@@ -1,4 +1,4 @@
-import { apiRequest } from "./client";
+import { apiRequest, type QueryParams } from "./client";
 import {
   categoryDetailResponseSchema,
   categoryListResponseSchema,
@@ -63,7 +63,7 @@ export const endpoints = {
     apiRequest({
       method: "GET",
       path: "/api/merchants",
-      query: params,
+      query: params as QueryParams,
       responseSchema: merchantListResponseSchema,
     }),
 
@@ -85,7 +85,7 @@ export const endpoints = {
     apiRequest({
       method: "GET",
       path: "/api/vouchers",
-      query: params,
+      query: params as QueryParams,
       responseSchema: voucherListResponseSchema,
     }),
 
@@ -110,7 +110,7 @@ export const endpoints = {
     apiRequest({
       method: "GET",
       path: "/api/redemptions",
-      query: params,
+      query: params as QueryParams,
       responseSchema: redemptionListResponseSchema,
       requireAuth: true,
     }),
@@ -137,7 +137,7 @@ export const endpoints = {
     apiRequest({
       method: "GET",
       path: "/api/transactions",
-      query: params,
+      query: params as QueryParams,
       responseSchema: transactionListResponseSchema,
       requireAuth: true,
     }),

@@ -17,23 +17,26 @@ function resolveBaseUrl(): string {
   return base.replace(/\/$/, "");
 }
 
+export type QueryValue = string | number | boolean | null | undefined;
+export type QueryParams = { readonly [key: string]: QueryValue };
+
 export interface ApiRequestOptions<TResponse> {
   method?: "GET" | "POST" | "PATCH" | "PUT" | "DELETE";
   path: string;
-  query?: Record<string, string | number | boolean | undefined>;
+  query?: QueryParams;
   body?: unknown;
   responseSchema: ZodType<TResponse>;
   requireAuth?: boolean;
   signal?: AbortSignal;
 }
 
-function buildUrl(path: string, query?: ApiRequestOptions<unknown>["query"]): string {
+function buildUrl(path: string, query?: QueryParams): string {
   const base = resolveBaseUrl();
   const normalizedPath = path.startsWith("/") ? path : `/${path}`;
   const url = new URL(`${base}${normalizedPath}`);
   if (query) {
     for (const [key, value] of Object.entries(query)) {
-      if (value === undefined) continue;
+      if (value === undefined || value === null) continue;
       url.searchParams.set(key, String(value));
     }
   }
