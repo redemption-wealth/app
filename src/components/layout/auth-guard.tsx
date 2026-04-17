@@ -1,12 +1,20 @@
 "use client";
 
-import { useAuth } from "@/hooks/use-auth";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
+import { useAuth } from "@/hooks/use-auth";
+import { useSyncUser } from "@/hooks/use-sync-user";
 
 export function AuthGuard({ children }: { children: React.ReactNode }) {
   const { authenticated, ready } = useAuth();
   const router = useRouter();
+  const {
+    mutate: syncUser,
+    isPending: isSyncing,
+    isSuccess: isSynced,
+    isError: syncFailed,
+  } = useSyncUser();
+  const syncStartedRef = useRef(false);
 
   useEffect(() => {
     if (ready && !authenticated) {
@@ -14,7 +22,14 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
     }
   }, [ready, authenticated, router]);
 
-  if (!ready) {
+  useEffect(() => {
+    if (ready && authenticated && !syncStartedRef.current) {
+      syncStartedRef.current = true;
+      syncUser();
+    }
+  }, [ready, authenticated, syncUser]);
+
+  if (!ready || (authenticated && isSyncing && !isSynced && !syncFailed)) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
