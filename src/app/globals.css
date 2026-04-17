@@ -1,0 +1,108 @@
+@import "tailwindcss";
+
+@theme {
+  /* ============================================================
+     Design System: "The Digital Concierge"
+     Light premium theme — cream/mint/magenta
+     ============================================================ */
+
+  /* Surface Hierarchy */
+  --color-surface: #fff8f7;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #fef0f0;
+  --color-surface-container: #f9e8e8;
+  --color-surface-container-high: #f5e0e0;
+  --color-surface-container-highest: #f0d8d8;
+
+  /* Brand Colors */
+  --color-primary: #006c48;
+  --color-primary-container: #2de19d;
+  --color-on-primary: #ffffff;
+  --color-on-primary-container: #002114;
+
+  --color-secondary: #b80049;
+  --color-secondary-container: #ffd9e0;
+  --color-on-secondary: #ffffff;
+  --color-on-secondary-container: #3f0017;
+
+  --color-tertiary-container: #d4f5e8;
+  --color-on-tertiary-container: #004d35;
+
+  /* Text Colors */
+  --color-on-surface: #211a1a;
+  --color-on-surface-variant: #4a4545;
+  --color-outline: #7a7070;
+  --color-outline-variant: #bacabf;
+
+  /* Status Colors */
+  --color-success: #2de19d;
+  --color-error: #ba1a1a;
+  --color-warning: #f59e0b;
+  --color-info: #006c48;
+
+  /* Shadcn/UI Compatible Mapping */
+  --color-background: #fff8f7;
+  --color-foreground: #211a1a;
+  --color-card: #ffffff;
+  --color-card-foreground: #211a1a;
+  --color-muted: #fef0f0;
+  --color-muted-foreground: #4a4545;
+  --color-accent: #2de19d;
+  --color-accent-foreground: #002114;
+  --color-destructive: #ba1a1a;
+  --color-destructive-foreground: #ffffff;
+  --color-border: #bacabf;
+  --color-input: #f5e0e0;
+  --color-ring: #006c48;
+
+  /* Radius Scale */
+  --radius-md: 1rem;
+  --radius-lg: 2rem;
+  --radius-xl: 3rem;
+
+  /* Fonts */
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-display: "Plus Jakarta Sans", "Inter", system-ui, sans-serif;
+
+  /* Shadows */
+  --shadow-ambient: 0 4px 40px rgba(33, 26, 26, 0.04);
+  --shadow-ambient-lg: 0 8px 60px rgba(33, 26, 26, 0.06);
+  --shadow-elevated: 0 12px 80px rgba(33, 26, 26, 0.08);
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    background-color: var(--color-surface);
+    color: var(--color-on-surface);
+    font-family: var(--font-sans);
+  }
+
+  body {
+    background-color: var(--color-surface);
+    color: var(--color-on-surface);
+    min-height: 100vh;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+  }
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-surface-container-low);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-outline-variant);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary);
+}
