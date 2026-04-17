@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -27,8 +28,15 @@ export function Sidebar() {
   return (
     <aside className="bg-surface-container-low sticky top-0 hidden h-screen w-64 flex-col md:flex">
       <div className="p-6">
-        <h1 className="font-display text-primary text-xl font-bold">WEALTH</h1>
-        <p className="text-on-surface-variant mt-1 text-xs">Redemption App</p>
+        <Image
+          src="/image/logo.png"
+          alt="WEALTH"
+          width={160}
+          height={52}
+          priority
+          className="h-9 w-auto"
+        />
+        <p className="text-on-surface-variant mt-2 text-xs">Redemption App</p>
       </div>
 
       <nav className="flex-1 px-3">

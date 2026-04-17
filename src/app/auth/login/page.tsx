@@ -5,6 +5,7 @@ import {
   describeLoginCodeError,
   describeSendCodeError,
 } from "@/lib/auth-errors";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 
@@ -64,11 +65,16 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center p-4">
       <div className="w-full max-w-sm space-y-8">
-        <div className="text-center">
-          <h1 className="font-display text-primary text-3xl font-bold">
-            WEALTH
-          </h1>
-          <p className="text-on-surface-variant mt-2">
+        <div className="flex flex-col items-center text-center">
+          <Image
+            src="/image/logo.png"
+            alt="WEALTH"
+            width={280}
+            height={92}
+            priority
+            className="h-16 w-auto"
+          />
+          <p className="text-on-surface-variant mt-3">
             Masuk untuk mulai redeem voucher
           </p>
         </div>
