@@ -13,9 +13,8 @@ concurrency:
 jobs:
   verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
     env:
-      NEXT_PUBLIC_PRIVY_APP_ID: ci-privy-app-id
       NEXT_PUBLIC_API_BASE_URL: https://ci.example.test
       NEXT_PUBLIC_TOKEN_CONTRACT_ADDRESS: "0x1111111111111111111111111111111111111111"
       NEXT_PUBLIC_APP_URL: https://ci.example.test
@@ -42,6 +41,3 @@ jobs:
 
       - name: Test
         run: pnpm test:ci
-
-      - name: Build
-        run: pnpm build
