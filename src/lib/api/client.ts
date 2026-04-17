@@ -76,12 +76,10 @@ export async function apiRequest<TResponse>(
     headers["Authorization"] = `Bearer ${token}`;
   }
 
-  const res = await fetch(url, {
-    method,
-    headers,
-    body: body === undefined ? undefined : JSON.stringify(body),
-    signal,
-  });
+  const init: RequestInit = { method, headers };
+  if (body !== undefined) init.body = JSON.stringify(body);
+  if (signal) init.signal = signal;
+  const res = await fetch(url, init);
 
   await throwIfNotOk(res, path);
 

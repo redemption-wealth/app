@@ -13,7 +13,7 @@ export default function MerchantsPage() {
     isLoading,
     error,
     refetch,
-  } = useMerchants({ categoryId, limit: 24 });
+  } = useMerchants(categoryId ? { categoryId, limit: 24 } : { limit: 24 });
 
   const categories = categoryData?.data ?? [];
   const merchants = merchantData?.merchants ?? [];

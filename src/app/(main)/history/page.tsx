@@ -22,10 +22,9 @@ export default function HistoryPage() {
     isLoading,
     error,
     refetch,
-  } = useRedemptions({
-    status: filter === "all" ? undefined : filter,
-    limit: 20,
-  });
+  } = useRedemptions(
+    filter === "all" ? { limit: 20 } : { status: filter, limit: 20 },
+  );
 
   const redemptions = data?.redemptions ?? [];
 

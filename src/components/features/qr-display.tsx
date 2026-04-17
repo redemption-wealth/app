@@ -20,6 +20,7 @@ export function QrDisplay({ qrCodes }: QrDisplayProps) {
 
   const isBogo = qrCodes.length > 1;
   const active = qrCodes[Math.min(activeIndex, qrCodes.length - 1)];
+  if (!active) return null;
 
   return (
     <div className="space-y-3">
