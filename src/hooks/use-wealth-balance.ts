@@ -1,13 +1,12 @@
 "use client";
 
 import { useReadContract } from "wagmi";
-import { ERC20_ABI } from "@/lib/wagmi";
 import { formatUnits } from "viem";
+import { ERC20_ABI } from "@/lib/erc20-abi";
+import { env } from "@/lib/env";
 
 export function useWealthBalance(walletAddress?: string | null) {
-  const tokenAddress = process.env.NEXT_PUBLIC_TOKEN_CONTRACT_ADDRESS as
-    | `0x${string}`
-    | undefined;
+  const tokenAddress = env.NEXT_PUBLIC_TOKEN_CONTRACT_ADDRESS as `0x${string}`;
 
   const { data: balance, isLoading, refetch } = useReadContract({
     address: tokenAddress,
@@ -15,7 +14,7 @@ export function useWealthBalance(walletAddress?: string | null) {
     functionName: "balanceOf",
     args: walletAddress ? [walletAddress as `0x${string}`] : undefined,
     query: {
-      enabled: !!walletAddress && !!tokenAddress,
+      enabled: Boolean(walletAddress),
       refetchInterval: 30_000,
     },
   });
