@@ -1,13 +1,40 @@
 "use client";
 
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
+import { useRedemptions } from "@/hooks/use-redemptions";
 import { useWealthBalance } from "@/hooks/use-wealth-balance";
 import { formatWealth } from "@/lib/utils";
-import Link from "next/link";
+
+const ONBOARDING_DISMISSED_KEY = "onboarding-deposit-dismissed";
 
 export default function HomePage() {
+  const router = useRouter();
   const { walletAddress } = useAuth();
-  const { balance } = useWealthBalance(walletAddress);
+  const { balance, rawBalance, isLoading: balanceLoading } =
+    useWealthBalance(walletAddress);
+  const { data: redemptions, isLoading: redemptionsLoading } = useRedemptions({
+    limit: 1,
+  });
+
+  useEffect(() => {
+    if (balanceLoading || redemptionsLoading) return;
+
+    const dismissed =
+      typeof window !== "undefined" &&
+      window.localStorage.getItem(ONBOARDING_DISMISSED_KEY) === "1";
+    if (dismissed) return;
+
+    const hasBalance =
+      typeof rawBalance === "bigint" && rawBalance > BigInt(0);
+    const hasHistory = (redemptions?.redemptions?.length ?? 0) > 0;
+
+    if (!hasBalance && !hasHistory) {
+      router.replace("/onboarding/deposit");
+    }
+  }, [balanceLoading, redemptionsLoading, rawBalance, redemptions, router]);
 
   return (
     <div className="max-w-2xl mx-auto md:max-w-7xl space-y-8">

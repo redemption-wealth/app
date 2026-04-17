@@ -38,9 +38,12 @@ export function truncateAddress(address: string): string {
 export function isVoucherValid(voucher: {
   isActive: boolean;
   remainingStock: number;
-  endDate: Date | string;
+  expiryDate: Date | string;
 }): boolean {
   const now = new Date();
-  const end = typeof voucher.endDate === "string" ? new Date(voucher.endDate) : voucher.endDate;
+  const end =
+    typeof voucher.expiryDate === "string"
+      ? new Date(voucher.expiryDate)
+      : voucher.expiryDate;
   return voucher.isActive && voucher.remainingStock > 0 && end >= now;
 }
