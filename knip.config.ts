@@ -6,7 +6,8 @@ const config: KnipConfig = {
     "src/providers.tsx",
   ],
   project: ["src/**/*.{ts,tsx}"],
-  ignoreDependencies: ["postcss", "tailwindcss"],
+  ignore: [".husky/**"],
+  ignoreDependencies: ["postcss", "tailwindcss", "lint-staged"],
 };
 
 export default config;
