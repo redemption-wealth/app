@@ -161,8 +161,14 @@ export function useRedeemVoucher() {
 
         const tokenAddress = (txDetails?.tokenContractAddress ??
           env.NEXT_PUBLIC_TOKEN_CONTRACT_ADDRESS) as `0x${string}`;
-        const treasury = (txDetails?.treasuryWalletAddress ??
-          env.NEXT_PUBLIC_TREASURY_WALLET_ADDRESS) as `0x${string}`;
+        const treasury = txDetails?.treasuryWalletAddress as
+          | `0x${string}`
+          | undefined;
+        if (!treasury) {
+          throw new Error(
+            "Treasury wallet tidak tersedia dari backend. Coba lagi.",
+          );
+        }
         const amount = txDetails?.wealthAmount ?? redemption.wealthAmount;
 
         await signAndSubmit(redemption.id, amount, treasury, tokenAddress);
