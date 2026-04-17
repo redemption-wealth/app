@@ -1,5 +1,9 @@
 export type { Pagination } from "@/lib/schemas/common";
-export type { Category } from "@/lib/schemas/category";
+export type {
+  Category,
+  CategoryListResponse,
+  CategoryDetailResponse,
+} from "@/lib/schemas/category";
 export type { User, UserSyncResponse } from "@/lib/schemas/user";
 export type {
   Merchant,
