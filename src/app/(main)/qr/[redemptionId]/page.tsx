@@ -5,6 +5,7 @@ import { use, useEffect, useMemo, useState } from "react";
 import { QrDisplay } from "@/components/features/qr-display";
 import { RedemptionStatusBanner } from "@/components/features/redemption-status-banner";
 import { TransactionInfo } from "@/components/features/transaction-info";
+import { useReconcileRedemption } from "@/hooks/use-reconcile-redemption";
 import { useRedemption } from "@/hooks/use-redemption";
 import { formatDate, formatWealth } from "@/lib/utils";
 
@@ -32,7 +33,7 @@ export default function QrDisplayPage({
     return () => clearInterval(id);
   }, []);
 
-  const { data, isLoading, error, refetch } = useRedemption(redemptionId, {
+  const { data, isLoading, error } = useRedemption(redemptionId, {
     refetchInterval: (query) => {
       const status = query.state.data?.redemption?.status;
       const createdAt = query.state.data?.redemption?.createdAt;
@@ -40,6 +41,8 @@ export default function QrDisplayPage({
       return pickPollingInterval(status, elapsed);
     },
   });
+  const { reconcile, isReconciling, isCoolingDown, fallbackMessage } =
+    useReconcileRedemption();
 
   const redemption = data?.redemption;
   const voucher = redemption?.voucher;
@@ -96,10 +99,16 @@ export default function QrDisplayPage({
         status={redemption.status}
         elapsedMs={elapsedMs}
         txHash={redemption.txHash}
-        onReconcile={() => {
-          void refetch();
-        }}
+        onReconcile={() => reconcile(redemption.id)}
+        isReconciling={isReconciling}
+        reconcileCooldown={isCoolingDown}
       />
+
+      {fallbackMessage ? (
+        <p className="text-xs text-on-surface-variant text-center">
+          {fallbackMessage}
+        </p>
+      ) : null}
 
       {redemption.status === "confirmed" ? (
         <QrDisplay qrCodes={qrCodes} />

@@ -12,6 +12,7 @@ import {
   voucherListResponseSchema,
 } from "@/lib/schemas/voucher";
 import {
+  reconcileRedemptionResponseSchema,
   redeemVoucherResponseSchema,
   redemptionDetailResponseSchema,
   redemptionListResponseSchema,
@@ -129,6 +130,14 @@ export const endpoints = {
       path: `/api/redemptions/${id}/submit-tx`,
       body: { txHash },
       responseSchema: submitTxResponseSchema,
+      requireAuth: true,
+    }),
+
+  reconcileRedemption: (id: string) =>
+    apiRequest({
+      method: "POST",
+      path: `/api/redemptions/${id}/reconcile`,
+      responseSchema: reconcileRedemptionResponseSchema,
       requireAuth: true,
     }),
 

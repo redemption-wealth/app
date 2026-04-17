@@ -94,3 +94,12 @@ export const submitTxResponseSchema = z.object({
 });
 
 export type SubmitTxResponse = z.infer<typeof submitTxResponseSchema>;
+
+export const reconcileRedemptionResponseSchema = z.object({
+  redemption: redemptionSchema,
+  reconciled: z.boolean().optional(),
+});
+
+export type ReconcileRedemptionResponse = z.infer<
+  typeof reconcileRedemptionResponseSchema
+>;
