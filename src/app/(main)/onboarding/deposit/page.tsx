@@ -1,11 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import { WalletDepositPanel } from "@/components/features/wallet-deposit-panel";
 import { useAuth } from "@/hooks/use-auth";
 import { useWealthBalance } from "@/hooks/use-wealth-balance";
-import { env } from "@/lib/env";
 import { formatWealth } from "@/lib/utils";
-import { CopyableAddress } from "@/components/shared/copyable-address";
 
 const ONBOARDING_DISMISSED_KEY = "onboarding-deposit-dismissed";
 
@@ -46,45 +45,7 @@ export default function OnboardingDepositPage() {
         </p>
       </section>
 
-      <ol className="space-y-6">
-        <li className="space-y-3">
-          <Step index={1} title="Alamat embedded wallet Anda" />
-          {walletAddress ? (
-            <CopyableAddress value={walletAddress} truncate={false} />
-          ) : (
-            <p className="text-sm text-on-surface-variant">
-              Dompet belum siap. Silakan refresh halaman jika tidak muncul
-              dalam beberapa detik.
-            </p>
-          )}
-        </li>
-
-        <li className="space-y-3">
-          <Step index={2} title="Pastikan pakai jaringan Base" />
-          <div className="bg-surface-container rounded-[var(--radius-md)] px-3 py-2 text-sm flex items-center gap-2">
-            <span className="inline-block h-2 w-2 rounded-full bg-primary" />
-            <span className="font-semibold">Base Mainnet</span>
-            <span className="text-on-surface-variant">· Chain ID 8453</span>
-          </div>
-          <p className="text-xs text-on-surface-variant">
-            Transfer dari jaringan lain (mis. Ethereum Mainnet) tidak akan
-            terdeteksi dan bisa menyebabkan dana hilang.
-          </p>
-        </li>
-
-        <li className="space-y-3">
-          <Step index={3} title="Kirim token $WEALTH ke alamat di atas" />
-          <CopyableAddress
-            label="Kontrak $WEALTH (Base)"
-            value={env.NEXT_PUBLIC_TOKEN_CONTRACT_ADDRESS}
-            truncate={false}
-          />
-          <p className="text-xs text-on-surface-variant">
-            Saat menambah custom token di dompet sumber, gunakan alamat kontrak
-            di atas agar token dikenali sebagai $WEALTH.
-          </p>
-        </li>
-      </ol>
+      <WalletDepositPanel variant="inline" />
 
       <div className="flex items-center justify-between pt-4">
         <Link
@@ -102,17 +63,6 @@ export default function OnboardingDepositPage() {
           Lihat merchant →
         </Link>
       </div>
-    </div>
-  );
-}
-
-function Step({ index, title }: { index: number; title: string }) {
-  return (
-    <div className="flex items-center gap-3">
-      <span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary text-on-primary text-sm font-semibold">
-        {index}
-      </span>
-      <h2 className="font-display text-lg font-semibold">{title}</h2>
     </div>
   );
 }

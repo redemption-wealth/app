@@ -1,6 +1,10 @@
 "use client";
 
 import { useAuth } from "@/hooks/use-auth";
+import {
+  describeLoginCodeError,
+  describeSendCodeError,
+} from "@/lib/auth-errors";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 
@@ -27,8 +31,8 @@ export default function LoginPage() {
     try {
       await sendCode({ email });
       setStep("otp");
-    } catch {
-      setError("Gagal mengirim kode. Coba lagi.");
+    } catch (err) {
+      setError(describeSendCodeError(err));
     } finally {
       setIsLoading(false);
     }
@@ -42,8 +46,8 @@ export default function LoginPage() {
     try {
       await loginWithCode({ code: otp });
       router.push("/");
-    } catch {
-      setError("Kode tidak valid. Coba lagi.");
+    } catch (err) {
+      setError(describeLoginCodeError(err));
     } finally {
       setIsLoading(false);
     }
@@ -130,17 +134,37 @@ export default function LoginPage() {
               {isLoading ? "Verifikasi..." : "Masuk"}
             </button>
 
-            <button
-              type="button"
-              onClick={() => {
-                setStep("email");
-                setOtp("");
-                setError("");
-              }}
-              className="w-full py-3 text-sm text-primary font-semibold"
-            >
-              Ganti Email
-            </button>
+            <div className="flex items-center justify-between">
+              <button
+                type="button"
+                onClick={() => {
+                  setStep("email");
+                  setOtp("");
+                  setError("");
+                }}
+                className="text-sm text-on-surface-variant font-semibold"
+              >
+                Ganti Email
+              </button>
+              <button
+                type="button"
+                disabled={isLoading}
+                onClick={async () => {
+                  setIsLoading(true);
+                  setError("");
+                  try {
+                    await sendCode({ email });
+                  } catch (err) {
+                    setError(describeSendCodeError(err));
+                  } finally {
+                    setIsLoading(false);
+                  }
+                }}
+                className="text-sm text-primary font-semibold disabled:opacity-50"
+              >
+                Kirim Ulang
+              </button>
+            </div>
           </form>
         )}
       </div>

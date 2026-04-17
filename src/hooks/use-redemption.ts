@@ -1,11 +1,16 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, type Query } from "@tanstack/react-query";
 import { endpoints } from "@/lib/api/endpoints";
+import type { RedemptionDetailResponse } from "@/lib/schemas/redemption";
 import { queryKeys } from "./query-keys";
 
+type RefetchIntervalFn = (
+  query: Query<RedemptionDetailResponse>,
+) => number | false | undefined;
+
 interface UseRedemptionOptions {
-  refetchInterval?: number | false;
+  refetchInterval?: number | false | RefetchIntervalFn;
   enabled?: boolean;
 }
 

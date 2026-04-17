@@ -3,10 +3,13 @@
 import Link from "next/link";
 import { use } from "react";
 import { useChainId } from "wagmi";
+import { SigningStateUI } from "@/components/features/signing-state-ui";
 import { usePrice } from "@/hooks/use-price";
+import { useRedeemVoucher } from "@/hooks/use-redeem-voucher";
 import { useVoucher } from "@/hooks/use-voucher";
 import { TARGET_CHAIN_ID } from "@/lib/wagmi";
 import { formatDate, formatIdr, formatWealth, isVoucherValid } from "@/lib/utils";
+import { selectIsSigning, useRedemptionFlow } from "@/stores/redemption-flow";
 
 function subtractDecimalStrings(...values: string[]): string {
   const total = values.reduce((acc, v, i) => {
@@ -25,6 +28,8 @@ export default function VoucherDetailPage({
   const chainId = useChainId();
   const { data, isLoading, error } = useVoucher(id);
   const { data: priceData } = usePrice();
+  const { start } = useRedeemVoucher();
+  const isSigning = useRedemptionFlow(selectIsSigning);
 
   const onWrongChain = chainId !== TARGET_CHAIN_ID;
 
@@ -68,14 +73,16 @@ export default function VoucherDetailPage({
     ? Number(voucher.totalPrice) * priceData.priceIdr
     : null;
 
-  const canRedeem = isValid && !onWrongChain;
+  const canRedeem = isValid && !onWrongChain && !isSigning;
   const redeemDisabledReason = !isValid
     ? voucher.remainingStock <= 0
       ? "Stok habis"
       : "Voucher tidak aktif"
     : onWrongChain
       ? "Pindah ke jaringan Base untuk melanjutkan"
-      : null;
+      : isSigning
+        ? "Memproses..."
+        : null;
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
@@ -157,10 +164,15 @@ export default function VoucherDetailPage({
       <button
         type="button"
         disabled={!canRedeem}
+        onClick={() => {
+          void start(voucher.id);
+        }}
         className="w-full py-4 rounded-full bg-gradient-to-r from-primary to-primary-container text-on-primary font-display font-bold text-lg disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {redeemDisabledReason ?? "Redeem Voucher"}
       </button>
+
+      <SigningStateUI />
     </div>
   );
 }
