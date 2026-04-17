@@ -28,32 +28,32 @@ export default function MerchantDetailPage({
   const vouchers = voucherData?.vouchers ?? [];
 
   return (
-    <div className="max-w-2xl mx-auto md:max-w-4xl space-y-6">
+    <div className="mx-auto max-w-2xl space-y-6 md:max-w-4xl">
       <Link
         href="/merchants"
-        className="text-sm text-primary font-semibold inline-flex items-center gap-1"
+        className="text-primary inline-flex items-center gap-1 text-sm font-semibold"
       >
         ← Kembali
       </Link>
 
       {merchantLoading ? (
-        <div className="bg-surface-container-lowest rounded-[var(--radius-lg)] p-6 h-48 animate-pulse" />
+        <div className="bg-surface-container-lowest h-48 animate-pulse rounded-[var(--radius-lg)] p-6" />
       ) : merchantError || !merchant ? (
         <div className="bg-error-container text-on-error-container rounded-[var(--radius-md)] p-4 text-sm">
           Gagal memuat merchant.
         </div>
       ) : (
-        <section className="bg-surface-container-lowest rounded-[var(--radius-lg)] p-6 flex gap-4 items-start">
-          <div className="w-20 h-20 rounded-[var(--radius-md)] bg-surface-container overflow-hidden flex items-center justify-center shrink-0">
+        <section className="bg-surface-container-lowest flex items-start gap-4 rounded-[var(--radius-lg)] p-6">
+          <div className="bg-surface-container flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-[var(--radius-md)]">
             {merchant.logoUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={merchant.logoUrl}
                 alt={merchant.name}
-                className="w-full h-full object-cover"
+                className="h-full w-full object-cover"
               />
             ) : (
-              <span className="font-display text-3xl font-bold text-on-surface-variant">
+              <span className="font-display text-on-surface-variant text-3xl font-bold">
                 {merchant.name.charAt(0)}
               </span>
             )}
@@ -61,12 +61,12 @@ export default function MerchantDetailPage({
           <div className="min-w-0">
             <h1 className="font-display text-2xl font-bold">{merchant.name}</h1>
             {merchant.category?.name ? (
-              <p className="text-xs text-on-surface-variant mt-1">
+              <p className="text-on-surface-variant mt-1 text-xs">
                 {merchant.category.name}
               </p>
             ) : null}
             {merchant.description ? (
-              <p className="text-sm text-on-surface-variant mt-2">
+              <p className="text-on-surface-variant mt-2 text-sm">
                 {merchant.description}
               </p>
             ) : null}
@@ -77,16 +77,16 @@ export default function MerchantDetailPage({
       <section className="space-y-4">
         <h2 className="font-display text-xl font-bold">Voucher</h2>
         {vouchersLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             {Array.from({ length: 4 }).map((_, i) => (
               <div
                 key={i}
-                className="bg-surface-container-lowest rounded-[var(--radius-lg)] p-6 h-32 animate-pulse"
+                className="bg-surface-container-lowest h-32 animate-pulse rounded-[var(--radius-lg)] p-6"
               />
             ))}
           </div>
         ) : vouchersError ? (
-          <div className="bg-error-container text-on-error-container rounded-[var(--radius-md)] p-4 text-sm flex items-center justify-between">
+          <div className="bg-error-container text-on-error-container flex items-center justify-between rounded-[var(--radius-md)] p-4 text-sm">
             <span>Gagal memuat voucher.</span>
             <button
               type="button"
@@ -100,12 +100,12 @@ export default function MerchantDetailPage({
           </div>
         ) : vouchers.length === 0 ? (
           <div className="bg-surface-container-lowest rounded-[var(--radius-lg)] p-8 text-center">
-            <p className="text-sm text-on-surface-variant">
+            <p className="text-on-surface-variant text-sm">
               Belum ada voucher untuk merchant ini.
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             {vouchers.map((v) => (
               <VoucherCard key={v.id} voucher={v} />
             ))}

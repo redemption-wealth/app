@@ -108,7 +108,7 @@ Hapus semua yang sekarang di-duplikasi dengan `backend/`. Jalankan dengan checkl
 **Config & env cleanup:**
 
 - `app/.env.example` — hapus: `DATABASE_URL`, `PRIVY_APP_SECRET`, `ALCHEMY_WEBHOOK_SIGNING_KEY`, `NEXT_PUBLIC_TREASURY_WALLET_ADDRESS` (lihat §7-E item 3).
-- `app/README.md` — update: sections "Environment Variables" + "Database" (line 110 salah). Koreksi: *migrations owned by `backend/`; app is a thin HTTP client, tidak punya DB connection.*
+- `app/README.md` — update: sections "Environment Variables" + "Database" (line 110 salah). Koreksi: _migrations owned by `backend/`; app is a thin HTTP client, tidak punya DB connection._
 - `app/pnpm-workspace.yaml` — review: confirm app masih valid anggota workspace setelah prisma removal. Kalau workspace-level prisma config ada, decouple.
 - `app/src/middleware.ts` — strip ke no-op (atau delete); middleware tidak bisa verify Privy token di edge runtime tanpa server auth.
 
@@ -288,21 +288,21 @@ Setelah §4.1 selesai (app jadi pure frontend), lakukan sweep berikut supaya pro
 
 Mayoritas endpoint yang app butuh **sudah ada** di backend:
 
-| Endpoint | Auth | Source | Status |
-|---|---|---|---|
-| `POST /api/auth/user-sync` | Privy token | `backend/src/routes/auth.ts:143-180` | ✅ Ready |
-| `GET /api/merchants?categoryId=&search=&page=&limit=` | Public | `backend/src/routes/merchants.ts:8-42` | ✅ Ready |
-| `GET /api/merchants/:id` | Public | `backend/src/routes/merchants.ts:45-58` | ✅ Ready |
-| `GET /api/vouchers?merchantId=&category=&search=&page=&limit=` | Public | `backend/src/routes/vouchers.ts:10-61` | ✅ Ready |
-| `GET /api/vouchers/:id` | Public | `backend/src/routes/vouchers.ts:64-77` | ✅ Ready |
-| `POST /api/vouchers/:id/redeem` | Privy | `backend/src/routes/vouchers.ts:80-124` | ✅ Ready |
-| `GET /api/redemptions` | Privy | `backend/src/routes/redemptions.ts:8-42` | ✅ Ready |
-| `GET /api/redemptions/:id` | Privy | `backend/src/routes/redemptions.ts:45-63` | ✅ Ready |
-| `PATCH /api/redemptions/:id/submit-tx` | Privy | `backend/src/routes/redemptions.ts:66-106` | ✅ Ready |
-| `GET /api/transactions` | Privy | `backend/src/routes/transactions.ts:8-38` | ✅ Ready |
-| `GET /api/price/wealth` | Public | `backend/src/routes/price.ts:7-14` | ✅ Ready |
-| `POST /api/webhook/alchemy` | Alchemy sig | `backend/src/routes/webhook.ts:10-49` | ⚠️ Sig verify is TODO |
-| `GET /api/categories` | Public | `backend/src/routes/categories.ts` | ✅ Assumed ready (file exists, verify) |
+| Endpoint                                                       | Auth        | Source                                     | Status                                 |
+| -------------------------------------------------------------- | ----------- | ------------------------------------------ | -------------------------------------- |
+| `POST /api/auth/user-sync`                                     | Privy token | `backend/src/routes/auth.ts:143-180`       | ✅ Ready                               |
+| `GET /api/merchants?categoryId=&search=&page=&limit=`          | Public      | `backend/src/routes/merchants.ts:8-42`     | ✅ Ready                               |
+| `GET /api/merchants/:id`                                       | Public      | `backend/src/routes/merchants.ts:45-58`    | ✅ Ready                               |
+| `GET /api/vouchers?merchantId=&category=&search=&page=&limit=` | Public      | `backend/src/routes/vouchers.ts:10-61`     | ✅ Ready                               |
+| `GET /api/vouchers/:id`                                        | Public      | `backend/src/routes/vouchers.ts:64-77`     | ✅ Ready                               |
+| `POST /api/vouchers/:id/redeem`                                | Privy       | `backend/src/routes/vouchers.ts:80-124`    | ✅ Ready                               |
+| `GET /api/redemptions`                                         | Privy       | `backend/src/routes/redemptions.ts:8-42`   | ✅ Ready                               |
+| `GET /api/redemptions/:id`                                     | Privy       | `backend/src/routes/redemptions.ts:45-63`  | ✅ Ready                               |
+| `PATCH /api/redemptions/:id/submit-tx`                         | Privy       | `backend/src/routes/redemptions.ts:66-106` | ✅ Ready                               |
+| `GET /api/transactions`                                        | Privy       | `backend/src/routes/transactions.ts:8-38`  | ✅ Ready                               |
+| `GET /api/price/wealth`                                        | Public      | `backend/src/routes/price.ts:7-14`         | ✅ Ready                               |
+| `POST /api/webhook/alchemy`                                    | Alchemy sig | `backend/src/routes/webhook.ts:10-49`      | ⚠️ Sig verify is TODO                  |
+| `GET /api/categories`                                          | Public      | `backend/src/routes/categories.ts`         | ✅ Assumed ready (file exists, verify) |
 
 **Response envelope note:** Backend tidak punya envelope yang uniform — `merchants/vouchers/redemptions/transactions` return `{ <resource>, pagination }`, `vouchers/:id/redeem` return `{ redemption, txDetails }`, `categories` return `{ data: ... }`. API client harus punya per-endpoint unwrapper atau DTO shape yang eksplisit di §4.2 (bukan generic `{ data }`).
 
@@ -383,16 +383,16 @@ done                — render QR
 
 **UI copy per state** (di `/qr/[id]` atau modal overlay):
 
-| State | Screen / copy | User action |
-|---|---|---|
-| `price-quote` | Spinner + "Mengambil kurs $WEALTH…" | wait (≤2s) |
-| `initiating` | Spinner + "Menyiapkan voucher…" | wait |
-| `opening-wallet` | Dim + "Buka dompet untuk tanda tangan…" | wait |
-| `awaiting-signature` | Dim + "Periksa transaksi di dompet kamu" + **Cancel** button | sign → `broadcasting`; cancel → back to `idle` (redemption row di-TTL cleanup backend; user tetap di `/vouchers/[id]` dengan toast "Dibatalkan") |
-| `broadcasting` | Spinner + "Mengirim transaksi…" + last-4 of txHash saat didapat | wait |
-| `submitting-hash` | Spinner + "Mencatat transaksi…" | wait |
-| `polling-confirmation` | See "QR polling screen" below | wait or backgrounded |
-| `done` | QR image + voucher info | save / screenshot |
+| State                  | Screen / copy                                                   | User action                                                                                                                                      |
+| ---------------------- | --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `price-quote`          | Spinner + "Mengambil kurs $WEALTH…"                             | wait (≤2s)                                                                                                                                       |
+| `initiating`           | Spinner + "Menyiapkan voucher…"                                 | wait                                                                                                                                             |
+| `opening-wallet`       | Dim + "Buka dompet untuk tanda tangan…"                         | wait                                                                                                                                             |
+| `awaiting-signature`   | Dim + "Periksa transaksi di dompet kamu" + **Cancel** button    | sign → `broadcasting`; cancel → back to `idle` (redemption row di-TTL cleanup backend; user tetap di `/vouchers/[id]` dengan toast "Dibatalkan") |
+| `broadcasting`         | Spinner + "Mengirim transaksi…" + last-4 of txHash saat didapat | wait                                                                                                                                             |
+| `submitting-hash`      | Spinner + "Mencatat transaksi…"                                 | wait                                                                                                                                             |
+| `polling-confirmation` | See "QR polling screen" below                                   | wait or backgrounded                                                                                                                             |
+| `done`                 | QR image + voucher info                                         | save / screenshot                                                                                                                                |
 
 **Rejection & retry recovery**
 
@@ -442,17 +442,17 @@ Screen harus jelas status dan tidak bikin user ragu. Konten:
 
 **Edge cases (konsolidasi)**
 
-| Case | Behavior |
-|---|---|
-| Double-submit redeem (same idempotencyKey) | Backend return `{ redemption, alreadyExists: true }` (`vouchers.ts:103-105`). App skip sign step kalau `redemption.txHash` sudah ada; kalau belum, lanjut signing dengan existing `redemption.id` + `txDetails`. |
-| Two-tab double-redeem (different idempotencyKey, same user+voucher) | Backend enforce: **one pending redemption per (userId, voucherId)**. Second request return 409 "Redemption sedang diproses" + reference existing `redemption.id`. App redirect ke `/qr/[existingId]`. (Lihat §7-F.) |
-| Voucher out of stock between browse & redeem | Backend return 400 from `initiateRedemption`. App toast "Voucher sold out" + invalidate voucher query + kembali ke listing. |
-| Price drift (quote vs actual) | Backend re-verify dengan tolerance (§7-E item 1); tolak kalau di luar threshold + return 409 "Harga berubah, coba lagi". App auto-refresh quote + re-prompt. |
-| User reject signing | Lihat "Rejection & retry recovery" di atas. |
-| Webhook arrives before submit-tx | Backend buffer unmatched confirmations (§7-G). App polling tetap lihat `confirmed` saat match. |
-| Offline / network loss mid-flow | React Query retries dengan backoff; app show persistent banner "Offline — akan sinkron kembali saat online" (deteksi via `navigator.onLine` + RQ online manager). Signing flow pause di state saat disconnect, resume kalau reconnect dalam 30s, else error + retry CTA. |
-| OTP failure (wrong / expired / too many attempts) | Privy sudah handle, tapi app harus surface error cleanly — tidak generic "Something went wrong". Map Privy error codes ke copy Bahasa Indonesia. |
-| Stuck-but-paid (tx confirmed on-chain, backend still `pending`) | QR polling timeout (§6 polling screen > 5 menit) trigger "Refresh status" CTA → `POST /api/redemptions/:id/reconcile` (§7-H) → backend re-verify via `eth_getTransactionReceipt` + confirm. |
+| Case                                                                | Behavior                                                                                                                                                                                                                                                                 |
+| ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Double-submit redeem (same idempotencyKey)                          | Backend return `{ redemption, alreadyExists: true }` (`vouchers.ts:103-105`). App skip sign step kalau `redemption.txHash` sudah ada; kalau belum, lanjut signing dengan existing `redemption.id` + `txDetails`.                                                         |
+| Two-tab double-redeem (different idempotencyKey, same user+voucher) | Backend enforce: **one pending redemption per (userId, voucherId)**. Second request return 409 "Redemption sedang diproses" + reference existing `redemption.id`. App redirect ke `/qr/[existingId]`. (Lihat §7-F.)                                                      |
+| Voucher out of stock between browse & redeem                        | Backend return 400 from `initiateRedemption`. App toast "Voucher sold out" + invalidate voucher query + kembali ke listing.                                                                                                                                              |
+| Price drift (quote vs actual)                                       | Backend re-verify dengan tolerance (§7-E item 1); tolak kalau di luar threshold + return 409 "Harga berubah, coba lagi". App auto-refresh quote + re-prompt.                                                                                                             |
+| User reject signing                                                 | Lihat "Rejection & retry recovery" di atas.                                                                                                                                                                                                                              |
+| Webhook arrives before submit-tx                                    | Backend buffer unmatched confirmations (§7-G). App polling tetap lihat `confirmed` saat match.                                                                                                                                                                           |
+| Offline / network loss mid-flow                                     | React Query retries dengan backoff; app show persistent banner "Offline — akan sinkron kembali saat online" (deteksi via `navigator.onLine` + RQ online manager). Signing flow pause di state saat disconnect, resume kalau reconnect dalam 30s, else error + retry CTA. |
+| OTP failure (wrong / expired / too many attempts)                   | Privy sudah handle, tapi app harus surface error cleanly — tidak generic "Something went wrong". Map Privy error codes ke copy Bahasa Indonesia.                                                                                                                         |
+| Stuck-but-paid (tx confirmed on-chain, backend still `pending`)     | QR polling timeout (§6 polling screen > 5 menit) trigger "Refresh status" CTA → `POST /api/redemptions/:id/reconcile` (§7-H) → backend re-verify via `eth_getTransactionReceipt` + confirm.                                                                              |
 
 ## 7. Dependencies (tidak di-solve di doc ini, tapi relevan)
 

@@ -5,5 +5,3 @@ export const priceResponseSchema = z.object({
   cached: z.boolean(),
   stale: z.boolean().optional(),
 });
-
-export type PriceResponse = z.infer<typeof priceResponseSchema>;

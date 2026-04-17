@@ -23,15 +23,15 @@ export function TransactionInfo({ txHash }: TransactionInfoProps) {
   };
 
   return (
-    <div className="bg-surface-container rounded-[var(--radius-md)] p-3 text-sm space-y-2">
+    <div className="bg-surface-container space-y-2 rounded-[var(--radius-md)] p-3 text-sm">
       <div className="flex items-center justify-between gap-2">
-        <span className="text-xs uppercase tracking-wide text-on-surface-variant">
+        <span className="text-on-surface-variant text-xs tracking-wide uppercase">
           Hash Transaksi
         </span>
         <button
           type="button"
           onClick={handleCopy}
-          className="text-xs font-semibold text-primary"
+          className="text-primary text-xs font-semibold"
         >
           {copied ? "Copied" : "Copy"}
         </button>
@@ -41,7 +41,7 @@ export function TransactionInfo({ txHash }: TransactionInfoProps) {
         href={`https://basescan.org/tx/${txHash}`}
         target="_blank"
         rel="noopener noreferrer"
-        className="text-xs font-semibold text-primary underline"
+        className="text-primary text-xs font-semibold underline"
       >
         Lihat di BaseScan ↗
       </a>

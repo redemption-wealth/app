@@ -29,19 +29,19 @@ export function CopyableAddress({
   return (
     <div className="space-y-1">
       {label ? (
-        <p className="text-xs text-on-surface-variant uppercase tracking-wide">
+        <p className="text-on-surface-variant text-xs tracking-wide uppercase">
           {label}
         </p>
       ) : null}
       <button
         type="button"
         onClick={handleCopy}
-        className="w-full text-left font-mono text-sm bg-surface-container rounded-[var(--radius-md)] px-3 py-2 hover:bg-surface-container-high transition-colors flex items-center justify-between gap-2"
+        className="bg-surface-container hover:bg-surface-container-high flex w-full items-center justify-between gap-2 rounded-[var(--radius-md)] px-3 py-2 text-left font-mono text-sm transition-colors"
       >
         <span className="truncate">
           {truncate ? truncateAddress(value) : value}
         </span>
-        <span className="text-xs text-primary font-sans font-semibold shrink-0">
+        <span className="text-primary shrink-0 font-sans text-xs font-semibold">
           {copied ? "Copied" : "Copy"}
         </span>
       </button>

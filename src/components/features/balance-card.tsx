@@ -10,19 +10,17 @@ export function BalanceCard() {
   const { balance } = useWealthBalance(walletAddress);
   const { data: priceData } = usePrice();
 
-  const balanceIdr = priceData
-    ? Number(balance) * priceData.priceIdr
-    : null;
+  const balanceIdr = priceData ? Number(balance) * priceData.priceIdr : null;
 
   return (
-    <section className="bg-gradient-to-br from-primary to-primary-container rounded-[var(--radius-xl)] p-8 text-on-primary">
+    <section className="from-primary to-primary-container text-on-primary rounded-[var(--radius-xl)] bg-gradient-to-br p-8">
       <p className="text-sm opacity-80">Saldo $WEALTH</p>
-      <h2 className="font-display text-4xl font-bold mt-2">
+      <h2 className="font-display mt-2 text-4xl font-bold">
         {formatWealth(balance)}
       </h2>
-      <p className="text-sm opacity-80 mt-1">$WEALTH</p>
+      <p className="mt-1 text-sm opacity-80">$WEALTH</p>
       {balanceIdr !== null ? (
-        <p className="text-xs opacity-80 mt-2">≈ {formatIdr(balanceIdr)}</p>
+        <p className="mt-2 text-xs opacity-80">≈ {formatIdr(balanceIdr)}</p>
       ) : null}
     </section>
   );

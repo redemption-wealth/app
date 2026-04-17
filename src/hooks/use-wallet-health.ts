@@ -9,7 +9,7 @@ function hasPrivyEmbeddedWallet(
   return wallets.some((w) => w.walletClientType === "privy");
 }
 
-export interface WalletHealth {
+interface WalletHealth {
   isHealthy: () => boolean;
   recover: (timeoutMs?: number) => Promise<boolean>;
 }

@@ -20,8 +20,12 @@ export default function HomePage() {
   const { data: redemptions, isLoading: redemptionsLoading } = useRedemptions({
     limit: 1,
   });
-  const { data: voucherList, isLoading: vouchersLoading, error: vouchersError, refetch } =
-    useVouchers({ limit: 6 });
+  const {
+    data: voucherList,
+    isLoading: vouchersLoading,
+    error: vouchersError,
+    refetch,
+  } = useVouchers({ limit: 6 });
 
   useEffect(() => {
     if (balanceLoading || redemptionsLoading) return;
@@ -42,28 +46,28 @@ export default function HomePage() {
   const vouchers = voucherList?.vouchers ?? [];
 
   return (
-    <div className="max-w-2xl mx-auto md:max-w-7xl space-y-8">
+    <div className="mx-auto max-w-2xl space-y-8 md:max-w-7xl">
       <BalanceCard />
 
       <section>
-        <div className="flex items-center justify-between mb-4">
+        <div className="mb-4 flex items-center justify-between">
           <h3 className="font-display text-xl font-bold">Voucher Populer</h3>
           <Link
             href="/merchants"
-            className="text-sm text-primary font-semibold"
+            className="text-primary text-sm font-semibold"
           >
             Lihat Semua
           </Link>
         </div>
 
         {vouchersLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-surface-container-lowest rounded-[var(--radius-lg)] p-6 h-40 animate-pulse" />
-            <div className="bg-surface-container-lowest rounded-[var(--radius-lg)] p-6 h-40 animate-pulse" />
-            <div className="bg-surface-container-lowest rounded-[var(--radius-lg)] p-6 h-40 animate-pulse" />
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+            <div className="bg-surface-container-lowest h-40 animate-pulse rounded-[var(--radius-lg)] p-6" />
+            <div className="bg-surface-container-lowest h-40 animate-pulse rounded-[var(--radius-lg)] p-6" />
+            <div className="bg-surface-container-lowest h-40 animate-pulse rounded-[var(--radius-lg)] p-6" />
           </div>
         ) : vouchersError ? (
-          <div className="bg-error-container text-on-error-container rounded-[var(--radius-md)] p-4 text-sm flex items-center justify-between">
+          <div className="bg-error-container text-on-error-container flex items-center justify-between rounded-[var(--radius-md)] p-4 text-sm">
             <span>Gagal memuat voucher.</span>
             <button
               type="button"
@@ -76,19 +80,19 @@ export default function HomePage() {
             </button>
           </div>
         ) : vouchers.length === 0 ? (
-          <div className="bg-surface-container-lowest rounded-[var(--radius-lg)] p-8 text-center space-y-3">
-            <p className="text-sm text-on-surface-variant">
+          <div className="bg-surface-container-lowest space-y-3 rounded-[var(--radius-lg)] p-8 text-center">
+            <p className="text-on-surface-variant text-sm">
               Belum ada voucher tersedia.
             </p>
             <Link
               href="/merchants"
-              className="inline-flex items-center rounded-full bg-primary text-on-primary px-4 py-2 text-sm font-semibold"
+              className="bg-primary text-on-primary inline-flex items-center rounded-full px-4 py-2 text-sm font-semibold"
             >
               Jelajahi merchant
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
             {vouchers.map((v) => (
               <VoucherCard key={v.id} voucher={v} />
             ))}

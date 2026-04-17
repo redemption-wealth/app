@@ -8,7 +8,11 @@ import { env } from "@/lib/env";
 export function useWealthBalance(walletAddress?: string | null) {
   const tokenAddress = env.NEXT_PUBLIC_TOKEN_CONTRACT_ADDRESS as `0x${string}`;
 
-  const { data: balance, isLoading, refetch } = useReadContract({
+  const {
+    data: balance,
+    isLoading,
+    refetch,
+  } = useReadContract({
     address: tokenAddress,
     abi: ERC20_ABI,
     functionName: "balanceOf",

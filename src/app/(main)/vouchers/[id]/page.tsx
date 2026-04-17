@@ -8,7 +8,12 @@ import { usePrice } from "@/hooks/use-price";
 import { useRedeemVoucher } from "@/hooks/use-redeem-voucher";
 import { useVoucher } from "@/hooks/use-voucher";
 import { TARGET_CHAIN_ID } from "@/lib/wagmi";
-import { formatDate, formatIdr, formatWealth, isVoucherValid } from "@/lib/utils";
+import {
+  formatDate,
+  formatIdr,
+  formatWealth,
+  isVoucherValid,
+} from "@/lib/utils";
 import { selectIsSigning, useRedemptionFlow } from "@/stores/redemption-flow";
 
 function subtractDecimalStrings(...values: string[]): string {
@@ -35,12 +40,12 @@ export default function VoucherDetailPage({
 
   if (isLoading) {
     return (
-      <div className="max-w-2xl mx-auto space-y-6">
-        <div className="h-8 bg-surface-container rounded w-1/2 animate-pulse" />
-        <div className="bg-surface-container-lowest rounded-[var(--radius-lg)] p-6 space-y-4">
-          <div className="h-48 bg-surface-container rounded-[var(--radius-md)] animate-pulse" />
-          <div className="h-6 bg-surface-container rounded w-3/4 animate-pulse" />
-          <div className="h-4 bg-surface-container rounded w-1/2 animate-pulse" />
+      <div className="mx-auto max-w-2xl space-y-6">
+        <div className="bg-surface-container h-8 w-1/2 animate-pulse rounded" />
+        <div className="bg-surface-container-lowest space-y-4 rounded-[var(--radius-lg)] p-6">
+          <div className="bg-surface-container h-48 animate-pulse rounded-[var(--radius-md)]" />
+          <div className="bg-surface-container h-6 w-3/4 animate-pulse rounded" />
+          <div className="bg-surface-container h-4 w-1/2 animate-pulse rounded" />
         </div>
       </div>
     );
@@ -48,12 +53,16 @@ export default function VoucherDetailPage({
 
   if (error || !data?.voucher) {
     return (
-      <div className="max-w-2xl mx-auto space-y-4">
-        <h1 className="font-display text-2xl font-bold">Voucher tidak ditemukan</h1>
+      <div className="mx-auto max-w-2xl space-y-4">
+        <h1 className="font-display text-2xl font-bold">
+          Voucher tidak ditemukan
+        </h1>
         <p className="text-on-surface-variant">
-          {error instanceof Error ? error.message : "Voucher ini tidak tersedia."}
+          {error instanceof Error
+            ? error.message
+            : "Voucher ini tidak tersedia."}
         </p>
-        <Link href="/merchants" className="text-sm font-semibold text-primary">
+        <Link href="/merchants" className="text-primary text-sm font-semibold">
           ← Kembali ke merchant
         </Link>
       </div>
@@ -85,12 +94,12 @@ export default function VoucherDetailPage({
         : null;
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
+    <div className="mx-auto max-w-2xl space-y-6">
       <div className="space-y-2">
         {merchant ? (
           <Link
             href={`/merchants/${merchant.id}`}
-            className="text-xs font-semibold uppercase tracking-wider text-on-surface-variant hover:text-on-surface"
+            className="text-on-surface-variant hover:text-on-surface text-xs font-semibold tracking-wider uppercase"
           >
             ← {merchant.name}
           </Link>
@@ -98,37 +107,39 @@ export default function VoucherDetailPage({
         <div className="flex items-start justify-between gap-4">
           <h1 className="font-display text-2xl font-bold">{voucher.title}</h1>
           {isBogo ? (
-            <span className="inline-flex items-center rounded-full bg-tertiary text-on-tertiary px-3 py-1 text-xs font-semibold uppercase tracking-wide">
+            <span className="bg-tertiary text-on-tertiary inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold tracking-wide uppercase">
               BOGO {voucher.qrPerSlot}x
             </span>
           ) : null}
         </div>
         {voucher.description ? (
-          <p className="text-sm text-on-surface-variant">{voucher.description}</p>
+          <p className="text-on-surface-variant text-sm">
+            {voucher.description}
+          </p>
         ) : null}
       </div>
 
-      <section className="bg-surface-container-lowest rounded-[var(--radius-lg)] p-6 space-y-4">
+      <section className="bg-surface-container-lowest space-y-4 rounded-[var(--radius-lg)] p-6">
         <div>
-          <p className="text-xs uppercase tracking-wide text-on-surface-variant">
+          <p className="text-on-surface-variant text-xs tracking-wide uppercase">
             Harga
           </p>
           <p className="font-display text-3xl font-bold">
             {formatWealth(voucher.totalPrice)}{" "}
-            <span className="text-base text-on-surface-variant">$WEALTH</span>
+            <span className="text-on-surface-variant text-base">$WEALTH</span>
           </p>
           {totalPriceIdr !== null ? (
-            <p className="text-sm text-on-surface-variant">
+            <p className="text-on-surface-variant text-sm">
               ≈ {formatIdr(totalPriceIdr)}
             </p>
           ) : null}
         </div>
 
-        <div className="border-t border-outline-variant pt-4 space-y-2 text-sm">
+        <div className="border-outline-variant space-y-2 border-t pt-4 text-sm">
           <FeeRow label="Harga dasar" value={voucher.basePrice} />
           <FeeRow label="Biaya layanan" value={appFeeAmount} />
           <FeeRow label="Biaya jaringan" value={voucher.gasFeeAmount} />
-          <div className="border-t border-outline-variant pt-2 flex justify-between font-semibold">
+          <div className="border-outline-variant flex justify-between border-t pt-2 font-semibold">
             <span>Total</span>
             <span>{formatWealth(voucher.totalPrice)} $WEALTH</span>
           </div>
@@ -142,14 +153,16 @@ export default function VoucherDetailPage({
           </div>
         ) : null}
 
-        <div className="text-xs text-on-surface-variant space-y-1">
+        <div className="text-on-surface-variant space-y-1 text-xs">
           <p>Berlaku hingga {formatDate(voucher.expiryDate)}</p>
-          <p>Sisa stok: {voucher.remainingStock} / {voucher.totalStock}</p>
+          <p>
+            Sisa stok: {voucher.remainingStock} / {voucher.totalStock}
+          </p>
         </div>
       </section>
 
       {onWrongChain ? (
-        <div className="bg-error-container text-on-error-container rounded-[var(--radius-md)] p-3 text-sm flex items-start gap-2">
+        <div className="bg-error-container text-on-error-container flex items-start gap-2 rounded-[var(--radius-md)] p-3 text-sm">
           <span>⚠️</span>
           <div>
             <p className="font-semibold">Jaringan tidak sesuai</p>
@@ -167,7 +180,7 @@ export default function VoucherDetailPage({
         onClick={() => {
           void start(voucher.id);
         }}
-        className="w-full py-4 rounded-full bg-gradient-to-r from-primary to-primary-container text-on-primary font-display font-bold text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+        className="from-primary to-primary-container text-on-primary font-display w-full rounded-full bg-gradient-to-r py-4 text-lg font-bold disabled:cursor-not-allowed disabled:opacity-50"
       >
         {redeemDisabledReason ?? "Redeem Voucher"}
       </button>
@@ -179,7 +192,7 @@ export default function VoucherDetailPage({
 
 function FeeRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex justify-between text-on-surface-variant">
+    <div className="text-on-surface-variant flex justify-between">
       <span>{label}</span>
       <span>{formatWealth(value)} $WEALTH</span>
     </div>

@@ -5,7 +5,7 @@ import { endpoints, type PaginationParams } from "@/lib/api/endpoints";
 import type { TransactionType } from "@/lib/schemas/transaction";
 import { queryKeys } from "./query-keys";
 
-export interface UseTransactionsParams extends PaginationParams {
+interface UseTransactionsParams extends PaginationParams {
   type?: TransactionType;
   enabled?: boolean;
 }

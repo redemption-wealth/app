@@ -55,17 +55,17 @@ export default function LoginPage() {
 
   if (!ready) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="border-primary h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" />
       </div>
     );
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen p-4">
+    <div className="flex min-h-screen items-center justify-center p-4">
       <div className="w-full max-w-sm space-y-8">
         <div className="text-center">
-          <h1 className="font-display text-3xl font-bold text-primary">
+          <h1 className="font-display text-primary text-3xl font-bold">
             WEALTH
           </h1>
           <p className="text-on-surface-variant mt-2">
@@ -76,7 +76,7 @@ export default function LoginPage() {
         {step === "email" ? (
           <form onSubmit={handleSendCode} className="space-y-4">
             <div>
-              <label className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
+              <label className="text-on-surface-variant text-[10px] font-bold tracking-widest uppercase">
                 Email
               </label>
               <input
@@ -85,30 +85,28 @@ export default function LoginPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="nama@email.com"
                 required
-                className="w-full mt-2 px-4 py-3 bg-surface-container-high rounded-[var(--radius-md)] text-on-surface placeholder:text-outline focus:bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
+                className="bg-surface-container-high text-on-surface placeholder:text-outline focus:bg-surface-container-lowest focus:ring-primary mt-2 w-full rounded-[var(--radius-md)] px-4 py-3 transition-colors focus:ring-2 focus:outline-none"
               />
             </div>
 
-            {error && (
-              <p className="text-sm text-error">{error}</p>
-            )}
+            {error && <p className="text-error text-sm">{error}</p>}
 
             <button
               type="submit"
               disabled={isLoading || !email}
-              className="w-full py-4 rounded-full bg-gradient-to-r from-primary to-primary-container text-on-primary font-display font-bold text-lg disabled:opacity-50"
+              className="from-primary to-primary-container text-on-primary font-display w-full rounded-full bg-gradient-to-r py-4 text-lg font-bold disabled:opacity-50"
             >
               {isLoading ? "Mengirim..." : "Kirim Kode OTP"}
             </button>
           </form>
         ) : (
           <form onSubmit={handleVerifyCode} className="space-y-4">
-            <p className="text-sm text-on-surface-variant text-center">
+            <p className="text-on-surface-variant text-center text-sm">
               Kode OTP telah dikirim ke <strong>{email}</strong>
             </p>
 
             <div>
-              <label className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
+              <label className="text-on-surface-variant text-[10px] font-bold tracking-widest uppercase">
                 Kode OTP
               </label>
               <input
@@ -118,18 +116,16 @@ export default function LoginPage() {
                 placeholder="123456"
                 required
                 maxLength={6}
-                className="w-full mt-2 px-4 py-3 bg-surface-container-high rounded-[var(--radius-md)] text-on-surface text-center text-2xl tracking-[0.5em] font-mono placeholder:text-outline focus:bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
+                className="bg-surface-container-high text-on-surface placeholder:text-outline focus:bg-surface-container-lowest focus:ring-primary mt-2 w-full rounded-[var(--radius-md)] px-4 py-3 text-center font-mono text-2xl tracking-[0.5em] transition-colors focus:ring-2 focus:outline-none"
               />
             </div>
 
-            {error && (
-              <p className="text-sm text-error">{error}</p>
-            )}
+            {error && <p className="text-error text-sm">{error}</p>}
 
             <button
               type="submit"
               disabled={isLoading || otp.length < 6}
-              className="w-full py-4 rounded-full bg-gradient-to-r from-primary to-primary-container text-on-primary font-display font-bold text-lg disabled:opacity-50"
+              className="from-primary to-primary-container text-on-primary font-display w-full rounded-full bg-gradient-to-r py-4 text-lg font-bold disabled:opacity-50"
             >
               {isLoading ? "Verifikasi..." : "Masuk"}
             </button>
@@ -142,7 +138,7 @@ export default function LoginPage() {
                   setOtp("");
                   setError("");
                 }}
-                className="text-sm text-on-surface-variant font-semibold"
+                className="text-on-surface-variant text-sm font-semibold"
               >
                 Ganti Email
               </button>
@@ -160,7 +156,7 @@ export default function LoginPage() {
                     setIsLoading(false);
                   }
                 }}
-                className="text-sm text-primary font-semibold disabled:opacity-50"
+                className="text-primary text-sm font-semibold disabled:opacity-50"
               >
                 Kirim Ulang
               </button>

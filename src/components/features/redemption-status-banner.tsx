@@ -60,15 +60,14 @@ function pickConfig(
     return {
       tone: "info",
       title: "Menunggu konfirmasi blockchain",
-      subtitle: "Biasanya memakan 30-60 detik. Aman untuk meninggalkan halaman.",
+      subtitle:
+        "Biasanya memakan 30-60 detik. Aman untuk meninggalkan halaman.",
     };
   }
 
   return {
     tone: "info",
-    title: txHash
-      ? "Menunggu konfirmasi blockchain"
-      : "Menyiapkan redemption",
+    title: txHash ? "Menunggu konfirmasi blockchain" : "Menyiapkan redemption",
     subtitle: txHash
       ? "Transaksi sedang dikonfirmasi di jaringan Base."
       : "Mohon tunggu sebentar...",
@@ -96,7 +95,7 @@ export function RedemptionStatusBanner({
     <div
       role="status"
       aria-live="polite"
-      className={`${TONE_CLASSES[config.tone]} rounded-[var(--radius-md)] p-4 space-y-2`}
+      className={`${TONE_CLASSES[config.tone]} space-y-2 rounded-[var(--radius-md)] p-4`}
     >
       <p className="font-semibold">{config.title}</p>
       {config.subtitle ? (
@@ -108,7 +107,7 @@ export function RedemptionStatusBanner({
           type="button"
           onClick={onReconcile}
           disabled={isReconciling || reconcileCooldown}
-          className="mt-1 inline-flex items-center rounded-full bg-primary text-on-primary px-4 py-2 text-sm font-semibold disabled:opacity-60"
+          className="bg-primary text-on-primary mt-1 inline-flex items-center rounded-full px-4 py-2 text-sm font-semibold disabled:opacity-60"
         >
           {isReconciling
             ? "Memeriksa..."

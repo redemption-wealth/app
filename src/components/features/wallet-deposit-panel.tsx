@@ -8,7 +8,9 @@ interface WalletDepositPanelProps {
   variant?: "card" | "inline";
 }
 
-export function WalletDepositPanel({ variant = "card" }: WalletDepositPanelProps) {
+export function WalletDepositPanel({
+  variant = "card",
+}: WalletDepositPanelProps) {
   const { walletAddress } = useAuth();
 
   const wrapperClasses =
@@ -22,7 +24,7 @@ export function WalletDepositPanel({ variant = "card" }: WalletDepositPanelProps
         <h3 className="font-display text-lg font-bold">
           Deposit $WEALTH ke embedded wallet
         </h3>
-        <p className="text-sm text-on-surface-variant">
+        <p className="text-on-surface-variant text-sm">
           Kirim $WEALTH dari bursa atau dompet lain ke alamat di bawah. Saldo
           muncul otomatis setelah transaksi terkonfirmasi di jaringan Base.
         </p>
@@ -34,21 +36,21 @@ export function WalletDepositPanel({ variant = "card" }: WalletDepositPanelProps
           {walletAddress ? (
             <CopyableAddress value={walletAddress} truncate={false} />
           ) : (
-            <p className="text-sm text-on-surface-variant">
-              Dompet belum siap. Silakan refresh halaman jika tidak muncul
-              dalam beberapa detik.
+            <p className="text-on-surface-variant text-sm">
+              Dompet belum siap. Silakan refresh halaman jika tidak muncul dalam
+              beberapa detik.
             </p>
           )}
         </li>
 
         <li className="space-y-2">
           <Step index={2} title="Pastikan pakai jaringan Base" />
-          <div className="bg-surface-container rounded-[var(--radius-md)] px-3 py-2 text-sm flex items-center gap-2">
-            <span className="inline-block h-2 w-2 rounded-full bg-primary" />
+          <div className="bg-surface-container flex items-center gap-2 rounded-[var(--radius-md)] px-3 py-2 text-sm">
+            <span className="bg-primary inline-block h-2 w-2 rounded-full" />
             <span className="font-semibold">Base Mainnet</span>
             <span className="text-on-surface-variant">· Chain ID 8453</span>
           </div>
-          <p className="text-xs text-on-surface-variant">
+          <p className="text-on-surface-variant text-xs">
             Transfer dari jaringan lain (mis. Ethereum Mainnet) tidak akan
             terdeteksi dan bisa menyebabkan dana hilang.
           </p>
@@ -61,7 +63,7 @@ export function WalletDepositPanel({ variant = "card" }: WalletDepositPanelProps
             value={env.NEXT_PUBLIC_TOKEN_CONTRACT_ADDRESS}
             truncate={false}
           />
-          <p className="text-xs text-on-surface-variant">
+          <p className="text-on-surface-variant text-xs">
             Saat menambah custom token di dompet sumber, gunakan alamat kontrak
             di atas agar token dikenali sebagai $WEALTH.
           </p>
@@ -74,7 +76,7 @@ export function WalletDepositPanel({ variant = "card" }: WalletDepositPanelProps
 function Step({ index, title }: { index: number; title: string }) {
   return (
     <div className="flex items-center gap-3">
-      <span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary text-on-primary text-sm font-semibold">
+      <span className="bg-primary text-on-primary flex h-7 w-7 items-center justify-center rounded-full text-sm font-semibold">
         {index}
       </span>
       <h4 className="font-display text-base font-semibold">{title}</h4>

@@ -37,7 +37,7 @@ export function OfflineBanner() {
     <div
       role="status"
       aria-live="polite"
-      className="fixed bottom-20 md:bottom-6 left-1/2 -translate-x-1/2 z-40 bg-error-container text-on-error-container rounded-full px-4 py-2 shadow-lg text-sm font-semibold"
+      className="bg-error-container text-on-error-container fixed bottom-20 left-1/2 z-40 -translate-x-1/2 rounded-full px-4 py-2 text-sm font-semibold shadow-lg md:bottom-6"
     >
       Offline — akan sinkron kembali saat online
     </div>

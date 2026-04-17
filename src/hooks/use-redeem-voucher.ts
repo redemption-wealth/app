@@ -10,6 +10,7 @@ import { ApiError } from "@/lib/api/errors";
 import { endpoints } from "@/lib/api/endpoints";
 import { env } from "@/lib/env";
 import { ERC20_ABI } from "@/lib/erc20-abi";
+import { telemetry } from "@/lib/telemetry";
 import type {
   RedeemVoucherResponse,
   Redemption,
@@ -161,8 +162,14 @@ export function useRedeemVoucher() {
 
         const tokenAddress = (txDetails?.tokenContractAddress ??
           env.NEXT_PUBLIC_TOKEN_CONTRACT_ADDRESS) as `0x${string}`;
-        const treasury = (txDetails?.treasuryWalletAddress ??
-          env.NEXT_PUBLIC_TREASURY_WALLET_ADDRESS) as `0x${string}`;
+        const treasury = txDetails?.treasuryWalletAddress as
+          | `0x${string}`
+          | undefined;
+        if (!treasury) {
+          throw new Error(
+            "Treasury wallet tidak tersedia dari backend. Coba lagi.",
+          );
+        }
         const amount = txDetails?.wealthAmount ?? redemption.wealthAmount;
 
         await signAndSubmit(redemption.id, amount, treasury, tokenAddress);
@@ -176,6 +183,7 @@ export function useRedeemVoucher() {
           router.push("/auth/login");
           return;
         }
+        telemetry.capture(err, { scope: "redeem-voucher", voucherId });
         const message =
           err instanceof Error ? err.message : "Terjadi kesalahan. Coba lagi.";
         setError(message);

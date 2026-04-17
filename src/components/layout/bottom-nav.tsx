@@ -15,7 +15,7 @@ export function BottomNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-surface-container-lowest/70 backdrop-blur-xl z-50">
+    <nav className="bg-surface-container-lowest/70 fixed right-0 bottom-0 left-0 z-50 backdrop-blur-xl md:hidden">
       <div className="flex justify-around py-2">
         {navItems.map((item) => {
           const isActive = pathname === item.href;
@@ -27,8 +27,8 @@ export function BottomNav() {
                 isActive ? "text-primary" : "text-on-surface-variant"
               }`}
             >
-              <div className="w-6 h-6" />
-              <span className="text-[10px] font-bold uppercase tracking-widest">
+              <div className="h-6 w-6" />
+              <span className="text-[10px] font-bold tracking-widest uppercase">
                 {item.label}
               </span>
             </Link>

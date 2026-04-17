@@ -12,7 +12,7 @@ export function QrDisplay({ qrCodes }: QrDisplayProps) {
 
   if (qrCodes.length === 0) {
     return (
-      <div className="bg-surface-container rounded-[var(--radius-lg)] p-6 text-center text-sm text-on-surface-variant">
+      <div className="bg-surface-container text-on-surface-variant rounded-[var(--radius-lg)] p-6 text-center text-sm">
         QR code belum siap. Mohon tunggu sebentar.
       </div>
     );
@@ -20,22 +20,23 @@ export function QrDisplay({ qrCodes }: QrDisplayProps) {
 
   const isBogo = qrCodes.length > 1;
   const active = qrCodes[Math.min(activeIndex, qrCodes.length - 1)];
+  if (!active) return null;
 
   return (
     <div className="space-y-3">
-      <div className="bg-surface rounded-[var(--radius-lg)] p-4 flex flex-col items-center gap-3">
+      <div className="bg-surface flex flex-col items-center gap-3 rounded-[var(--radius-lg)] p-4">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={active.imageUrl}
           alt={`QR code ${active.qrNumber}`}
-          className="w-64 h-64 object-contain"
+          className="h-64 w-64 object-contain"
         />
         {isBogo ? (
-          <p className="text-xs font-semibold text-on-surface-variant">
+          <p className="text-on-surface-variant text-xs font-semibold">
             QR {activeIndex + 1} dari {qrCodes.length}
           </p>
         ) : null}
-        <p className="text-xs text-on-surface-variant">
+        <p className="text-on-surface-variant text-xs">
           Status:{" "}
           <span
             className={
@@ -63,9 +64,7 @@ export function QrDisplay({ qrCodes }: QrDisplayProps) {
               type="button"
               onClick={() => setActiveIndex(i)}
               className={`h-2 w-8 rounded-full transition-colors ${
-                i === activeIndex
-                  ? "bg-primary"
-                  : "bg-surface-container-high"
+                i === activeIndex ? "bg-primary" : "bg-surface-container-high"
               }`}
               aria-label={`Tampilkan QR ${i + 1}`}
             />
