@@ -1,4 +1,5 @@
 import type { ZodType } from "zod";
+import { env } from "@/lib/env";
 import { ApiError, throwIfNotOk } from "./errors";
 
 type AccessTokenGetter = () => Promise<string | null>;
@@ -10,11 +11,7 @@ export function registerAccessTokenGetter(getter: AccessTokenGetter): void {
 }
 
 function resolveBaseUrl(): string {
-  const base = process.env.NEXT_PUBLIC_API_BASE_URL;
-  if (!base) {
-    throw new Error("NEXT_PUBLIC_API_BASE_URL is not configured");
-  }
-  return base.replace(/\/$/, "");
+  return env.NEXT_PUBLIC_API_BASE_URL.replace(/\/$/, "");
 }
 
 export type QueryValue = string | number | boolean | null | undefined;
