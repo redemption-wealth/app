@@ -37,17 +37,25 @@ export function Modal({
 
   if (!open) return null;
 
+  const canDismissByBackdrop = dismissable && onClose;
+
   return (
-    <div
-      role="dialog"
-      aria-modal="true"
-      aria-label={ariaLabel}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
-      onClick={dismissable && onClose ? onClose : undefined}
-    >
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      {canDismissByBackdrop ? (
+        <button
+          type="button"
+          aria-label="Tutup"
+          onClick={onClose}
+          className="absolute inset-0 cursor-default bg-black/60"
+        />
+      ) : (
+        <div aria-hidden="true" className="absolute inset-0 bg-black/60" />
+      )}
       <div
-        className="bg-surface w-full max-w-md rounded-[var(--radius-xl)] p-6 shadow-xl"
-        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-label={ariaLabel}
+        className="bg-surface relative w-full max-w-md rounded-[var(--radius-xl)] p-6 shadow-xl"
       >
         {children}
       </div>
