@@ -6,7 +6,7 @@ User-facing web application for the WEALTH Token Redemption platform. End users 
 
 **Domain**: `redeem.wealthcrypto.fund`
 
-This app serves exclusively **end users** (crypto wallet holders). Users authenticate via email OTP through Privy, which automatically creates an MPC embedded wallet. They browse merchant vouchers priced in IDR, converted to `$WEALTH` at runtime, and redeem by signing an ERC-20 transfer from their embedded wallet to the platform treasury. After on-chain confirmation via Alchemy webhook, a QR code voucher is issued.
+This app serves exclusively **end users** (crypto wallet holders). Users authenticate via email OTP through Privy, which automatically creates an MPC embedded wallet. They browse merchant vouchers priced in IDR, converted to `$WEALTH` at runtime, and redeem by signing an ERC-20 transfer from their embedded wallet to the platform treasury. After on-chain confirmation, a QR code voucher is issued.
 
 ### Core User Flows
 
@@ -16,99 +16,107 @@ This app serves exclusively **end users** (crypto wallet holders). Users authent
 4. **History** — View past redemptions with status tracking
 5. **Wallet** — Check $WEALTH balance, transaction history
 
-## Design Principles
+## Architecture
 
-1. **"The Digital Concierge"** — Premium, editorial-inspired experience. Feels like a luxury lifestyle magazine, not a clinical crypto dashboard.
-2. **No Borders** — Define boundaries through background color shifts, not 1px solid lines. Surfaces layer like premium materials.
-3. **Mobile-First** — Bottom nav on mobile, sidebar on desktop. `pb-20` compensates for fixed bottom nav.
-4. **Dual Currency** — Prices stored in IDR, converted to $WEALTH at runtime using live price feed.
-5. **String Token Amounts** — All `$WEALTH` amounts use string representation to preserve Decimal(36,18) ERC-20 precision.
-6. **Client-Side Signing** — Users sign transactions via Privy embedded wallet + wagmi. Server never holds private keys.
+This app is a **thin client**. All data reads and writes go through the Hono backend (`wealth-redemption/backend`) at `NEXT_PUBLIC_API_BASE_URL`. The app holds no database connection, no Prisma, no server-side services, and no custody of secrets. The only on-chain action the app performs is the ERC-20 `transfer` signed by the user's embedded wallet during redemption.
+
+```
+[User Browser]                           [Backend]                          [On-chain]
+  Next.js App  ─── REST (Hono) ──▶   Hono + Prisma + PG  ◀── Alchemy ──▶   Base Mainnet
+       │                                    │                                   │
+       │  wagmi + viem (ERC-20 transfer)    │                                   │
+       └────────────────────────────────────┼───────────────────────────────────┘
+                                            │
+                                    Webhook confirms tx
+```
+
+- **Auth**: Privy email OTP → embedded MPC wallet. `privy:token` in cookies is used as a bearer token to call the backend.
+- **Writes**: `POST /vouchers/:id/redeem` → user signs → `POST /redemptions/:id/submit-tx` → adaptive polling on `/redemptions/:id`.
+- **Migrations**: The backend owns the Prisma schema and migrations. This app never runs migrations.
 
 ## Tech Stack
 
 | Layer | Technology |
 |---|---|
-| Framework | Next.js 15 (App Router) |
+| Framework | Next.js 16 (App Router, Turbopack) |
 | Language | TypeScript |
 | Styling | Tailwind CSS v4 |
-| Auth | Privy (email OTP, embedded wallet) |
-| Blockchain | wagmi + viem (ERC-20 transfer) |
-| Data Fetching | @tanstack/react-query |
-| State | Zustand |
-| Database | Prisma + PostgreSQL (Supabase) |
+| Auth | Privy v3 (email OTP, embedded wallet) |
+| Blockchain | wagmi v3 + viem (ERC-20 transfer on Base) |
+| Data Fetching | @tanstack/react-query v5 |
+| Flow State | Zustand (redemption flow state machine) |
 | Package Manager | pnpm |
 
-## Architecture
+## Directory Layout
 
 ```
 src/
 ├── app/
 │   ├── (main)/              # Authenticated user pages
-│   │   ├── page.tsx          # Home: balance card, featured vouchers
-│   │   ├── merchants/        # Merchant listing & detail
-│   │   ├── vouchers/[id]/    # Voucher detail + redeem
-│   │   ├── qr/[redemptionId] # QR display after redemption
-│   │   ├── wallet/           # Balance & transaction history
-│   │   ├── history/          # Redemption history
-│   │   └── profile/          # Account info
-│   ├── auth/login/           # Email OTP login
-│   └── api/                  # API routes
-│       ├── auth/user-sync    # Sync Privy user to DB
-│       ├── merchants/        # Read-only merchant data
-│       ├── vouchers/         # Read-only voucher data + redeem
-│       ├── redemptions/      # User's redemptions
-│       ├── transactions/     # User's transactions
-│       ├── price/wealth      # $WEALTH/IDR price feed
-│       └── webhook/alchemy   # On-chain tx confirmation
+│   │   ├── page.tsx           # Home: balance + featured vouchers
+│   │   ├── merchants/         # Merchant listing & detail
+│   │   ├── vouchers/[id]/     # Voucher detail + redeem CTA
+│   │   ├── qr/[redemptionId]  # Redemption polling + QR display
+│   │   ├── wallet/            # Balance + deposit panel + tx list
+│   │   ├── history/           # Redemption history
+│   │   ├── profile/           # Account info + logout
+│   │   └── onboarding/deposit # First-time deposit guide
+│   └── auth/login/            # Email OTP login
 ├── components/
-│   ├── layout/               # Sidebar, BottomNav, MobileHeader, AuthGuard
-│   └── shared/               # Reusable UI components
-├── hooks/
-│   ├── use-auth.ts           # Privy auth wrapper
-│   ├── use-wealth-balance.ts # ERC-20 balance via wagmi
-│   └── use-send-wealth.ts    # ERC-20 transfer via wagmi
+│   ├── features/              # Domain components (voucher-card, qr-display, ...)
+│   ├── layout/                # Sidebar, BottomNav, MobileHeader, AuthGuard, OfflineBanner
+│   └── shared/                # Generic UI primitives (modal, copyable-address)
+├── hooks/                     # React-query wrappers over endpoints.* + wallet hooks
 ├── lib/
-│   ├── auth/                 # Privy server verification
-│   ├── services/             # Redemption business logic
-│   ├── db.ts                 # Prisma singleton
-│   ├── utils.ts              # Format helpers
-│   └── wagmi.ts              # Wagmi config + ERC-20 ABI
-├── types/                    # TypeScript interfaces
-├── providers.tsx             # Privy + QueryClient + Wagmi providers
-└── middleware.ts             # Route middleware
+│   ├── api/                   # client.ts (fetch), endpoints.ts (typed calls), errors.ts
+│   ├── schemas/               # Zod response schemas matching backend contracts
+│   ├── auth-errors.ts         # Privy error → Indonesian copy mapping
+│   ├── env.ts                 # Zod-validated public env
+│   ├── erc20-abi.ts           # Minimal transfer ABI
+│   ├── utils.ts               # Format helpers (IDR, WEALTH, date)
+│   └── wagmi.ts               # Single-chain Base wagmi config via Privy connector
+├── stores/
+│   └── redemption-flow.ts     # Zustand state machine (idle → signing → polling → done)
+└── providers.tsx              # PrivyProvider + WagmiProvider + QueryClient
 ```
 
 ## Environment Variables
 
 ```bash
-# Copy .env.example to .env.local
 cp .env.example .env.local
 ```
 
-| Variable | Description |
-|---|---|
-| `DATABASE_URL` | PostgreSQL connection string (Supabase) |
-| `NEXT_PUBLIC_PRIVY_APP_ID` | Privy app ID |
-| `PRIVY_APP_SECRET` | Privy server secret |
-| `NEXT_PUBLIC_TOKEN_CONTRACT_ADDRESS` | $WEALTH ERC-20 contract |
-| `NEXT_PUBLIC_TREASURY_WALLET_ADDRESS` | Platform treasury address |
-| `NEXT_PUBLIC_ALCHEMY_API_KEY` | Alchemy API key (Base network) |
-| `ALCHEMY_WEBHOOK_SIGNING_KEY` | Alchemy webhook signature key |
-| `NEXT_PUBLIC_APP_URL` | App URL (default: http://localhost:3000) |
+| Variable | Required | Description |
+|---|---|---|
+| `NEXT_PUBLIC_PRIVY_APP_ID` | yes | Privy app ID for email OTP + embedded wallets |
+| `NEXT_PUBLIC_API_BASE_URL` | yes | Hono backend base URL (e.g. `http://localhost:3001`) |
+| `NEXT_PUBLIC_TOKEN_CONTRACT_ADDRESS` | yes | `$WEALTH` ERC-20 address on Base mainnet |
+| `NEXT_PUBLIC_APP_URL` | yes | Public app URL (used in metadata) |
+| `NEXT_PUBLIC_ALCHEMY_RPC_URL` | no | Optional custom Base RPC; defaults to the public Base RPC |
+
+The treasury wallet address is returned by the backend in the redeem response (`txDetails.treasuryWalletAddress`) and is intentionally **not** an environment variable — the backend is the authoritative source.
 
 ## Development
 
+Start the backend first (see `../backend`), then:
+
 ```bash
 pnpm install
-pnpm prisma generate
-pnpm dev              # Start dev server on port 3000
+pnpm dev        # dev server on http://localhost:3000
+pnpm lint       # eslint
+pnpm build      # production build (Next.js + Turbopack)
 ```
 
-## Database
+By default the app expects the backend at `http://localhost:3001`. Override via `NEXT_PUBLIC_API_BASE_URL` in `.env.local`.
 
-Both `app` and `back-office` share the same PostgreSQL database. Migrations are managed from the `back-office` project.
+## Troubleshooting
 
-```bash
-pnpm prisma studio    # Browse database
-```
+- **401 Unauthorized from backend** — Privy session expired. Clear cookies and log back in.
+- **CORS errors in the browser** — Backend `CORS_ORIGINS` must include your app origin. Add `http://localhost:3000` in dev, your deployed URL in prod.
+- **"Wallet belum siap"** — Privy iframe evicted. The app will attempt recovery via `useWalletHealth`; otherwise log out and back in.
+- **Transaction stuck in pending** — After 5 minutes the QR page surfaces a Refresh CTA; after 15 minutes it routes to support with the tx hash.
+
+## Where to look for more
+
+- Backend contracts: `wealth-redemption/backend/src/routes/**`
+- Plan + brainstorm: `docs/plans/*`, `docs/brainstorms/*`
