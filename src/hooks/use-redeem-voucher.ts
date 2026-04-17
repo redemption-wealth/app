@@ -10,6 +10,7 @@ import { ApiError } from "@/lib/api/errors";
 import { endpoints } from "@/lib/api/endpoints";
 import { env } from "@/lib/env";
 import { ERC20_ABI } from "@/lib/erc20-abi";
+import { telemetry } from "@/lib/telemetry";
 import type {
   RedeemVoucherResponse,
   Redemption,
@@ -182,6 +183,7 @@ export function useRedeemVoucher() {
           router.push("/auth/login");
           return;
         }
+        telemetry.capture(err, { scope: "redeem-voucher", voucherId });
         const message =
           err instanceof Error ? err.message : "Terjadi kesalahan. Coba lagi.";
         setError(message);
