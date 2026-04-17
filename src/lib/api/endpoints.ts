@@ -107,7 +107,9 @@ export const endpoints = {
     }),
 
   // ── Redemptions ───────────────────────────────────────────────────────────
-  listRedemptions: (params: PaginationParams & { status?: RedemptionStatus } = {}) =>
+  listRedemptions: (
+    params: PaginationParams & { status?: RedemptionStatus } = {},
+  ) =>
     apiRequest({
       method: "GET",
       path: "/api/redemptions",
@@ -142,7 +144,9 @@ export const endpoints = {
     }),
 
   // ── Transactions ──────────────────────────────────────────────────────────
-  listTransactions: (params: PaginationParams & { type?: TransactionType } = {}) =>
+  listTransactions: (
+    params: PaginationParams & { type?: TransactionType } = {},
+  ) =>
     apiRequest({
       method: "GET",
       path: "/api/transactions",

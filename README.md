@@ -36,16 +36,16 @@ This app is a **thin client**. All data reads and writes go through the Hono bac
 
 ## Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Framework | Next.js 16 (App Router, Turbopack) |
-| Language | TypeScript |
-| Styling | Tailwind CSS v4 |
-| Auth | Privy v3 (email OTP, embedded wallet) |
-| Blockchain | wagmi v3 + viem (ERC-20 transfer on Base) |
-| Data Fetching | @tanstack/react-query v5 |
-| Flow State | Zustand (redemption flow state machine) |
-| Package Manager | pnpm |
+| Layer           | Technology                                |
+| --------------- | ----------------------------------------- |
+| Framework       | Next.js 16 (App Router, Turbopack)        |
+| Language        | TypeScript                                |
+| Styling         | Tailwind CSS v4                           |
+| Auth            | Privy v3 (email OTP, embedded wallet)     |
+| Blockchain      | wagmi v3 + viem (ERC-20 transfer on Base) |
+| Data Fetching   | @tanstack/react-query v5                  |
+| Flow State      | Zustand (redemption flow state machine)   |
+| Package Manager | pnpm                                      |
 
 ## Directory Layout
 
@@ -86,13 +86,13 @@ src/
 cp .env.example .env.local
 ```
 
-| Variable | Required | Description |
-|---|---|---|
-| `NEXT_PUBLIC_PRIVY_APP_ID` | yes | Privy app ID for email OTP + embedded wallets |
-| `NEXT_PUBLIC_API_BASE_URL` | yes | Hono backend base URL (e.g. `http://localhost:3001`) |
-| `NEXT_PUBLIC_TOKEN_CONTRACT_ADDRESS` | yes | `$WEALTH` ERC-20 address on Base mainnet |
-| `NEXT_PUBLIC_APP_URL` | yes | Public app URL (used in metadata) |
-| `NEXT_PUBLIC_ALCHEMY_RPC_URL` | no | Optional custom Base RPC; defaults to the public Base RPC |
+| Variable                             | Required | Description                                               |
+| ------------------------------------ | -------- | --------------------------------------------------------- |
+| `NEXT_PUBLIC_PRIVY_APP_ID`           | yes      | Privy app ID for email OTP + embedded wallets             |
+| `NEXT_PUBLIC_API_BASE_URL`           | yes      | Hono backend base URL (e.g. `http://localhost:3001`)      |
+| `NEXT_PUBLIC_TOKEN_CONTRACT_ADDRESS` | yes      | `$WEALTH` ERC-20 address on Base mainnet                  |
+| `NEXT_PUBLIC_APP_URL`                | yes      | Public app URL (used in metadata)                         |
+| `NEXT_PUBLIC_ALCHEMY_RPC_URL`        | no       | Optional custom Base RPC; defaults to the public Base RPC |
 
 The treasury wallet address is returned by the backend in the redeem response (`txDetails.treasuryWalletAddress`) and is intentionally **not** an environment variable — the backend is the authoritative source.
 

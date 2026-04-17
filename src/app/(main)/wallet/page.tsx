@@ -7,17 +7,12 @@ import type { Transaction } from "@/lib/schemas/transaction";
 import { formatDate, formatWealth } from "@/lib/utils";
 
 export default function WalletPage() {
-  const {
-    data,
-    isLoading,
-    error,
-    refetch,
-  } = useTransactions({ limit: 10 });
+  const { data, isLoading, error, refetch } = useTransactions({ limit: 10 });
 
   const transactions = data?.transactions ?? [];
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
+    <div className="mx-auto max-w-2xl space-y-6">
       <h1 className="font-display text-2xl font-bold">Wallet</h1>
 
       <BalanceCard />
@@ -31,12 +26,12 @@ export default function WalletPage() {
             {Array.from({ length: 4 }).map((_, i) => (
               <div
                 key={i}
-                className="bg-surface-container-lowest rounded-[var(--radius-md)] p-4 h-16 animate-pulse"
+                className="bg-surface-container-lowest h-16 animate-pulse rounded-[var(--radius-md)] p-4"
               />
             ))}
           </div>
         ) : error ? (
-          <div className="bg-error-container text-on-error-container rounded-[var(--radius-md)] p-4 text-sm flex items-center justify-between">
+          <div className="bg-error-container text-on-error-container flex items-center justify-between rounded-[var(--radius-md)] p-4 text-sm">
             <span>Gagal memuat transaksi.</span>
             <button
               type="button"
@@ -50,7 +45,7 @@ export default function WalletPage() {
           </div>
         ) : transactions.length === 0 ? (
           <div className="bg-surface-container-lowest rounded-[var(--radius-md)] p-6 text-center">
-            <p className="text-sm text-on-surface-variant">
+            <p className="text-on-surface-variant text-sm">
               Belum ada transaksi.
             </p>
           </div>
@@ -87,24 +82,24 @@ const STATUS_LABELS: Record<Transaction["status"], string> = {
 function TransactionRow({ tx }: { tx: Transaction }) {
   const isOutflow = tx.type === "withdrawal" || tx.type === "redeem";
   return (
-    <li className="bg-surface-container-lowest rounded-[var(--radius-md)] p-4 flex items-center justify-between gap-3">
+    <li className="bg-surface-container-lowest flex items-center justify-between gap-3 rounded-[var(--radius-md)] p-4">
       <div className="min-w-0">
         <div className="flex items-center gap-2">
-          <p className="font-semibold text-sm">{TYPE_LABELS[tx.type]}</p>
+          <p className="text-sm font-semibold">{TYPE_LABELS[tx.type]}</p>
           <span
-            className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${STATUS_STYLES[tx.status]}`}
+            className={`rounded-full px-2 py-0.5 text-[10px] font-semibold tracking-wide uppercase ${STATUS_STYLES[tx.status]}`}
           >
             {STATUS_LABELS[tx.status]}
           </span>
         </div>
-        <p className="text-xs text-on-surface-variant mt-0.5">
+        <p className="text-on-surface-variant mt-0.5 text-xs">
           {formatDate(tx.createdAt)}
         </p>
       </div>
-      <p className="font-display text-sm font-bold shrink-0">
+      <p className="font-display shrink-0 text-sm font-bold">
         {isOutflow ? "-" : "+"}
         {formatWealth(tx.amountWealth)}{" "}
-        <span className="text-xs text-on-surface-variant font-normal">
+        <span className="text-on-surface-variant text-xs font-normal">
           $WEALTH
         </span>
       </p>

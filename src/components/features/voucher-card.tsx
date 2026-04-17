@@ -15,19 +15,19 @@ export function VoucherCard({ voucher }: VoucherCardProps) {
   return (
     <Link
       href={`/vouchers/${voucher.id}`}
-      className="bg-surface-container-lowest rounded-[var(--radius-lg)] p-4 flex flex-col justify-between gap-3 hover:bg-surface-container transition-colors"
+      className="bg-surface-container-lowest hover:bg-surface-container flex flex-col justify-between gap-3 rounded-[var(--radius-lg)] p-4 transition-colors"
     >
       <div className="flex items-start justify-between gap-2">
         <div>
-          <p className="text-xs uppercase tracking-wide text-on-surface-variant">
+          <p className="text-on-surface-variant text-xs tracking-wide uppercase">
             {voucher.merchant?.name ?? "Voucher"}
           </p>
-          <h4 className="font-display text-sm font-bold line-clamp-2">
+          <h4 className="font-display line-clamp-2 text-sm font-bold">
             {voucher.title}
           </h4>
         </div>
         {isBogo ? (
-          <span className="inline-flex items-center rounded-full bg-tertiary text-on-tertiary px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide shrink-0">
+          <span className="bg-tertiary text-on-tertiary inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-[10px] font-semibold tracking-wide uppercase">
             BOGO
           </span>
         ) : null}
@@ -36,15 +36,15 @@ export function VoucherCard({ voucher }: VoucherCardProps) {
         <div>
           <p className="font-display text-base font-bold">
             {formatWealth(voucher.totalPrice)}{" "}
-            <span className="text-xs text-on-surface-variant">$WEALTH</span>
+            <span className="text-on-surface-variant text-xs">$WEALTH</span>
           </p>
           {!valid ? (
-            <p className="text-[10px] text-error">
+            <p className="text-error text-[10px]">
               {voucher.remainingStock <= 0 ? "Stok habis" : "Tidak aktif"}
             </p>
           ) : null}
         </div>
-        <span className="text-xs font-semibold text-primary">Lihat →</span>
+        <span className="text-primary text-xs font-semibold">Lihat →</span>
       </div>
     </Link>
   );

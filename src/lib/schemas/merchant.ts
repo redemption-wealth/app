@@ -29,4 +29,6 @@ export const merchantDetailResponseSchema = z.object({
   merchant: merchantSchema,
 });
 
-export type MerchantDetailResponse = z.infer<typeof merchantDetailResponseSchema>;
+export type MerchantDetailResponse = z.infer<
+  typeof merchantDetailResponseSchema
+>;

@@ -20,4 +20,6 @@ export const categoryDetailResponseSchema = z.object({
   data: categorySchema,
 });
 
-export type CategoryDetailResponse = z.infer<typeof categoryDetailResponseSchema>;
+export type CategoryDetailResponse = z.infer<
+  typeof categoryDetailResponseSchema
+>;

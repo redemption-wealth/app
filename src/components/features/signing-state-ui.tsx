@@ -71,20 +71,18 @@ export function SigningStateUI() {
         role="status"
         className="flex flex-col items-center gap-4 text-center"
       >
-        <div className="w-10 h-10 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+        <div className="border-primary h-10 w-10 animate-spin rounded-full border-2 border-t-transparent" />
         <div className="space-y-1">
           <h2 className="font-display text-lg font-bold">{copy.title}</h2>
-          <p className="text-sm text-on-surface-variant">{copy.subtitle}</p>
-          {error ? (
-            <p className="text-xs text-error mt-2">{error}</p>
-          ) : null}
+          <p className="text-on-surface-variant text-sm">{copy.subtitle}</p>
+          {error ? <p className="text-error mt-2 text-xs">{error}</p> : null}
         </div>
 
         {canCancel ? (
           <button
             type="button"
             onClick={reset}
-            className="text-sm font-semibold text-on-surface-variant hover:text-on-surface"
+            className="text-on-surface-variant hover:text-on-surface text-sm font-semibold"
           >
             Batal
           </button>

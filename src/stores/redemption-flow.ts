@@ -52,12 +52,7 @@ const ALLOWED_TRANSITIONS: Record<SigningState, readonly SigningState[]> = {
     "error",
     "idle",
   ],
-  "awaiting-signature": [
-    "broadcasting",
-    "wallet-recovering",
-    "error",
-    "idle",
-  ],
+  "awaiting-signature": ["broadcasting", "wallet-recovering", "error", "idle"],
   broadcasting: ["submitting-hash", "error"],
   "submitting-hash": ["polling-confirmation", "error"],
   "polling-confirmation": ["done", "error"],

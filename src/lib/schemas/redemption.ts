@@ -2,7 +2,11 @@ import { z } from "zod";
 import { decimalStringSchema, paginationSchema } from "./common";
 import { voucherSchema } from "./voucher";
 
-export const redemptionStatusSchema = z.enum(["pending", "confirmed", "failed"]);
+export const redemptionStatusSchema = z.enum([
+  "pending",
+  "confirmed",
+  "failed",
+]);
 export type RedemptionStatus = z.infer<typeof redemptionStatusSchema>;
 
 export const qrCodeStatusSchema = z.enum(["available", "redeemed", "used"]);
@@ -54,13 +58,17 @@ export const redemptionListResponseSchema = z.object({
   pagination: paginationSchema,
 });
 
-export type RedemptionListResponse = z.infer<typeof redemptionListResponseSchema>;
+export type RedemptionListResponse = z.infer<
+  typeof redemptionListResponseSchema
+>;
 
 export const redemptionDetailResponseSchema = z.object({
   redemption: redemptionSchema,
 });
 
-export type RedemptionDetailResponse = z.infer<typeof redemptionDetailResponseSchema>;
+export type RedemptionDetailResponse = z.infer<
+  typeof redemptionDetailResponseSchema
+>;
 
 export const redeemVoucherRequestSchema = z.object({
   idempotencyKey: z.string().uuid(),

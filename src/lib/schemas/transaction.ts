@@ -1,10 +1,18 @@
 import { z } from "zod";
 import { decimalStringSchema, paginationSchema } from "./common";
 
-export const transactionTypeSchema = z.enum(["deposit", "withdrawal", "redeem"]);
+export const transactionTypeSchema = z.enum([
+  "deposit",
+  "withdrawal",
+  "redeem",
+]);
 export type TransactionType = z.infer<typeof transactionTypeSchema>;
 
-export const transactionStatusSchema = z.enum(["pending", "confirmed", "failed"]);
+export const transactionStatusSchema = z.enum([
+  "pending",
+  "confirmed",
+  "failed",
+]);
 export type TransactionStatus = z.infer<typeof transactionStatusSchema>;
 
 export const transactionSchema = z.object({
@@ -26,4 +34,6 @@ export const transactionListResponseSchema = z.object({
   pagination: paginationSchema,
 });
 
-export type TransactionListResponse = z.infer<typeof transactionListResponseSchema>;
+export type TransactionListResponse = z.infer<
+  typeof transactionListResponseSchema
+>;

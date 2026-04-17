@@ -9,7 +9,12 @@ export class ApiError extends Error {
   readonly endpoint: string;
   readonly body: ApiErrorBody | null;
 
-  constructor(message: string, status: number, endpoint: string, body: ApiErrorBody | null) {
+  constructor(
+    message: string,
+    status: number,
+    endpoint: string,
+    body: ApiErrorBody | null,
+  ) {
     super(message);
     this.name = "ApiError";
     this.status = status;
@@ -34,7 +39,10 @@ export class ApiError extends Error {
   }
 }
 
-export async function throwIfNotOk(res: Response, endpoint: string): Promise<void> {
+export async function throwIfNotOk(
+  res: Response,
+  endpoint: string,
+): Promise<void> {
   if (res.ok) return;
 
   let body: ApiErrorBody | null = null;

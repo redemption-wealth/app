@@ -42,11 +42,11 @@ export function Modal({
       role="dialog"
       aria-modal="true"
       aria-label={ariaLabel}
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
       onClick={dismissable && onClose ? onClose : undefined}
     >
       <div
-        className="bg-surface rounded-[var(--radius-xl)] shadow-xl max-w-md w-full p-6"
+        className="bg-surface w-full max-w-md rounded-[var(--radius-xl)] p-6 shadow-xl"
         onClick={(e) => e.stopPropagation()}
       >
         {children}
