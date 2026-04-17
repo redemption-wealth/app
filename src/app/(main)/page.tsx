@@ -27,8 +27,9 @@ export default function HomePage() {
       window.localStorage.getItem(ONBOARDING_DISMISSED_KEY) === "1";
     if (dismissed) return;
 
-    const hasBalance = typeof rawBalance === "bigint" && rawBalance > 0n;
-    const hasHistory = (redemptions?.data?.length ?? 0) > 0;
+    const hasBalance =
+      typeof rawBalance === "bigint" && rawBalance > BigInt(0);
+    const hasHistory = (redemptions?.redemptions?.length ?? 0) > 0;
 
     if (!hasBalance && !hasHistory) {
       router.replace("/onboarding/deposit");
