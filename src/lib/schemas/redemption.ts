@@ -9,8 +9,7 @@ export const redemptionStatusSchema = z.enum([
 ]);
 export type RedemptionStatus = z.infer<typeof redemptionStatusSchema>;
 
-export const qrCodeStatusSchema = z.enum(["available", "redeemed", "used"]);
-export type QrCodeStatus = z.infer<typeof qrCodeStatusSchema>;
+const qrCodeStatusSchema = z.enum(["available", "redeemed", "used"]);
 
 export const qrCodeSchema = z.object({
   id: z.string(),
@@ -58,10 +57,6 @@ export const redemptionListResponseSchema = z.object({
   pagination: paginationSchema,
 });
 
-export type RedemptionListResponse = z.infer<
-  typeof redemptionListResponseSchema
->;
-
 export const redemptionDetailResponseSchema = z.object({
   redemption: redemptionSchema,
 });
@@ -91,23 +86,11 @@ export const redeemVoucherResponseSchema = z.object({
 
 export type RedeemVoucherResponse = z.infer<typeof redeemVoucherResponseSchema>;
 
-export const submitTxRequestSchema = z.object({
-  txHash: z.string().regex(/^0x[0-9a-fA-F]{64}$/),
-});
-
-export type SubmitTxRequest = z.infer<typeof submitTxRequestSchema>;
-
 export const submitTxResponseSchema = z.object({
   redemption: redemptionSchema,
 });
-
-export type SubmitTxResponse = z.infer<typeof submitTxResponseSchema>;
 
 export const reconcileRedemptionResponseSchema = z.object({
   redemption: redemptionSchema,
   reconciled: z.boolean().optional(),
 });
-
-export type ReconcileRedemptionResponse = z.infer<
-  typeof reconcileRedemptionResponseSchema
->;

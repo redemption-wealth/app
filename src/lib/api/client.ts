@@ -14,10 +14,10 @@ function resolveBaseUrl(): string {
   return env.NEXT_PUBLIC_API_BASE_URL.replace(/\/$/, "");
 }
 
-export type QueryValue = string | number | boolean | null | undefined;
+type QueryValue = string | number | boolean | null | undefined;
 export type QueryParams = { readonly [key: string]: QueryValue };
 
-export interface ApiRequestOptions<TResponse> {
+interface ApiRequestOptions<TResponse> {
   method?: "GET" | "POST" | "PATCH" | "PUT" | "DELETE";
   path: string;
   query?: QueryParams;

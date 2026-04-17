@@ -19,7 +19,7 @@ const envSchema = z.object({
   NEXT_PUBLIC_ALCHEMY_RPC_URL: z.string().url().optional(),
 });
 
-export type Env = z.infer<typeof envSchema>;
+type Env = z.infer<typeof envSchema>;
 
 function parseEnv(): Env {
   const parsed = envSchema.safeParse({

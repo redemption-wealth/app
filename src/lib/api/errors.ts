@@ -1,4 +1,4 @@
-export interface ApiErrorBody {
+interface ApiErrorBody {
   error?: string;
   details?: unknown;
   [key: string]: unknown;

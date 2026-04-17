@@ -21,7 +21,7 @@ interface TxDetails {
   wealthAmount: string;
 }
 
-export interface RedemptionFlowState {
+interface RedemptionFlowState {
   state: SigningState;
   voucherId?: string;
   redemptionId?: string;

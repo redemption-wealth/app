@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { endpoints, type PaginationParams } from "@/lib/api/endpoints";
 import { queryKeys } from "./query-keys";
 
-export interface UseVouchersParams extends PaginationParams {
+interface UseVouchersParams extends PaginationParams {
   merchantId?: string;
   category?: string;
   search?: string;

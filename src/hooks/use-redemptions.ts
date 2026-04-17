@@ -5,7 +5,7 @@ import { endpoints, type PaginationParams } from "@/lib/api/endpoints";
 import type { RedemptionStatus } from "@/lib/schemas/redemption";
 import { queryKeys } from "./query-keys";
 
-export interface UseRedemptionsParams extends PaginationParams {
+interface UseRedemptionsParams extends PaginationParams {
   status?: RedemptionStatus;
   enabled?: boolean;
 }

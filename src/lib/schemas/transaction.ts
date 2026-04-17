@@ -8,12 +8,7 @@ export const transactionTypeSchema = z.enum([
 ]);
 export type TransactionType = z.infer<typeof transactionTypeSchema>;
 
-export const transactionStatusSchema = z.enum([
-  "pending",
-  "confirmed",
-  "failed",
-]);
-export type TransactionStatus = z.infer<typeof transactionStatusSchema>;
+const transactionStatusSchema = z.enum(["pending", "confirmed", "failed"]);
 
 export const transactionSchema = z.object({
   id: z.string(),
@@ -33,7 +28,3 @@ export const transactionListResponseSchema = z.object({
   transactions: z.array(transactionSchema),
   pagination: paginationSchema,
 });
-
-export type TransactionListResponse = z.infer<
-  typeof transactionListResponseSchema
->;

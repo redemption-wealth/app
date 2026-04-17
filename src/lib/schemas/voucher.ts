@@ -31,10 +31,6 @@ export const voucherListResponseSchema = z.object({
   pagination: paginationSchema,
 });
 
-export type VoucherListResponse = z.infer<typeof voucherListResponseSchema>;
-
 export const voucherDetailResponseSchema = z.object({
   voucher: voucherSchema,
 });
-
-export type VoucherDetailResponse = z.infer<typeof voucherDetailResponseSchema>;

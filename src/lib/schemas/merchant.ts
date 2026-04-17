@@ -23,12 +23,6 @@ export const merchantListResponseSchema = z.object({
   pagination: paginationSchema,
 });
 
-export type MerchantListResponse = z.infer<typeof merchantListResponseSchema>;
-
 export const merchantDetailResponseSchema = z.object({
   merchant: merchantSchema,
 });
-
-export type MerchantDetailResponse = z.infer<
-  typeof merchantDetailResponseSchema
->;

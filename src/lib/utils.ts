@@ -1,9 +1,3 @@
-import { type ClassValue, clsx } from "clsx";
-
-export function cn(...inputs: ClassValue[]) {
-  return clsx(inputs);
-}
-
 export function formatIdr(amount: number): string {
   return new Intl.NumberFormat("id-ID", {
     style: "currency",
