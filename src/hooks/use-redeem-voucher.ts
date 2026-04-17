@@ -5,6 +5,7 @@ import { useCallback } from "react";
 import { parseUnits, UserRejectedRequestError } from "viem";
 import { useWriteContract } from "wagmi";
 import { useAuth } from "@/hooks/use-auth";
+import { useWalletHealth } from "@/hooks/use-wallet-health";
 import { ApiError } from "@/lib/api/errors";
 import { endpoints } from "@/lib/api/endpoints";
 import { env } from "@/lib/env";
@@ -62,6 +63,7 @@ export function useRedeemVoucher() {
   const router = useRouter();
   const { walletAddress } = useAuth();
   const { writeContractAsync } = useWriteContract();
+  const walletHealth = useWalletHealth();
   const initiateStore = useRedemptionFlow((s) => s.initiate);
   const transition = useRedemptionFlow((s) => s.transition);
   const setError = useRedemptionFlow((s) => s.setError);
@@ -77,6 +79,16 @@ export function useRedeemVoucher() {
       transition("opening-wallet", { redemptionId });
       if (!walletAddress) {
         throw new Error("Wallet belum siap");
+      }
+
+      if (!walletHealth.isHealthy()) {
+        transition("wallet-recovering");
+        const recovered = await walletHealth.recover(10_000);
+        if (!recovered) {
+          router.push(`/qr/${redemptionId}`);
+          return;
+        }
+        transition("opening-wallet");
       }
 
       transition("awaiting-signature");
@@ -95,7 +107,7 @@ export function useRedeemVoucher() {
       transition("polling-confirmation");
       router.push(`/qr/${redemptionId}`);
     },
-    [router, transition, walletAddress, writeContractAsync],
+    [router, transition, walletAddress, walletHealth, writeContractAsync],
   );
 
   const start = useCallback(
