@@ -2,6 +2,7 @@ import { Sidebar } from "@/components/layout/sidebar";
 import { BottomNav } from "@/components/layout/bottom-nav";
 import { MobileHeader } from "@/components/layout/mobile-header";
 import { AuthGuard } from "@/components/layout/auth-guard";
+import { OfflineBanner } from "@/components/layout/offline-banner";
 
 export default function MainLayout({
   children,
@@ -19,6 +20,7 @@ export default function MainLayout({
           </main>
         </div>
         <BottomNav />
+        <OfflineBanner />
       </div>
     </AuthGuard>
   );
