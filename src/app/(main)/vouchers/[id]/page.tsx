@@ -73,14 +73,20 @@ export default function VoucherDetailPage({
   const merchant = voucher.merchant;
   const isBogo = voucher.qrPerSlot > 1;
   const isValid = isVoucherValid(voucher);
-  const appFeeAmount = subtractDecimalStrings(
-    voucher.totalPrice,
-    voucher.basePrice,
-    voucher.gasFeeAmount,
+  const totalPriceIdr = Number(voucher.totalPrice);
+  const basePriceIdr = Number(voucher.basePrice);
+  const gasFeeIdr = Number(voucher.gasFeeAmount);
+  const appFeeIdr = Number(
+    subtractDecimalStrings(
+      voucher.totalPrice,
+      voucher.basePrice,
+      voucher.gasFeeAmount,
+    ),
   );
-  const totalPriceIdr = priceData
-    ? Number(voucher.totalPrice) * priceData.priceIdr
-    : null;
+  const wealthAmount =
+    priceData && priceData.priceIdr > 0
+      ? totalPriceIdr / priceData.priceIdr
+      : null;
 
   const canRedeem = isValid && !onWrongChain && !isSigning;
   const redeemDisabledReason = !isValid
@@ -125,23 +131,21 @@ export default function VoucherDetailPage({
             Harga
           </p>
           <p className="font-display text-3xl font-bold">
-            {formatWealth(voucher.totalPrice)}{" "}
+            {wealthAmount !== null ? formatWealth(wealthAmount) : "—"}{" "}
             <span className="text-on-surface-variant text-base">$WEALTH</span>
           </p>
-          {totalPriceIdr !== null ? (
-            <p className="text-on-surface-variant text-sm">
-              ≈ {formatIdr(totalPriceIdr)}
-            </p>
-          ) : null}
+          <p className="text-on-surface-variant text-sm">
+            ≈ {formatIdr(totalPriceIdr)}
+          </p>
         </div>
 
         <div className="border-outline-variant space-y-2 border-t pt-4 text-sm">
-          <FeeRow label="Harga dasar" value={voucher.basePrice} />
-          <FeeRow label="Biaya layanan" value={appFeeAmount} />
-          <FeeRow label="Biaya jaringan" value={voucher.gasFeeAmount} />
+          <FeeRow label="Harga dasar" valueIdr={basePriceIdr} />
+          <FeeRow label="Biaya layanan" valueIdr={appFeeIdr} />
+          <FeeRow label="Biaya jaringan" valueIdr={gasFeeIdr} />
           <div className="border-outline-variant flex justify-between border-t pt-2 font-semibold">
             <span>Total</span>
-            <span>{formatWealth(voucher.totalPrice)} $WEALTH</span>
+            <span>{formatIdr(totalPriceIdr)}</span>
           </div>
         </div>
 
@@ -190,11 +194,11 @@ export default function VoucherDetailPage({
   );
 }
 
-function FeeRow({ label, value }: { label: string; value: string }) {
+function FeeRow({ label, valueIdr }: { label: string; valueIdr: number }) {
   return (
     <div className="text-on-surface-variant flex justify-between">
       <span>{label}</span>
-      <span>{formatWealth(value)} $WEALTH</span>
+      <span>{formatIdr(valueIdr)}</span>
     </div>
   );
 }
