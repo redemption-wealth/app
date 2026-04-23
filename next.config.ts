@@ -4,7 +4,8 @@ const privyDomains =
   "https://auth.privy.io https://*.privy.io wss://*.privy.io";
 const alchemyDomains =
   "https://*.g.alchemy.com https://*.alchemy.com wss://*.g.alchemy.com";
-const baseRpcDomains = "https://mainnet.base.org https://*.base.org";
+const ethereumRpcDomains =
+  "https://cloudflare-eth.com https://rpc.ankr.com https://*.ankr.com";
 const walletConnectDomains =
   "https://*.walletconnect.com https://*.walletconnect.org wss://*.walletconnect.com wss://*.walletconnect.org";
 const cloudflareChallenge = "https://challenges.cloudflare.com";
@@ -18,7 +19,7 @@ const connectSrc = [
   apiBaseUrl,
   privyDomains,
   alchemyDomains,
-  baseRpcDomains,
+  ethereumRpcDomains,
   walletConnectDomains,
 ]
   .filter(Boolean)
