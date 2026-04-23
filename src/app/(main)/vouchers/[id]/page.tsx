@@ -88,7 +88,7 @@ export default function VoucherDetailPage({
       ? "Stok habis"
       : "Voucher tidak aktif"
     : onWrongChain
-      ? "Pindah ke jaringan Base untuk melanjutkan"
+      ? "Pindah ke jaringan Ethereum untuk melanjutkan"
       : isSigning
         ? "Memproses..."
         : null;
@@ -167,8 +167,8 @@ export default function VoucherDetailPage({
           <div>
             <p className="font-semibold">Jaringan tidak sesuai</p>
             <p className="text-xs opacity-90">
-              Pindah ke Base Mainnet (chain ID {TARGET_CHAIN_ID}) di dompet Anda
-              sebelum melakukan redemption.
+              Pindah ke Ethereum Mainnet (chain ID {TARGET_CHAIN_ID}) di dompet
+              Anda sebelum melakukan redemption.
             </p>
           </div>
         </div>

@@ -32,7 +32,7 @@ const STATE_COPY: Record<Exclude<SigningState, "idle" | "done">, StateCopy> = {
   },
   broadcasting: {
     title: "Menyiarkan transaksi",
-    subtitle: "Transaksi sedang dikirim ke jaringan Base.",
+    subtitle: "Transaksi sedang dikirim ke jaringan Ethereum.",
   },
   "submitting-hash": {
     title: "Menyimpan bukti transaksi",

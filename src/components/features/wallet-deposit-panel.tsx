@@ -26,7 +26,7 @@ export function WalletDepositPanel({
         </h3>
         <p className="text-on-surface-variant text-sm">
           Kirim $WEALTH dari bursa atau dompet lain ke alamat di bawah. Saldo
-          muncul otomatis setelah transaksi terkonfirmasi di jaringan Base.
+          muncul otomatis setelah transaksi terkonfirmasi di jaringan Ethereum.
         </p>
       </div>
 
@@ -44,14 +44,14 @@ export function WalletDepositPanel({
         </li>
 
         <li className="space-y-2">
-          <Step index={2} title="Pastikan pakai jaringan Base" />
+          <Step index={2} title="Pastikan pakai jaringan Ethereum" />
           <div className="bg-surface-container flex items-center gap-2 rounded-[var(--radius-md)] px-3 py-2 text-sm">
             <span className="bg-primary inline-block h-2 w-2 rounded-full" />
-            <span className="font-semibold">Base Mainnet</span>
-            <span className="text-on-surface-variant">· Chain ID 8453</span>
+            <span className="font-semibold">Ethereum Mainnet</span>
+            <span className="text-on-surface-variant">· Chain ID 1</span>
           </div>
           <p className="text-on-surface-variant text-xs">
-            Transfer dari jaringan lain (mis. Ethereum Mainnet) tidak akan
+            Transfer dari jaringan lain (mis. Base, Polygon, BSC) tidak akan
             terdeteksi dan bisa menyebabkan dana hilang.
           </p>
         </li>
@@ -59,7 +59,7 @@ export function WalletDepositPanel({
         <li className="space-y-2">
           <Step index={3} title="Kirim token $WEALTH ke alamat di atas" />
           <CopyableAddress
-            label="Kontrak $WEALTH (Base)"
+            label="Kontrak $WEALTH (Ethereum)"
             value={env.NEXT_PUBLIC_TOKEN_CONTRACT_ADDRESS}
             truncate={false}
           />
