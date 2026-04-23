@@ -7,7 +7,7 @@ import { SigningStateUI } from "@/components/features/signing-state-ui";
 import { usePrice } from "@/hooks/use-price";
 import { useRedeemVoucher } from "@/hooks/use-redeem-voucher";
 import { useVoucher } from "@/hooks/use-voucher";
-import { TARGET_CHAIN_ID } from "@/lib/wagmi";
+import { TARGET_CHAIN_ID, targetChain } from "@/lib/wagmi";
 import {
   formatDate,
   formatIdr,
@@ -171,8 +171,8 @@ export default function VoucherDetailPage({
           <div>
             <p className="font-semibold">Jaringan tidak sesuai</p>
             <p className="text-xs opacity-90">
-              Pindah ke Ethereum Mainnet (chain ID {TARGET_CHAIN_ID}) di dompet
-              Anda sebelum melakukan redemption.
+              Pindah ke {targetChain.name} (chain ID {TARGET_CHAIN_ID}) di
+              dompet Anda sebelum melakukan redemption.
             </p>
           </div>
         </div>

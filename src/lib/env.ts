@@ -7,6 +7,8 @@ const hexAddress = z
     "Must be a 0x-prefixed 40-character hex address",
   );
 
+const chain = z.enum(["mainnet", "sepolia"]).default("mainnet");
+
 const envSchema = z.object({
   NEXT_PUBLIC_PRIVY_APP_ID: z
     .string()
@@ -17,6 +19,7 @@ const envSchema = z.object({
   NEXT_PUBLIC_TOKEN_CONTRACT_ADDRESS: hexAddress,
   NEXT_PUBLIC_APP_URL: z.string().url("NEXT_PUBLIC_APP_URL must be a URL"),
   NEXT_PUBLIC_ALCHEMY_RPC_URL: z.string().url().optional(),
+  NEXT_PUBLIC_CHAIN: chain,
 });
 
 type Env = z.infer<typeof envSchema>;
@@ -29,6 +32,7 @@ function parseEnv(): Env {
       process.env.NEXT_PUBLIC_TOKEN_CONTRACT_ADDRESS,
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
     NEXT_PUBLIC_ALCHEMY_RPC_URL: process.env.NEXT_PUBLIC_ALCHEMY_RPC_URL,
+    NEXT_PUBLIC_CHAIN: process.env.NEXT_PUBLIC_CHAIN || "mainnet",
   });
 
   if (!parsed.success) {

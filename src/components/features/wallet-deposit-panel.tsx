@@ -3,6 +3,7 @@
 import { CopyableAddress } from "@/components/shared/copyable-address";
 import { useAuth } from "@/hooks/use-auth";
 import { env } from "@/lib/env";
+import { targetChain } from "@/lib/wagmi";
 
 interface WalletDepositPanelProps {
   variant?: "card" | "inline";
@@ -44,22 +45,24 @@ export function WalletDepositPanel({
         </li>
 
         <li className="space-y-2">
-          <Step index={2} title="Pastikan pakai jaringan Ethereum" />
+          <Step index={2} title="Pastikan pakai jaringan yang benar" />
           <div className="bg-surface-container flex items-center gap-2 rounded-[var(--radius-md)] px-3 py-2 text-sm">
             <span className="bg-primary inline-block h-2 w-2 rounded-full" />
-            <span className="font-semibold">Ethereum Mainnet</span>
-            <span className="text-on-surface-variant">· Chain ID 1</span>
+            <span className="font-semibold">{targetChain.name}</span>
+            <span className="text-on-surface-variant">
+              · Chain ID {targetChain.id}
+            </span>
           </div>
           <p className="text-on-surface-variant text-xs">
-            Transfer dari jaringan lain (mis. Base, Polygon, BSC) tidak akan
-            terdeteksi dan bisa menyebabkan dana hilang.
+            Transfer dari jaringan lain tidak akan terdeteksi dan bisa
+            menyebabkan dana hilang.
           </p>
         </li>
 
         <li className="space-y-2">
           <Step index={3} title="Kirim token $WEALTH ke alamat di atas" />
           <CopyableAddress
-            label="Kontrak $WEALTH (Ethereum)"
+            label={`Kontrak $WEALTH (${targetChain.name})`}
             value={env.NEXT_PUBLIC_TOKEN_CONTRACT_ADDRESS}
             truncate={false}
           />

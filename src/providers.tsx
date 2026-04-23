@@ -5,7 +5,7 @@ import { WagmiProvider } from "@privy-io/wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
 import { env } from "@/lib/env";
-import { wagmiConfig } from "@/lib/wagmi";
+import { wagmiConfig, targetChain } from "@/lib/wagmi";
 import { AccessTokenBridge } from "@/components/layout/access-token-bridge";
 
 export function Providers({ children }: { children: React.ReactNode }) {
@@ -36,6 +36,10 @@ export function Providers({ children }: { children: React.ReactNode }) {
             createOnLogin: "all-users",
           },
         },
+        /* eslint-disable @typescript-eslint/no-explicit-any */
+        defaultChain: targetChain as any,
+        supportedChains: [targetChain] as any,
+        /* eslint-enable @typescript-eslint/no-explicit-any */
       }}
     >
       <QueryClientProvider client={queryClient}>
