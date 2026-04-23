@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const privyDomains =
-  "https://auth.privy.io https://*.privy.io wss://*.privy.io";
+  "https://auth.privy.io https://*.privy.io wss://*.privy.io https://*.privy.systems";
 const alchemyDomains =
   "https://*.g.alchemy.com https://*.alchemy.com wss://*.g.alchemy.com";
 const ethereumRpcDomains =
