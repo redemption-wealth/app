@@ -1,16 +1,23 @@
 "use client";
 
 import Link from "next/link";
+import { usePrice } from "@/hooks/use-price";
 import type { Voucher } from "@/lib/schemas/voucher";
-import { formatWealth, isVoucherValid } from "@/lib/utils";
+import { formatIdr, formatWealth, isVoucherValid } from "@/lib/utils";
 
 interface VoucherCardProps {
   voucher: Voucher;
 }
 
 export function VoucherCard({ voucher }: VoucherCardProps) {
+  const { data: priceData } = usePrice();
   const valid = isVoucherValid(voucher);
   const isBogo = voucher.qrPerSlot > 1;
+  const totalPriceIdr = Number(voucher.totalPrice);
+  const wealthAmount =
+    priceData && priceData.priceIdr > 0
+      ? totalPriceIdr / priceData.priceIdr
+      : null;
 
   return (
     <Link
@@ -35,8 +42,11 @@ export function VoucherCard({ voucher }: VoucherCardProps) {
       <div className="flex items-end justify-between">
         <div>
           <p className="font-display text-base font-bold">
-            {formatWealth(voucher.totalPrice)}{" "}
+            {wealthAmount !== null ? formatWealth(wealthAmount) : "—"}{" "}
             <span className="text-on-surface-variant text-xs">$WEALTH</span>
+          </p>
+          <p className="text-on-surface-variant text-[10px]">
+            ≈ {formatIdr(totalPriceIdr)}
           </p>
           {!valid ? (
             <p className="text-error text-[10px]">

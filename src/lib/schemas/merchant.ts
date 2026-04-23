@@ -1,6 +1,10 @@
 import { z } from "zod";
-import { categorySchema } from "./category";
 import { paginationSchema } from "./common";
+
+const embeddedCategorySchema = z.object({
+  id: z.string().optional(),
+  name: z.string(),
+});
 
 export const merchantSchema = z.object({
   id: z.string(),
@@ -13,7 +17,7 @@ export const merchantSchema = z.object({
   deletedAt: z.string().nullable(),
   createdAt: z.string(),
   updatedAt: z.string(),
-  category: categorySchema.optional(),
+  category: embeddedCategorySchema.optional(),
 });
 
 export type Merchant = z.infer<typeof merchantSchema>;
