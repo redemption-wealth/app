@@ -69,7 +69,7 @@ function pickConfig(
     tone: "info",
     title: txHash ? "Menunggu konfirmasi blockchain" : "Menyiapkan redemption",
     subtitle: txHash
-      ? "Transaksi sedang dikonfirmasi di jaringan Base."
+      ? "Transaksi sedang dikonfirmasi di jaringan Ethereum."
       : "Mohon tunggu sebentar...",
   };
 }

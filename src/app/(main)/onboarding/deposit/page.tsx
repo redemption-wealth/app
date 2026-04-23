@@ -29,7 +29,7 @@ export default function OnboardingDepositPage() {
         <p className="text-on-surface-variant text-sm">
           Kirim $WEALTH ke alamat embedded wallet di bawah dari bursa atau
           dompet lain. Saldo akan muncul otomatis setelah transaksi
-          terkonfirmasi di jaringan Base.
+          terkonfirmasi di jaringan Ethereum.
         </p>
       </header>
 
