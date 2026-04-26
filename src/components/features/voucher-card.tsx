@@ -33,7 +33,16 @@ export function VoucherCard({ voucher }: VoucherCardProps) {
       className="border-border hover:border-surface-container-highest flex flex-col justify-between gap-3 rounded-[var(--radius-lg)] border bg-white p-3.5 transition-all hover:-translate-y-0.5 hover:shadow-sm"
     >
       <div className="flex items-start gap-3">
-        <CategoryTile name={voucher.merchant?.name ?? "V"} size={48} />
+        {voucher.merchant?.logoUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={voucher.merchant.logoUrl}
+            alt={voucher.merchant.name}
+            className="h-12 w-12 shrink-0 rounded-[var(--radius-sm)] object-cover"
+          />
+        ) : (
+          <CategoryTile name={voucher.merchant?.name ?? "V"} size={48} />
+        )}
         <div className="min-w-0 flex-1">
           <p className="text-on-surface-variant text-xs">
             {voucher.merchant?.name ?? "Voucher"}
