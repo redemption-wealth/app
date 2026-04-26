@@ -75,10 +75,10 @@ function pickConfig(
 }
 
 const TONE_CLASSES: Record<BannerConfig["tone"], string> = {
-  info: "bg-surface-container text-on-surface",
-  warning: "bg-tertiary-container text-on-tertiary-container",
-  error: "bg-error-container text-on-error-container",
-  success: "bg-primary-container text-on-primary-container",
+  info: "bg-[#ececec] text-[#171717]",
+  warning: "bg-[#fef3c7] text-[#854d0e]",
+  error: "bg-[#fee2e2] text-[#b91c1c]",
+  success: "bg-[#dcfce7] text-[#15803d]",
 };
 
 export function RedemptionStatusBanner({
@@ -95,9 +95,9 @@ export function RedemptionStatusBanner({
     <div
       role="status"
       aria-live="polite"
-      className={`${TONE_CLASSES[config.tone]} space-y-2 rounded-[var(--radius-md)] p-4`}
+      className={`${TONE_CLASSES[config.tone]} space-y-2 rounded-[var(--radius-lg)] p-4`}
     >
-      <p className="font-semibold">{config.title}</p>
+      <p className="font-display font-bold">{config.title}</p>
       {config.subtitle ? (
         <p className="text-sm opacity-90">{config.subtitle}</p>
       ) : null}
@@ -107,7 +107,7 @@ export function RedemptionStatusBanner({
           type="button"
           onClick={onReconcile}
           disabled={isReconciling || reconcileCooldown}
-          className="bg-primary text-on-primary mt-1 inline-flex items-center rounded-full px-4 py-2 text-sm font-semibold disabled:opacity-60"
+          className="bg-primary mt-1 inline-flex items-center rounded-full px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
         >
           {isReconciling
             ? "Memeriksa..."

@@ -12,7 +12,7 @@ export function QrDisplay({ qrCodes }: QrDisplayProps) {
 
   if (qrCodes.length === 0) {
     return (
-      <div className="bg-surface-container text-on-surface-variant rounded-[var(--radius-lg)] p-6 text-center text-sm">
+      <div className="rounded-[var(--radius-lg)] border border-[#ececec] bg-white p-6 text-center text-sm text-[#525252]">
         QR code belum siap. Mohon tunggu sebentar.
       </div>
     );
@@ -24,7 +24,7 @@ export function QrDisplay({ qrCodes }: QrDisplayProps) {
 
   return (
     <div className="space-y-3">
-      <div className="bg-surface flex flex-col items-center gap-3 rounded-[var(--radius-lg)] p-4">
+      <div className="flex flex-col items-center gap-3 rounded-[var(--radius-lg)] border border-[#ececec] bg-white p-6">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={active.imageUrl}
@@ -32,19 +32,19 @@ export function QrDisplay({ qrCodes }: QrDisplayProps) {
           className="h-64 w-64 object-contain"
         />
         {isBogo ? (
-          <p className="text-on-surface-variant text-xs font-semibold">
+          <p className="text-xs font-semibold text-[#525252]">
             QR {activeIndex + 1} dari {qrCodes.length}
           </p>
         ) : null}
-        <p className="text-on-surface-variant text-xs">
+        <p className="text-xs text-[#737373]">
           Status:{" "}
           <span
             className={
               active.status === "used"
-                ? "text-on-surface-variant line-through"
+                ? "text-[#a3a3a3] line-through"
                 : active.status === "redeemed"
                   ? "text-primary font-semibold"
-                  : "text-tertiary font-semibold"
+                  : "font-semibold text-[#15803d]"
             }
           >
             {active.status === "used"
@@ -64,7 +64,7 @@ export function QrDisplay({ qrCodes }: QrDisplayProps) {
               type="button"
               onClick={() => setActiveIndex(i)}
               className={`h-2 w-8 rounded-full transition-colors ${
-                i === activeIndex ? "bg-primary" : "bg-surface-container-high"
+                i === activeIndex ? "bg-primary" : "bg-[#e5e5e5]"
               }`}
               aria-label={`Tampilkan QR ${i + 1}`}
             />

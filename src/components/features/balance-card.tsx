@@ -5,22 +5,52 @@ import { usePrice } from "@/hooks/use-price";
 import { useWealthBalance } from "@/hooks/use-wealth-balance";
 import { formatIdr, formatWealth } from "@/lib/utils";
 
-export function BalanceCard() {
+interface BalanceCardProps {
+  variant?: "full" | "compact";
+}
+
+export function BalanceCard({ variant = "full" }: BalanceCardProps) {
   const { walletAddress } = useAuth();
   const { balance } = useWealthBalance(walletAddress);
   const { data: priceData } = usePrice();
 
   const balanceIdr = priceData ? Number(balance) * priceData.priceIdr : null;
+  const isCompact = variant === "compact";
 
   return (
-    <section className="from-primary to-primary-container text-on-primary rounded-[var(--radius-xl)] bg-gradient-to-br p-8">
-      <p className="text-sm opacity-80">Saldo $WEALTH</p>
-      <h2 className="font-display mt-2 text-4xl font-bold">
+    <section
+      className="shadow-ambient relative overflow-hidden rounded-[var(--radius-lg)] text-white"
+      style={{
+        background:
+          "linear-gradient(140deg, #003a26 0%, #006c48 60%, #2de19d 130%)",
+        padding: isCompact ? "18px" : "24px",
+      }}
+    >
+      {/* Decorative blobs */}
+      <div
+        className="pointer-events-none absolute -top-10 -right-10 h-40 w-40 rounded-full opacity-10"
+        style={{ background: "#2de19d" }}
+      />
+      <div
+        className="pointer-events-none absolute -bottom-8 -left-8 h-32 w-32 rounded-full opacity-10"
+        style={{ background: "#2de19d" }}
+      />
+
+      <p className="relative text-sm opacity-80">Saldo $WEALTH</p>
+      <h2
+        className="font-display relative mt-2 font-bold tracking-tight"
+        style={{
+          fontSize: isCompact ? "28px" : "40px",
+          letterSpacing: "-0.02em",
+        }}
+      >
         {formatWealth(balance)}
       </h2>
-      <p className="mt-1 text-sm opacity-80">$WEALTH</p>
+      <p className="relative mt-1 text-sm opacity-80">$WEALTH</p>
       {balanceIdr !== null ? (
-        <p className="mt-2 text-xs opacity-80">≈ {formatIdr(balanceIdr)}</p>
+        <p className="relative mt-2 text-xs opacity-80">
+          ≈ {formatIdr(balanceIdr)}
+        </p>
       ) : null}
     </section>
   );

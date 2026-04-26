@@ -3,15 +3,16 @@
 import Link from "next/link";
 import type { Redemption } from "@/lib/schemas/redemption";
 import { formatDate, formatWealth } from "@/lib/utils";
+import { CategoryTile } from "@/components/shared/category-tile";
 
 interface RedemptionCardProps {
   redemption: Redemption;
 }
 
 const STATUS_STYLES: Record<Redemption["status"], string> = {
-  pending: "bg-tertiary-container text-on-tertiary-container",
-  confirmed: "bg-primary-container text-on-primary-container",
-  failed: "bg-error-container text-on-error-container",
+  pending: "bg-[#fef3c7] text-[#854d0e]",
+  confirmed: "bg-[#dcfce7] text-[#15803d]",
+  failed: "bg-[#fee2e2] text-[#b91c1c]",
 };
 
 const STATUS_LABELS: Record<Redemption["status"], string> = {
@@ -21,34 +22,39 @@ const STATUS_LABELS: Record<Redemption["status"], string> = {
 };
 
 export function RedemptionCard({ redemption }: RedemptionCardProps) {
+  const merchantName = redemption.voucher?.merchant?.name ?? "Merchant";
+
   return (
     <Link
       href={`/qr/${redemption.id}`}
-      className="bg-surface-container-lowest hover:bg-surface-container block rounded-[var(--radius-lg)] p-4 transition-colors"
+      className="block rounded-[var(--radius-lg)] border border-[#ececec] bg-white p-4 transition-all hover:-translate-y-0.5 hover:border-[#dcdcdc] hover:shadow-sm"
     >
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <p className="text-on-surface-variant text-xs tracking-wide uppercase">
-            {redemption.voucher?.merchant?.name ?? "Merchant"}
-          </p>
-          <h4 className="font-display mt-0.5 line-clamp-2 text-sm font-bold">
-            {redemption.voucher?.title ?? "Voucher"}
-          </h4>
+      <div className="flex items-start gap-3">
+        <CategoryTile name={merchantName} size={44} />
+        <div className="min-w-0 flex-1">
+          <div className="flex items-start justify-between gap-2">
+            <div className="min-w-0">
+              <p className="text-xs text-[#525252]">{merchantName}</p>
+              <h4 className="font-display mt-0.5 line-clamp-2 text-sm font-bold text-[#171717]">
+                {redemption.voucher?.title ?? "Voucher"}
+              </h4>
+            </div>
+            <span
+              className={`inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-[10px] font-bold ${STATUS_STYLES[redemption.status]}`}
+            >
+              {STATUS_LABELS[redemption.status]}
+            </span>
+          </div>
+          <div className="mt-2 flex items-end justify-between">
+            <p className="text-xs text-[#737373]">
+              {formatDate(redemption.redeemedAt)}
+            </p>
+            <p className="font-display text-sm font-bold text-[#171717]">
+              {formatWealth(redemption.wealthAmount)}{" "}
+              <span className="text-xs text-[#525252]">$WEALTH</span>
+            </p>
+          </div>
         </div>
-        <span
-          className={`inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-[10px] font-semibold tracking-wide uppercase ${STATUS_STYLES[redemption.status]}`}
-        >
-          {STATUS_LABELS[redemption.status]}
-        </span>
-      </div>
-      <div className="mt-3 flex items-end justify-between">
-        <p className="text-on-surface-variant text-xs">
-          {formatDate(redemption.redeemedAt)}
-        </p>
-        <p className="font-display text-sm font-bold">
-          {formatWealth(redemption.wealthAmount)}{" "}
-          <span className="text-on-surface-variant text-xs">$WEALTH</span>
-        </p>
       </div>
     </Link>
   );

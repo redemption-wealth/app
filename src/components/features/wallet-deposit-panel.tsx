@@ -16,16 +16,16 @@ export function WalletDepositPanel({
 
   const wrapperClasses =
     variant === "card"
-      ? "bg-surface-container-lowest rounded-[var(--radius-lg)] p-6 space-y-6"
+      ? "rounded-[var(--radius-lg)] border border-[#ececec] bg-white p-6 space-y-6"
       : "space-y-6";
 
   return (
     <section className={wrapperClasses}>
       <div className="space-y-2">
-        <h3 className="font-display text-lg font-bold">
+        <h3 className="font-display text-lg font-bold text-[#171717]">
           Deposit $WEALTH ke embedded wallet
         </h3>
-        <p className="text-on-surface-variant text-sm">
+        <p className="text-sm text-[#525252]">
           Kirim $WEALTH dari bursa atau dompet lain ke alamat di bawah. Saldo
           muncul otomatis setelah transaksi terkonfirmasi di jaringan Ethereum.
         </p>
@@ -37,7 +37,7 @@ export function WalletDepositPanel({
           {walletAddress ? (
             <CopyableAddress value={walletAddress} truncate={false} />
           ) : (
-            <p className="text-on-surface-variant text-sm">
+            <p className="text-sm text-[#525252]">
               Dompet belum siap. Silakan refresh halaman jika tidak muncul dalam
               beberapa detik.
             </p>
@@ -46,14 +46,14 @@ export function WalletDepositPanel({
 
         <li className="space-y-2">
           <Step index={2} title="Pastikan pakai jaringan yang benar" />
-          <div className="bg-surface-container flex items-center gap-2 rounded-[var(--radius-md)] px-3 py-2 text-sm">
+          <div className="flex items-center gap-2 rounded-[var(--radius-md)] border border-[#ececec] bg-[#fafaf9] px-3 py-2 text-sm">
             <span className="bg-primary inline-block h-2 w-2 rounded-full" />
-            <span className="font-semibold">{targetChain.name}</span>
-            <span className="text-on-surface-variant">
-              · Chain ID {targetChain.id}
+            <span className="font-semibold text-[#171717]">
+              {targetChain.name}
             </span>
+            <span className="text-[#737373]">· Chain ID {targetChain.id}</span>
           </div>
-          <p className="text-on-surface-variant text-xs">
+          <p className="text-xs text-[#737373]">
             Transfer dari jaringan lain tidak akan terdeteksi dan bisa
             menyebabkan dana hilang.
           </p>
@@ -66,7 +66,7 @@ export function WalletDepositPanel({
             value={env.NEXT_PUBLIC_TOKEN_CONTRACT_ADDRESS}
             truncate={false}
           />
-          <p className="text-on-surface-variant text-xs">
+          <p className="text-xs text-[#737373]">
             Saat menambah custom token di dompet sumber, gunakan alamat kontrak
             di atas agar token dikenali sebagai $WEALTH.
           </p>
@@ -79,10 +79,12 @@ export function WalletDepositPanel({
 function Step({ index, title }: { index: number; title: string }) {
   return (
     <div className="flex items-center gap-3">
-      <span className="bg-primary text-on-primary flex h-7 w-7 items-center justify-center rounded-full text-sm font-semibold">
+      <span className="bg-primary flex h-7 w-7 items-center justify-center rounded-full text-sm font-semibold text-white">
         {index}
       </span>
-      <h4 className="font-display text-base font-semibold">{title}</h4>
+      <h4 className="font-display text-base font-semibold text-[#171717]">
+        {title}
+      </h4>
     </div>
   );
 }
