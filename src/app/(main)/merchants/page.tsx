@@ -20,7 +20,9 @@ export default function MerchantsPage() {
 
   return (
     <div className="mx-auto max-w-2xl space-y-6 md:max-w-7xl">
-      <h1 className="font-display text-2xl font-bold">Merchant</h1>
+      <h1 className="font-display text-2xl font-bold text-[#171717]">
+        Merchant
+      </h1>
 
       <div className="flex gap-2 overflow-x-auto pb-2">
         <CategoryChip
@@ -43,12 +45,12 @@ export default function MerchantsPage() {
           {Array.from({ length: 8 }).map((_, i) => (
             <div
               key={i}
-              className="bg-surface-container-lowest h-40 animate-pulse rounded-[var(--radius-lg)] p-4"
+              className="h-40 animate-pulse rounded-[var(--radius-lg)] border border-[#ececec] bg-white p-4"
             />
           ))}
         </div>
       ) : error ? (
-        <div className="bg-error-container text-on-error-container flex items-center justify-between rounded-[var(--radius-md)] p-4 text-sm">
+        <div className="flex items-center justify-between rounded-[var(--radius-lg)] bg-[#fee2e2] p-4 text-sm text-[#b91c1c]">
           <span>Gagal memuat merchant.</span>
           <button
             type="button"
@@ -61,8 +63,8 @@ export default function MerchantsPage() {
           </button>
         </div>
       ) : merchants.length === 0 ? (
-        <div className="bg-surface-container-lowest rounded-[var(--radius-lg)] p-8 text-center">
-          <p className="text-on-surface-variant text-sm">
+        <div className="rounded-[var(--radius-lg)] border border-[#ececec] bg-white p-8 text-center">
+          <p className="text-sm text-[#525252]">
             Belum ada merchant pada kategori ini.
           </p>
         </div>
@@ -92,8 +94,8 @@ function CategoryChip({
       onClick={onClick}
       className={`rounded-full px-4 py-2 text-sm font-medium whitespace-nowrap transition-colors ${
         active
-          ? "bg-primary text-on-primary"
-          : "bg-surface-container-lowest text-on-surface-variant hover:bg-tertiary-container hover:text-on-tertiary-container"
+          ? "bg-primary text-white"
+          : "border border-[#ececec] bg-white text-[#525252] hover:border-[#dcdcdc] hover:bg-[#fafaf9]"
       }`}
     >
       {label}

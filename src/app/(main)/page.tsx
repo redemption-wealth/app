@@ -51,7 +51,9 @@ export default function HomePage() {
 
       <section>
         <div className="mb-4 flex items-center justify-between">
-          <h3 className="font-display text-xl font-bold">Voucher Populer</h3>
+          <h3 className="font-display text-xl font-bold text-[#171717]">
+            Voucher Populer
+          </h3>
           <Link
             href="/merchants"
             className="text-primary text-sm font-semibold"
@@ -62,12 +64,12 @@ export default function HomePage() {
 
         {vouchersLoading ? (
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-            <div className="bg-surface-container-lowest h-40 animate-pulse rounded-[var(--radius-lg)] p-6" />
-            <div className="bg-surface-container-lowest h-40 animate-pulse rounded-[var(--radius-lg)] p-6" />
-            <div className="bg-surface-container-lowest h-40 animate-pulse rounded-[var(--radius-lg)] p-6" />
+            <div className="h-40 animate-pulse rounded-[var(--radius-lg)] border border-[#ececec] bg-white p-6" />
+            <div className="h-40 animate-pulse rounded-[var(--radius-lg)] border border-[#ececec] bg-white p-6" />
+            <div className="h-40 animate-pulse rounded-[var(--radius-lg)] border border-[#ececec] bg-white p-6" />
           </div>
         ) : vouchersError ? (
-          <div className="bg-error-container text-on-error-container flex items-center justify-between rounded-[var(--radius-md)] p-4 text-sm">
+          <div className="flex items-center justify-between rounded-[var(--radius-lg)] bg-[#fee2e2] p-4 text-sm text-[#b91c1c]">
             <span>Gagal memuat voucher.</span>
             <button
               type="button"
@@ -80,13 +82,13 @@ export default function HomePage() {
             </button>
           </div>
         ) : vouchers.length === 0 ? (
-          <div className="bg-surface-container-lowest space-y-3 rounded-[var(--radius-lg)] p-8 text-center">
-            <p className="text-on-surface-variant text-sm">
+          <div className="space-y-3 rounded-[var(--radius-lg)] border border-[#ececec] bg-white p-8 text-center">
+            <p className="text-sm text-[#525252]">
               Belum ada voucher tersedia.
             </p>
             <Link
               href="/merchants"
-              className="bg-primary text-on-primary inline-flex items-center rounded-full px-4 py-2 text-sm font-semibold"
+              className="bg-primary inline-flex items-center rounded-full px-4 py-2 text-sm font-semibold text-white"
             >
               Jelajahi merchant
             </Link>

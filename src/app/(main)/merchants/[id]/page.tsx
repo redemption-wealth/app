@@ -37,14 +37,14 @@ export default function MerchantDetailPage({
       </Link>
 
       {merchantLoading ? (
-        <div className="bg-surface-container-lowest h-48 animate-pulse rounded-[var(--radius-lg)] p-6" />
+        <div className="h-48 animate-pulse rounded-[var(--radius-lg)] border border-[#ececec] bg-white p-6" />
       ) : merchantError || !merchant ? (
-        <div className="bg-error-container text-on-error-container rounded-[var(--radius-md)] p-4 text-sm">
+        <div className="rounded-[var(--radius-lg)] bg-[#fee2e2] p-4 text-sm text-[#b91c1c]">
           Gagal memuat merchant.
         </div>
       ) : (
-        <section className="bg-surface-container-lowest flex items-start gap-4 rounded-[var(--radius-lg)] p-6">
-          <div className="bg-surface-container flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-[var(--radius-md)]">
+        <section className="flex items-start gap-4 rounded-[var(--radius-lg)] border border-[#ececec] bg-white p-6">
+          <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-[var(--radius-md)] bg-[#f5f5f4]">
             {merchant.logoUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
@@ -53,20 +53,22 @@ export default function MerchantDetailPage({
                 className="h-full w-full object-cover"
               />
             ) : (
-              <span className="font-display text-on-surface-variant text-3xl font-bold">
+              <span className="font-display text-3xl font-bold text-[#525252]">
                 {merchant.name.charAt(0)}
               </span>
             )}
           </div>
           <div className="min-w-0">
-            <h1 className="font-display text-2xl font-bold">{merchant.name}</h1>
+            <h1 className="font-display text-2xl font-bold text-[#171717]">
+              {merchant.name}
+            </h1>
             {merchant.category?.name ? (
-              <p className="text-on-surface-variant mt-1 text-xs">
+              <p className="mt-1 text-xs text-[#525252]">
                 {merchant.category.name}
               </p>
             ) : null}
             {merchant.description ? (
-              <p className="text-on-surface-variant mt-2 text-sm">
+              <p className="mt-2 text-sm text-[#525252]">
                 {merchant.description}
               </p>
             ) : null}
@@ -75,18 +77,20 @@ export default function MerchantDetailPage({
       )}
 
       <section className="space-y-4">
-        <h2 className="font-display text-xl font-bold">Voucher</h2>
+        <h2 className="font-display text-xl font-bold text-[#171717]">
+          Voucher
+        </h2>
         {vouchersLoading ? (
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             {Array.from({ length: 4 }).map((_, i) => (
               <div
                 key={i}
-                className="bg-surface-container-lowest h-32 animate-pulse rounded-[var(--radius-lg)] p-6"
+                className="h-32 animate-pulse rounded-[var(--radius-lg)] border border-[#ececec] bg-white p-6"
               />
             ))}
           </div>
         ) : vouchersError ? (
-          <div className="bg-error-container text-on-error-container flex items-center justify-between rounded-[var(--radius-md)] p-4 text-sm">
+          <div className="flex items-center justify-between rounded-[var(--radius-lg)] bg-[#fee2e2] p-4 text-sm text-[#b91c1c]">
             <span>Gagal memuat voucher.</span>
             <button
               type="button"
@@ -99,8 +103,8 @@ export default function MerchantDetailPage({
             </button>
           </div>
         ) : vouchers.length === 0 ? (
-          <div className="bg-surface-container-lowest rounded-[var(--radius-lg)] p-8 text-center">
-            <p className="text-on-surface-variant text-sm">
+          <div className="rounded-[var(--radius-lg)] border border-[#ececec] bg-white p-8 text-center">
+            <p className="text-sm text-[#525252]">
               Belum ada voucher untuk merchant ini.
             </p>
           </div>

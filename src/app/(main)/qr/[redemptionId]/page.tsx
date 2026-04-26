@@ -52,8 +52,8 @@ export default function QrDisplayPage({
   if (isLoading) {
     return (
       <div className="mx-auto max-w-md space-y-6">
-        <div className="bg-surface-container h-8 w-1/2 animate-pulse rounded" />
-        <div className="bg-surface-container mx-auto h-64 w-64 animate-pulse rounded-[var(--radius-lg)]" />
+        <div className="h-8 w-1/2 animate-pulse rounded bg-[#ececec]" />
+        <div className="mx-auto h-64 w-64 animate-pulse rounded-[var(--radius-lg)] bg-[#ececec]" />
       </div>
     );
   }
@@ -64,7 +64,7 @@ export default function QrDisplayPage({
         <h1 className="font-display text-2xl font-bold">
           Redemption tidak ditemukan
         </h1>
-        <p className="text-on-surface-variant text-sm">
+        <p className="text-sm text-[#525252]">
           {error instanceof Error
             ? error.message
             : "Redemption ini tidak tersedia."}
@@ -80,14 +80,14 @@ export default function QrDisplayPage({
     <div className="mx-auto max-w-md space-y-5">
       <div className="space-y-1">
         {voucher ? (
-          <p className="text-on-surface-variant text-xs tracking-wide uppercase">
+          <p className="text-xs tracking-wide text-[#737373] uppercase">
             {voucher.merchant?.name ?? "Voucher"}
           </p>
         ) : null}
-        <h1 className="font-display text-xl font-bold">
+        <h1 className="font-display text-xl font-bold text-[#171717]">
           {voucher?.title ?? "Redemption"}
         </h1>
-        <p className="text-on-surface-variant text-sm">
+        <p className="text-sm text-[#525252]">
           Dibuat {formatDate(redemption.createdAt)} ·{" "}
           {formatWealth(redemption.wealthAmount)} $WEALTH
         </p>
@@ -103,9 +103,7 @@ export default function QrDisplayPage({
       />
 
       {fallbackMessage ? (
-        <p className="text-on-surface-variant text-center text-xs">
-          {fallbackMessage}
-        </p>
+        <p className="text-center text-xs text-[#525252]">{fallbackMessage}</p>
       ) : null}
 
       {redemption.status === "confirmed" ? (
@@ -115,13 +113,13 @@ export default function QrDisplayPage({
       <TransactionInfo txHash={redemption.txHash} />
 
       {redemption.status === "pending" ? (
-        <p className="text-on-surface-variant text-center text-xs">
+        <p className="text-center text-xs text-[#525252]">
           Aman untuk menutup halaman. Kami akan memperbarui status otomatis.
         </p>
       ) : null}
 
       <div className="flex justify-between pt-2 text-sm">
-        <Link href="/history" className="text-on-surface-variant font-semibold">
+        <Link href="/history" className="font-semibold text-[#525252]">
           ← Riwayat
         </Link>
         <Link href="/merchants" className="text-primary font-semibold">

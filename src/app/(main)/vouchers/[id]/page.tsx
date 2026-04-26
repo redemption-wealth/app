@@ -41,11 +41,11 @@ export default function VoucherDetailPage({
   if (isLoading) {
     return (
       <div className="mx-auto max-w-2xl space-y-6">
-        <div className="bg-surface-container h-8 w-1/2 animate-pulse rounded" />
-        <div className="bg-surface-container-lowest space-y-4 rounded-[var(--radius-lg)] p-6">
-          <div className="bg-surface-container h-48 animate-pulse rounded-[var(--radius-md)]" />
-          <div className="bg-surface-container h-6 w-3/4 animate-pulse rounded" />
-          <div className="bg-surface-container h-4 w-1/2 animate-pulse rounded" />
+        <div className="h-8 w-1/2 animate-pulse rounded bg-[#ececec]" />
+        <div className="space-y-4 rounded-[var(--radius-lg)] border border-[#ececec] bg-white p-6">
+          <div className="h-48 animate-pulse rounded-[var(--radius-md)] bg-[#f5f5f4]" />
+          <div className="h-6 w-3/4 animate-pulse rounded bg-[#ececec]" />
+          <div className="h-4 w-1/2 animate-pulse rounded bg-[#ececec]" />
         </div>
       </div>
     );
@@ -57,7 +57,7 @@ export default function VoucherDetailPage({
         <h1 className="font-display text-2xl font-bold">
           Voucher tidak ditemukan
         </h1>
-        <p className="text-on-surface-variant">
+        <p className="text-[#525252]">
           {error instanceof Error
             ? error.message
             : "Voucher ini tidak tersedia."}
@@ -105,59 +105,57 @@ export default function VoucherDetailPage({
         {merchant ? (
           <Link
             href={`/merchants/${merchant.id}`}
-            className="text-on-surface-variant hover:text-on-surface text-xs font-semibold tracking-wider uppercase"
+            className="text-xs font-semibold tracking-wider text-[#525252] uppercase hover:text-[#171717]"
           >
             ← {merchant.name}
           </Link>
         ) : null}
         <div className="flex items-start justify-between gap-4">
-          <h1 className="font-display text-2xl font-bold">{voucher.title}</h1>
+          <h1 className="font-display text-2xl font-bold text-[#171717]">
+            {voucher.title}
+          </h1>
           {isBogo ? (
-            <span className="bg-tertiary text-on-tertiary inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold tracking-wide uppercase">
+            <span className="inline-flex items-center rounded-full bg-[#dcfce7] px-3 py-1 text-xs font-semibold tracking-wide text-[#15803d] uppercase">
               BOGO {voucher.qrPerSlot}x
             </span>
           ) : null}
         </div>
         {voucher.description ? (
-          <p className="text-on-surface-variant text-sm">
-            {voucher.description}
-          </p>
+          <p className="text-sm text-[#525252]">{voucher.description}</p>
         ) : null}
       </div>
 
-      <section className="bg-surface-container-lowest space-y-4 rounded-[var(--radius-lg)] p-6">
+      <section className="space-y-4 rounded-[var(--radius-lg)] border border-[#ececec] bg-white p-6">
         <div>
-          <p className="text-on-surface-variant text-xs tracking-wide uppercase">
+          <p className="text-xs tracking-wide text-[#737373] uppercase">
             Harga
           </p>
-          <p className="font-display text-3xl font-bold">
+          <p className="font-display text-3xl font-bold text-[#171717]">
             {wealthAmount !== null ? formatWealth(wealthAmount) : "—"}{" "}
-            <span className="text-on-surface-variant text-base">$WEALTH</span>
+            <span className="text-base text-[#525252]">$WEALTH</span>
           </p>
-          <p className="text-on-surface-variant text-sm">
-            ≈ {formatIdr(totalPriceIdr)}
-          </p>
+          <p className="text-sm text-[#525252]">≈ {formatIdr(totalPriceIdr)}</p>
         </div>
 
-        <div className="border-outline-variant space-y-2 border-t pt-4 text-sm">
+        <div className="space-y-2 border-t border-[#ececec] pt-4 text-sm">
           <FeeRow label="Harga dasar" valueIdr={basePriceIdr} />
           <FeeRow label="Biaya layanan" valueIdr={appFeeIdr} />
           <FeeRow label="Biaya jaringan" valueIdr={gasFeeIdr} />
-          <div className="border-outline-variant flex justify-between border-t pt-2 font-semibold">
+          <div className="flex justify-between border-t border-[#ececec] pt-2 font-semibold text-[#171717]">
             <span>Total</span>
             <span>{formatIdr(totalPriceIdr)}</span>
           </div>
         </div>
 
         {isBogo ? (
-          <div className="bg-tertiary-container text-on-tertiary-container rounded-[var(--radius-md)] p-3 text-xs">
+          <div className="rounded-[var(--radius-md)] bg-[#dcfce7] p-3 text-xs text-[#15803d]">
             Voucher BOGO: satu pembelian memberi{" "}
             <span className="font-semibold">{voucher.qrPerSlot} QR codes</span>{" "}
             yang bisa digunakan bergantian sampai habis.
           </div>
         ) : null}
 
-        <div className="text-on-surface-variant space-y-1 text-xs">
+        <div className="space-y-1 text-xs text-[#737373]">
           <p>Berlaku hingga {formatDate(voucher.expiryDate)}</p>
           <p>
             Sisa stok: {voucher.remainingStock} / {voucher.totalStock}
@@ -166,7 +164,7 @@ export default function VoucherDetailPage({
       </section>
 
       {onWrongChain ? (
-        <div className="bg-error-container text-on-error-container flex items-start gap-2 rounded-[var(--radius-md)] p-3 text-sm">
+        <div className="flex items-start gap-2 rounded-[var(--radius-lg)] bg-[#fee2e2] p-3 text-sm text-[#b91c1c]">
           <span>⚠️</span>
           <div>
             <p className="font-semibold">Jaringan tidak sesuai</p>
@@ -184,7 +182,7 @@ export default function VoucherDetailPage({
         onClick={() => {
           void start(voucher.id);
         }}
-        className="from-primary to-primary-container text-on-primary font-display w-full rounded-full bg-gradient-to-r py-4 text-lg font-bold disabled:cursor-not-allowed disabled:opacity-50"
+        className="font-display w-full rounded-full bg-gradient-to-r from-[#006c48] to-[#2de19d] py-4 text-lg font-bold text-white disabled:cursor-not-allowed disabled:opacity-50"
       >
         {redeemDisabledReason ?? "Redeem Voucher"}
       </button>
@@ -196,7 +194,7 @@ export default function VoucherDetailPage({
 
 function FeeRow({ label, valueIdr }: { label: string; valueIdr: number }) {
   return (
-    <div className="text-on-surface-variant flex justify-between">
+    <div className="flex justify-between text-[#525252]">
       <span>{label}</span>
       <span>{formatIdr(valueIdr)}</span>
     </div>
