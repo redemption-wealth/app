@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { targetChain } from "@/lib/wagmi";
 
 const navItems = [
   { href: "/", label: "Beranda", icon: "home" },
@@ -12,7 +13,7 @@ const navItems = [
   { href: "/profile", label: "Profil", icon: "user" },
 ];
 
-const iconMap: Record<string, string> = {
+export const iconMap: Record<string, string> = {
   home: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6",
   store:
     "M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10",
@@ -22,11 +23,16 @@ const iconMap: Record<string, string> = {
   user: "M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z",
 };
 
+function isNavActive(pathname: string, href: string): boolean {
+  if (href === "/") return pathname === "/";
+  return pathname.startsWith(href);
+}
+
 export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="bg-surface-container-low sticky top-0 hidden h-screen w-64 flex-col md:flex">
+    <aside className="sticky top-0 hidden h-screen w-[248px] flex-col border-r border-[#ececec] bg-white md:flex">
       <div className="p-6">
         <Image
           src="/image/logo.png"
@@ -36,20 +42,20 @@ export function Sidebar() {
           priority
           className="h-9 w-auto"
         />
-        <p className="text-on-surface-variant mt-2 text-xs">Redemption App</p>
+        <p className="mt-2 text-xs text-[#737373]">Redemption App</p>
       </div>
 
       <nav className="flex-1 px-3">
         {navItems.map((item) => {
-          const isActive = pathname === item.href;
+          const isActive = isNavActive(pathname, item.href);
           return (
             <Link
               key={item.href}
               href={item.href}
-              className={`mb-1 flex items-center gap-3 rounded-[var(--radius-md)] px-4 py-3 transition-colors ${
+              className={`relative mb-1 flex items-center gap-3 rounded-[var(--radius-md)] px-4 py-3 transition-colors ${
                 isActive
-                  ? "bg-surface-container-lowest text-primary font-semibold"
-                  : "text-on-surface-variant hover:bg-surface-container"
+                  ? "text-primary bg-[#e8f5ee] font-bold"
+                  : "text-[#525252] hover:bg-[#f6f6f6]"
               }`}
             >
               <svg
@@ -66,10 +72,20 @@ export function Sidebar() {
                 />
               </svg>
               <span className="text-sm">{item.label}</span>
+              {isActive ? (
+                <span className="bg-primary absolute right-2 h-1.5 w-1.5 rounded-full" />
+              ) : null}
             </Link>
           );
         })}
       </nav>
+
+      <div className="border-t border-[#ececec] px-6 py-4">
+        <div className="flex items-center gap-2 text-xs text-[#525252]">
+          <span className="h-2 w-2 rounded-full bg-[#22c55e]" />
+          <span>{targetChain.name}</span>
+        </div>
+      </div>
     </aside>
   );
 }
