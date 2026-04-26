@@ -2,72 +2,81 @@
 
 @theme {
   /* ============================================================
-     Design System: "The Digital Concierge"
-     Light premium theme — cream/mint/magenta
+     Design System: Neutral / Sand
+     Matched to ui_kits/redemption_app reference
      ============================================================ */
 
   /* Surface Hierarchy */
-  --color-surface: #fff8f7;
+  --color-surface: #fafaf9;
   --color-surface-container-lowest: #ffffff;
-  --color-surface-container-low: #fef0f0;
-  --color-surface-container: #f9e8e8;
-  --color-surface-container-high: #f5e0e0;
-  --color-surface-container-highest: #f0d8d8;
+  --color-surface-container-low: #f5f5f4;
+  --color-surface-container: #ececec;
+  --color-surface-container-high: #e5e5e5;
+  --color-surface-container-highest: #dcdcdc;
 
   /* Brand Colors */
   --color-primary: #006c48;
   --color-primary-container: #2de19d;
   --color-on-primary: #ffffff;
-  --color-on-primary-container: #002114;
+  --color-on-primary-container: #003a26;
 
   --color-secondary: #b80049;
   --color-secondary-container: #ffd9e0;
   --color-on-secondary: #ffffff;
   --color-on-secondary-container: #3f0017;
 
-  --color-tertiary-container: #d4f5e8;
-  --color-on-tertiary-container: #004d35;
+  --color-tertiary: #15803d;
+  --color-on-tertiary: #ffffff;
+  --color-tertiary-container: #fef3c7;
+  --color-on-tertiary-container: #854d0e;
 
   /* Text Colors */
-  --color-on-surface: #211a1a;
-  --color-on-surface-variant: #4a4545;
-  --color-outline: #7a7070;
-  --color-outline-variant: #bacabf;
+  --color-on-surface: #171717;
+  --color-on-surface-variant: #525252;
+  --color-outline: #737373;
+  --color-outline-variant: #a3a3a3;
 
   /* Status Colors */
-  --color-success: #2de19d;
-  --color-error: #ba1a1a;
+  --color-success: #22c55e;
+  --color-success-container: #dcfce7;
+  --color-on-success-container: #15803d;
+  --color-error: #b91c1c;
+  --color-error-container: #fee2e2;
+  --color-on-error-container: #b91c1c;
   --color-warning: #f59e0b;
   --color-info: #006c48;
 
   /* Shadcn/UI Compatible Mapping */
-  --color-background: #fff8f7;
-  --color-foreground: #211a1a;
+  --color-background: #fafaf9;
+  --color-foreground: #171717;
   --color-card: #ffffff;
-  --color-card-foreground: #211a1a;
-  --color-muted: #fef0f0;
-  --color-muted-foreground: #4a4545;
+  --color-card-foreground: #171717;
+  --color-muted: #f5f5f4;
+  --color-muted-foreground: #525252;
   --color-accent: #2de19d;
-  --color-accent-foreground: #002114;
-  --color-destructive: #ba1a1a;
+  --color-accent-foreground: #003a26;
+  --color-destructive: #b91c1c;
   --color-destructive-foreground: #ffffff;
-  --color-border: #bacabf;
-  --color-input: #f5e0e0;
+  --color-border: #ececec;
+  --color-input: #ececec;
   --color-ring: #006c48;
 
   /* Radius Scale */
-  --radius-md: 1rem;
-  --radius-lg: 2rem;
-  --radius-xl: 3rem;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
 
   /* Fonts */
   --font-sans: "Inter", system-ui, sans-serif;
   --font-display: "Plus Jakarta Sans", "Inter", system-ui, sans-serif;
 
   /* Shadows */
-  --shadow-ambient: 0 4px 40px rgba(33, 26, 26, 0.04);
-  --shadow-ambient-lg: 0 8px 60px rgba(33, 26, 26, 0.06);
-  --shadow-elevated: 0 12px 80px rgba(33, 26, 26, 0.08);
+  --shadow-ambient:
+    0 1px 2px rgba(16, 16, 16, 0.04), 0 12px 32px -12px rgba(0, 108, 72, 0.35);
+  --shadow-ambient-lg: 0 8px 24px -8px rgba(16, 16, 16, 0.12);
+  --shadow-elevated: 0 30px 80px -20px rgba(23, 23, 23, 0.2);
+  --shadow-modal: 0 20px 60px rgba(23, 23, 23, 0.25);
 }
 
 @layer base {
