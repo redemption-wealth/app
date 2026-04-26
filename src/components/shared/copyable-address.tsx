@@ -29,14 +29,14 @@ export function CopyableAddress({
   return (
     <div className="space-y-1">
       {label ? (
-        <p className="text-xs font-semibold tracking-wide text-[#525252] uppercase">
+        <p className="text-on-surface-variant text-xs font-semibold tracking-wide uppercase">
           {label}
         </p>
       ) : null}
       <button
         type="button"
         onClick={handleCopy}
-        className="flex w-full items-center justify-between gap-2 rounded-[var(--radius-md)] border border-[#ececec] bg-[#fafaf9] px-3 py-2 text-left font-mono text-sm text-[#525252] transition-colors hover:bg-[#f5f5f4]"
+        className="border-border bg-surface text-on-surface-variant hover:bg-surface-container-low flex w-full items-center justify-between gap-2 rounded-[var(--radius-md)] border px-3 py-2 text-left font-mono text-sm transition-colors"
       >
         <span className="truncate">
           {truncate ? truncateAddress(value) : value}

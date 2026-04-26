@@ -8,10 +8,10 @@ export function StockProgressBar({ remaining, total }: StockProgressBarProps) {
   const isLow = pct <= 20;
 
   return (
-    <div className="h-1.5 w-full overflow-hidden rounded-full bg-[#ececec]">
+    <div className="bg-surface-container h-1.5 w-full overflow-hidden rounded-full">
       <div
         className={`h-full rounded-full transition-all duration-300 ${
-          isLow ? "bg-[#b91c1c]" : "bg-[#15803d]"
+          isLow ? "bg-error" : "bg-on-success-container"
         }`}
         style={{ width: `${Math.min(pct, 100)}%` }}
       />

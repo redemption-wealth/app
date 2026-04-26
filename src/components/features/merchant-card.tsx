@@ -12,7 +12,7 @@ export function MerchantCard({ merchant }: MerchantCardProps) {
   return (
     <Link
       href={`/merchants/${merchant.id}`}
-      className="flex flex-col gap-2 rounded-[var(--radius-lg)] border border-[#ececec] bg-white p-4 transition-all hover:-translate-y-0.5 hover:border-[#dcdcdc] hover:shadow-sm"
+      className="border-border hover:border-surface-container-highest flex flex-col gap-2 rounded-[var(--radius-lg)] border bg-white p-4 transition-all hover:-translate-y-0.5 hover:shadow-sm"
     >
       <div className="flex aspect-square w-full items-center justify-center overflow-hidden rounded-[var(--radius-md)]">
         {merchant.logoUrl ? (
@@ -27,11 +27,11 @@ export function MerchantCard({ merchant }: MerchantCardProps) {
         )}
       </div>
       <div>
-        <h4 className="font-display line-clamp-1 text-sm font-bold text-[#171717]">
+        <h4 className="font-display text-on-surface line-clamp-1 text-sm font-bold">
           {merchant.name}
         </h4>
         {merchant.category?.name ? (
-          <p className="line-clamp-1 text-xs text-[#525252]">
+          <p className="text-on-surface-variant line-clamp-1 text-xs">
             {merchant.category.name}
           </p>
         ) : null}

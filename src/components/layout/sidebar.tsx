@@ -32,7 +32,7 @@ export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="sticky top-0 hidden h-screen w-[248px] flex-col border-r border-[#ececec] bg-white md:flex">
+    <aside className="border-border sticky top-0 hidden h-screen w-[248px] flex-col border-r bg-white md:flex">
       <div className="p-6">
         <Image
           src="/image/logo.png"
@@ -42,7 +42,7 @@ export function Sidebar() {
           priority
           className="h-9 w-auto"
         />
-        <p className="mt-2 text-xs text-[#737373]">Redemption App</p>
+        <p className="text-outline mt-2 text-xs">Redemption App</p>
       </div>
 
       <nav className="flex-1 px-3">
@@ -54,8 +54,8 @@ export function Sidebar() {
               href={item.href}
               className={`relative mb-1 flex items-center gap-3 rounded-[var(--radius-md)] px-4 py-3 transition-colors ${
                 isActive
-                  ? "text-primary bg-[#e8f5ee] font-bold"
-                  : "text-[#525252] hover:bg-[#f6f6f6]"
+                  ? "text-primary bg-surface-active font-bold"
+                  : "text-on-surface-variant hover:bg-surface-hover"
               }`}
             >
               <svg
@@ -80,9 +80,9 @@ export function Sidebar() {
         })}
       </nav>
 
-      <div className="border-t border-[#ececec] px-6 py-4">
-        <div className="flex items-center gap-2 text-xs text-[#525252]">
-          <span className="h-2 w-2 rounded-full bg-[#22c55e]" />
+      <div className="border-border border-t px-6 py-4">
+        <div className="text-on-surface-variant flex items-center gap-2 text-xs">
+          <span className="bg-success h-2 w-2 rounded-full" />
           <span>{targetChain.name}</span>
         </div>
       </div>

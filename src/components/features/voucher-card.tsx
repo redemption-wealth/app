@@ -30,19 +30,19 @@ export function VoucherCard({ voucher }: VoucherCardProps) {
   return (
     <Link
       href={`/vouchers/${voucher.id}`}
-      className="flex flex-col justify-between gap-3 rounded-[var(--radius-lg)] border border-[#ececec] bg-white p-3.5 transition-all hover:-translate-y-0.5 hover:border-[#dcdcdc] hover:shadow-sm"
+      className="border-border hover:border-surface-container-highest flex flex-col justify-between gap-3 rounded-[var(--radius-lg)] border bg-white p-3.5 transition-all hover:-translate-y-0.5 hover:shadow-sm"
     >
       <div className="flex items-start gap-3">
         <CategoryTile name={voucher.merchant?.name ?? "V"} size={48} />
         <div className="min-w-0 flex-1">
-          <p className="text-xs text-[#525252]">
+          <p className="text-on-surface-variant text-xs">
             {voucher.merchant?.name ?? "Voucher"}
           </p>
-          <h4 className="font-display mt-0.5 line-clamp-2 text-sm font-bold text-[#171717]">
+          <h4 className="font-display text-on-surface mt-0.5 line-clamp-2 text-sm font-bold">
             {voucher.title}
           </h4>
           {isBogo ? (
-            <span className="mt-1 inline-flex items-center rounded-full bg-[#dcfce7] px-2 py-0.5 text-[10px] font-bold text-[#15803d]">
+            <span className="bg-success-container text-on-success-container mt-1 inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold">
               BOGO
             </span>
           ) : null}
@@ -54,7 +54,7 @@ export function VoucherCard({ voucher }: VoucherCardProps) {
           remaining={voucher.remainingStock}
           total={voucher.totalStock}
         />
-        <div className="flex items-center justify-between text-[10px] text-[#525252]">
+        <div className="text-on-surface-variant flex items-center justify-between text-[10px]">
           <span>
             {isLowStock
               ? "Terbatas"
@@ -67,11 +67,11 @@ export function VoucherCard({ voucher }: VoucherCardProps) {
 
       <div className="flex items-end justify-between">
         <div>
-          <p className="font-display text-base font-bold text-[#171717]">
+          <p className="font-display text-on-surface text-base font-bold">
             {wealthAmount !== null ? formatWealth(wealthAmount) : "—"}{" "}
-            <span className="text-xs text-[#525252]">$WEALTH</span>
+            <span className="text-on-surface-variant text-xs">$WEALTH</span>
           </p>
-          <p className="text-[10px] text-[#737373]">
+          <p className="text-outline text-[10px]">
             ≈ {formatIdr(totalPriceIdr)}
           </p>
         </div>
@@ -80,7 +80,7 @@ export function VoucherCard({ voucher }: VoucherCardProps) {
             Tukar
           </span>
         ) : (
-          <span className="rounded-full bg-[#e5e5e5] px-3 py-1 text-[11px] font-bold text-[#a3a3a3]">
+          <span className="bg-surface-container-high text-outline-variant rounded-full px-3 py-1 text-[11px] font-bold">
             Habis
           </span>
         )}

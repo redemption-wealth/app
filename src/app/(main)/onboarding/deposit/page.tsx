@@ -23,17 +23,17 @@ export default function OnboardingDepositPage() {
         <span className="text-primary inline-block text-xs font-semibold tracking-wider uppercase">
           Langkah Awal
         </span>
-        <h1 className="font-display text-3xl font-bold text-[#171717]">
+        <h1 className="font-display text-on-surface text-3xl font-bold">
           Mari isi saldo $WEALTH Anda
         </h1>
-        <p className="text-sm text-[#525252]">
+        <p className="text-on-surface-variant text-sm">
           Kirim $WEALTH ke alamat embedded wallet di bawah dari bursa atau
           dompet lain. Saldo akan muncul otomatis setelah transaksi
           terkonfirmasi di jaringan Ethereum.
         </p>
       </header>
 
-      <section className="space-y-1 rounded-[var(--radius-xl)] bg-gradient-to-br from-[#003a26] to-[#006c48] p-6 text-white">
+      <section className="from-on-primary-container to-primary space-y-1 rounded-[var(--radius-xl)] bg-gradient-to-br p-6 text-white">
         <p className="text-xs tracking-wide uppercase opacity-80">
           Saldo Saat Ini
         </p>
@@ -51,7 +51,7 @@ export default function OnboardingDepositPage() {
         <Link
           href="/"
           onClick={dismissOnboarding}
-          className="text-sm font-semibold text-[#525252] hover:text-[#171717]"
+          className="text-on-surface-variant hover:text-on-surface text-sm font-semibold"
         >
           Lewati untuk sekarang
         </Link>

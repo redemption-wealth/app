@@ -75,10 +75,10 @@ function pickConfig(
 }
 
 const TONE_CLASSES: Record<BannerConfig["tone"], string> = {
-  info: "bg-[#ececec] text-[#171717]",
-  warning: "bg-[#fef3c7] text-[#854d0e]",
-  error: "bg-[#fee2e2] text-[#b91c1c]",
-  success: "bg-[#dcfce7] text-[#15803d]",
+  info: "bg-surface-container text-on-surface",
+  warning: "bg-tertiary-container text-on-tertiary-container",
+  error: "bg-error-container text-error",
+  success: "bg-success-container text-on-success-container",
 };
 
 export function RedemptionStatusBanner({

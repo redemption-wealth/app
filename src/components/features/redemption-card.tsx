@@ -10,9 +10,9 @@ interface RedemptionCardProps {
 }
 
 const STATUS_STYLES: Record<Redemption["status"], string> = {
-  pending: "bg-[#fef3c7] text-[#854d0e]",
-  confirmed: "bg-[#dcfce7] text-[#15803d]",
-  failed: "bg-[#fee2e2] text-[#b91c1c]",
+  pending: "bg-tertiary-container text-on-tertiary-container",
+  confirmed: "bg-success-container text-on-success-container",
+  failed: "bg-error-container text-error",
 };
 
 const STATUS_LABELS: Record<Redemption["status"], string> = {
@@ -27,15 +27,15 @@ export function RedemptionCard({ redemption }: RedemptionCardProps) {
   return (
     <Link
       href={`/qr/${redemption.id}`}
-      className="block rounded-[var(--radius-lg)] border border-[#ececec] bg-white p-4 transition-all hover:-translate-y-0.5 hover:border-[#dcdcdc] hover:shadow-sm"
+      className="border-border hover:border-surface-container-highest block rounded-[var(--radius-lg)] border bg-white p-4 transition-all hover:-translate-y-0.5 hover:shadow-sm"
     >
       <div className="flex items-start gap-3">
         <CategoryTile name={merchantName} size={44} />
         <div className="min-w-0 flex-1">
           <div className="flex items-start justify-between gap-2">
             <div className="min-w-0">
-              <p className="text-xs text-[#525252]">{merchantName}</p>
-              <h4 className="font-display mt-0.5 line-clamp-2 text-sm font-bold text-[#171717]">
+              <p className="text-on-surface-variant text-xs">{merchantName}</p>
+              <h4 className="font-display text-on-surface mt-0.5 line-clamp-2 text-sm font-bold">
                 {redemption.voucher?.title ?? "Voucher"}
               </h4>
             </div>
@@ -46,12 +46,12 @@ export function RedemptionCard({ redemption }: RedemptionCardProps) {
             </span>
           </div>
           <div className="mt-2 flex items-end justify-between">
-            <p className="text-xs text-[#737373]">
+            <p className="text-outline text-xs">
               {formatDate(redemption.redeemedAt)}
             </p>
-            <p className="font-display text-sm font-bold text-[#171717]">
+            <p className="font-display text-on-surface text-sm font-bold">
               {formatWealth(redemption.wealthAmount)}{" "}
-              <span className="text-xs text-[#525252]">$WEALTH</span>
+              <span className="text-on-surface-variant text-xs">$WEALTH</span>
             </p>
           </div>
         </div>

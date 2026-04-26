@@ -30,7 +30,7 @@ export function QuickActionChips() {
         <Link
           key={action.label}
           href={action.href}
-          className="flex flex-col items-center gap-2 rounded-[var(--radius-lg)] border border-[#ececec] bg-white p-3 transition-all hover:-translate-y-0.5 hover:shadow-sm"
+          className="border-border flex flex-col items-center gap-2 rounded-[var(--radius-lg)] border bg-white p-3 transition-all hover:-translate-y-0.5 hover:shadow-sm"
         >
           <svg
             className="text-primary h-6 w-6"
@@ -45,7 +45,7 @@ export function QuickActionChips() {
               d={action.icon}
             />
           </svg>
-          <span className="text-[11px] font-semibold text-[#525252]">
+          <span className="text-on-surface-variant text-[11px] font-semibold">
             {action.label}
           </span>
         </Link>

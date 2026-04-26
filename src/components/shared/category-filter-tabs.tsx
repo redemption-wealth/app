@@ -23,7 +23,7 @@ export function CategoryFilterTabs({
             className={`shrink-0 rounded-full px-4 py-1.5 text-sm font-semibold transition-colors ${
               isActive
                 ? "bg-primary text-white"
-                : "border border-[#ececec] bg-white text-[#525252] hover:bg-[#f5f5f4]"
+                : "border-border text-on-surface-variant hover:bg-surface-container-low border bg-white"
             }`}
           >
             {cat}

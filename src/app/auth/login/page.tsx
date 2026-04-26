@@ -74,7 +74,7 @@ export default function LoginPage() {
             priority
             className="h-16 w-auto"
           />
-          <p className="mt-3 text-[#525252]">
+          <p className="text-on-surface-variant mt-3">
             Masuk untuk mulai redeem voucher
           </p>
         </div>
@@ -82,7 +82,7 @@ export default function LoginPage() {
         {step === "email" ? (
           <form onSubmit={handleSendCode} className="space-y-4">
             <div>
-              <label className="text-[10px] font-bold tracking-widest text-[#525252] uppercase">
+              <label className="text-on-surface-variant text-[10px] font-bold tracking-widest uppercase">
                 Email
               </label>
               <input
@@ -91,28 +91,28 @@ export default function LoginPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="nama@email.com"
                 required
-                className="focus:border-primary focus:ring-primary mt-2 w-full rounded-[var(--radius-md)] border border-[#ececec] bg-[#fafaf9] px-4 py-3 text-[#171717] transition-colors placeholder:text-[#a3a3a3] focus:bg-white focus:ring-2 focus:outline-none"
+                className="focus:border-primary focus:ring-primary border-border bg-surface text-on-surface placeholder:text-outline-variant mt-2 w-full rounded-[var(--radius-md)] border px-4 py-3 transition-colors focus:bg-white focus:ring-2 focus:outline-none"
               />
             </div>
 
-            {error && <p className="text-sm text-[#b91c1c]">{error}</p>}
+            {error && <p className="text-error text-sm">{error}</p>}
 
             <button
               type="submit"
               disabled={isLoading || !email}
-              className="font-display w-full rounded-full bg-gradient-to-r from-[#006c48] to-[#2de19d] py-4 text-lg font-bold text-white disabled:opacity-50"
+              className="font-display from-primary to-primary-container w-full rounded-full bg-gradient-to-r py-4 text-lg font-bold text-white disabled:opacity-50"
             >
               {isLoading ? "Mengirim..." : "Kirim Kode OTP"}
             </button>
           </form>
         ) : (
           <form onSubmit={handleVerifyCode} className="space-y-4">
-            <p className="text-center text-sm text-[#525252]">
+            <p className="text-on-surface-variant text-center text-sm">
               Kode OTP telah dikirim ke <strong>{email}</strong>
             </p>
 
             <div>
-              <label className="text-[10px] font-bold tracking-widest text-[#525252] uppercase">
+              <label className="text-on-surface-variant text-[10px] font-bold tracking-widest uppercase">
                 Kode OTP
               </label>
               <input
@@ -122,16 +122,16 @@ export default function LoginPage() {
                 placeholder="123456"
                 required
                 maxLength={6}
-                className="focus:border-primary focus:ring-primary mt-2 w-full rounded-[var(--radius-md)] border border-[#ececec] bg-[#fafaf9] px-4 py-3 text-center font-mono text-2xl tracking-[0.5em] text-[#171717] transition-colors placeholder:text-[#a3a3a3] focus:bg-white focus:ring-2 focus:outline-none"
+                className="focus:border-primary focus:ring-primary border-border bg-surface text-on-surface placeholder:text-outline-variant mt-2 w-full rounded-[var(--radius-md)] border px-4 py-3 text-center font-mono text-2xl tracking-[0.5em] transition-colors focus:bg-white focus:ring-2 focus:outline-none"
               />
             </div>
 
-            {error && <p className="text-sm text-[#b91c1c]">{error}</p>}
+            {error && <p className="text-error text-sm">{error}</p>}
 
             <button
               type="submit"
               disabled={isLoading || otp.length < 6}
-              className="font-display w-full rounded-full bg-gradient-to-r from-[#006c48] to-[#2de19d] py-4 text-lg font-bold text-white disabled:opacity-50"
+              className="font-display from-primary to-primary-container w-full rounded-full bg-gradient-to-r py-4 text-lg font-bold text-white disabled:opacity-50"
             >
               {isLoading ? "Verifikasi..." : "Masuk"}
             </button>
@@ -144,7 +144,7 @@ export default function LoginPage() {
                   setOtp("");
                   setError("");
                 }}
-                className="text-sm font-semibold text-[#525252]"
+                className="text-on-surface-variant text-sm font-semibold"
               >
                 Ganti Email
               </button>

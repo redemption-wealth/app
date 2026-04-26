@@ -20,7 +20,7 @@ export default function MerchantsPage() {
 
   return (
     <div className="mx-auto max-w-2xl space-y-6 md:max-w-7xl">
-      <h1 className="font-display text-2xl font-bold text-[#171717]">
+      <h1 className="font-display text-on-surface text-2xl font-bold">
         Merchant
       </h1>
 
@@ -45,12 +45,12 @@ export default function MerchantsPage() {
           {Array.from({ length: 8 }).map((_, i) => (
             <div
               key={i}
-              className="h-40 animate-pulse rounded-[var(--radius-lg)] border border-[#ececec] bg-white p-4"
+              className="border-border h-40 animate-pulse rounded-[var(--radius-lg)] border bg-white p-4"
             />
           ))}
         </div>
       ) : error ? (
-        <div className="flex items-center justify-between rounded-[var(--radius-lg)] bg-[#fee2e2] p-4 text-sm text-[#b91c1c]">
+        <div className="bg-error-container text-error flex items-center justify-between rounded-[var(--radius-lg)] p-4 text-sm">
           <span>Gagal memuat merchant.</span>
           <button
             type="button"
@@ -63,8 +63,8 @@ export default function MerchantsPage() {
           </button>
         </div>
       ) : merchants.length === 0 ? (
-        <div className="rounded-[var(--radius-lg)] border border-[#ececec] bg-white p-8 text-center">
-          <p className="text-sm text-[#525252]">
+        <div className="border-border rounded-[var(--radius-lg)] border bg-white p-8 text-center">
+          <p className="text-on-surface-variant text-sm">
             Belum ada merchant pada kategori ini.
           </p>
         </div>
@@ -95,7 +95,7 @@ function CategoryChip({
       className={`rounded-full px-4 py-2 text-sm font-medium whitespace-nowrap transition-colors ${
         active
           ? "bg-primary text-white"
-          : "border border-[#ececec] bg-white text-[#525252] hover:border-[#dcdcdc] hover:bg-[#fafaf9]"
+          : "border-border text-on-surface-variant hover:border-surface-container-highest hover:bg-surface border bg-white"
       }`}
     >
       {label}

@@ -30,7 +30,7 @@ export function CategoryTile({ name, size = 56 }: CategoryTileProps) {
       }}
     >
       <span
-        className="font-display text-[#1e293b]"
+        className="font-display text-tile-text"
         style={{ fontSize: size * 0.45, fontWeight: 800 }}
       >
         {initial}

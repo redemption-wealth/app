@@ -73,20 +73,18 @@ export function SigningStateUI() {
         className="flex flex-col items-center gap-4 text-center"
       >
         {isError ? (
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#fee2e2] text-xl font-bold text-[#b91c1c]">
+          <div className="bg-error-container text-error flex h-12 w-12 items-center justify-center rounded-full text-xl font-bold">
             !
           </div>
         ) : (
           <div className="border-primary h-12 w-12 animate-spin rounded-full border-[3px] border-t-transparent" />
         )}
         <div className="space-y-1">
-          <h2 className="font-display text-lg font-bold text-[#171717]">
+          <h2 className="font-display text-on-surface text-lg font-bold">
             {copy.title}
           </h2>
-          <p className="text-sm text-[#525252]">{copy.subtitle}</p>
-          {error ? (
-            <p className="mt-2 text-xs text-[#b91c1c]">{error}</p>
-          ) : null}
+          <p className="text-on-surface-variant text-sm">{copy.subtitle}</p>
+          {error ? <p className="text-error mt-2 text-xs">{error}</p> : null}
         </div>
 
         {isError ? (
@@ -101,7 +99,7 @@ export function SigningStateUI() {
           <button
             type="button"
             onClick={reset}
-            className="text-sm font-semibold text-[#525252] hover:text-[#171717]"
+            className="text-on-surface-variant hover:text-on-surface text-sm font-semibold"
           >
             Batal
           </button>

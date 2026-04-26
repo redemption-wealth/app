@@ -22,18 +22,18 @@ export function BalanceCard({ variant = "full" }: BalanceCardProps) {
       className="shadow-ambient relative overflow-hidden rounded-[var(--radius-lg)] text-white"
       style={{
         background:
-          "linear-gradient(140deg, #003a26 0%, #006c48 60%, #2de19d 130%)",
+          "linear-gradient(140deg, var(--color-on-primary-container) 0%, var(--color-primary) 60%, var(--color-primary-container) 130%)",
         padding: isCompact ? "18px" : "24px",
       }}
     >
       {/* Decorative blobs */}
       <div
         className="pointer-events-none absolute -top-10 -right-10 h-40 w-40 rounded-full opacity-10"
-        style={{ background: "#2de19d" }}
+        style={{ background: "var(--color-primary-container)" }}
       />
       <div
         className="pointer-events-none absolute -bottom-8 -left-8 h-32 w-32 rounded-full opacity-10"
-        style={{ background: "#2de19d" }}
+        style={{ background: "var(--color-primary-container)" }}
       />
 
       <p className="relative text-sm opacity-80">Saldo $WEALTH</p>

@@ -13,14 +13,16 @@ export default function WalletPage() {
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
-      <h1 className="font-display text-2xl font-bold text-[#171717]">Wallet</h1>
+      <h1 className="font-display text-on-surface text-2xl font-bold">
+        Wallet
+      </h1>
 
       <BalanceCard />
 
       <WalletDepositPanel />
 
       <section className="space-y-3">
-        <h3 className="font-display text-lg font-bold text-[#171717]">
+        <h3 className="font-display text-on-surface text-lg font-bold">
           Transaksi Terakhir
         </h3>
         {isLoading ? (
@@ -28,12 +30,12 @@ export default function WalletPage() {
             {Array.from({ length: 4 }).map((_, i) => (
               <div
                 key={i}
-                className="h-16 animate-pulse rounded-[var(--radius-md)] border border-[#ececec] bg-white p-4"
+                className="border-border h-16 animate-pulse rounded-[var(--radius-md)] border bg-white p-4"
               />
             ))}
           </div>
         ) : error ? (
-          <div className="flex items-center justify-between rounded-[var(--radius-lg)] bg-[#fee2e2] p-4 text-sm text-[#b91c1c]">
+          <div className="bg-error-container text-error flex items-center justify-between rounded-[var(--radius-lg)] p-4 text-sm">
             <span>Gagal memuat transaksi.</span>
             <button
               type="button"
@@ -46,8 +48,10 @@ export default function WalletPage() {
             </button>
           </div>
         ) : transactions.length === 0 ? (
-          <div className="rounded-[var(--radius-lg)] border border-[#ececec] bg-white p-6 text-center">
-            <p className="text-sm text-[#525252]">Belum ada transaksi.</p>
+          <div className="border-border rounded-[var(--radius-lg)] border bg-white p-6 text-center">
+            <p className="text-on-surface-variant text-sm">
+              Belum ada transaksi.
+            </p>
           </div>
         ) : (
           <ul className="space-y-2">
@@ -68,9 +72,9 @@ const TYPE_LABELS: Record<Transaction["type"], string> = {
 };
 
 const STATUS_STYLES: Record<Transaction["status"], string> = {
-  pending: "bg-[#fef3c7] text-[#854d0e]",
-  confirmed: "bg-[#dcfce7] text-[#15803d]",
-  failed: "bg-[#fee2e2] text-[#b91c1c]",
+  pending: "bg-tertiary-container text-on-tertiary-container",
+  confirmed: "bg-success-container text-on-success-container",
+  failed: "bg-error-container text-error",
 };
 
 const STATUS_LABELS: Record<Transaction["status"], string> = {
@@ -82,10 +86,10 @@ const STATUS_LABELS: Record<Transaction["status"], string> = {
 function TransactionRow({ tx }: { tx: Transaction }) {
   const isOutflow = tx.type === "withdrawal" || tx.type === "redeem";
   return (
-    <li className="flex items-center justify-between gap-3 rounded-[var(--radius-lg)] border border-[#ececec] bg-white p-4">
+    <li className="border-border flex items-center justify-between gap-3 rounded-[var(--radius-lg)] border bg-white p-4">
       <div className="min-w-0">
         <div className="flex items-center gap-2">
-          <p className="text-sm font-semibold text-[#171717]">
+          <p className="text-on-surface text-sm font-semibold">
             {TYPE_LABELS[tx.type]}
           </p>
           <span
@@ -94,14 +98,16 @@ function TransactionRow({ tx }: { tx: Transaction }) {
             {STATUS_LABELS[tx.status]}
           </span>
         </div>
-        <p className="mt-0.5 text-xs text-[#737373]">
+        <p className="text-outline mt-0.5 text-xs">
           {formatDate(tx.createdAt)}
         </p>
       </div>
-      <p className="font-display shrink-0 text-sm font-bold text-[#171717]">
+      <p className="font-display text-on-surface shrink-0 text-sm font-bold">
         {isOutflow ? "-" : "+"}
         {formatWealth(tx.amountWealth)}{" "}
-        <span className="text-xs font-normal text-[#525252]">$WEALTH</span>
+        <span className="text-on-surface-variant text-xs font-normal">
+          $WEALTH
+        </span>
       </p>
     </li>
   );

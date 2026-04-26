@@ -46,6 +46,11 @@
   --color-warning: #f59e0b;
   --color-info: #006c48;
 
+  /* Interactive Surface */
+  --color-surface-active: #e8f5ee;
+  --color-surface-hover: #f6f6f6;
+  --color-tile-text: #1e293b;
+
   /* Shadcn/UI Compatible Mapping */
   --color-background: #fafaf9;
   --color-foreground: #171717;

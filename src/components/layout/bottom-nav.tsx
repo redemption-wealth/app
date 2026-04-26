@@ -21,7 +21,7 @@ export function BottomNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed right-0 bottom-0 left-0 z-50 border-t border-[#ececec] bg-white/70 backdrop-blur-[16px] md:hidden">
+    <nav className="border-border fixed right-0 bottom-0 left-0 z-50 border-t bg-white/70 backdrop-blur-[16px] md:hidden">
       <div className="flex justify-around pt-2 pb-3">
         {navItems.map((item) => {
           const isActive = isNavActive(pathname, item.href);
@@ -30,7 +30,7 @@ export function BottomNav() {
               key={item.href}
               href={item.href}
               className={`flex flex-col items-center gap-0.5 px-3 py-1 ${
-                isActive ? "text-primary" : "text-[#737373]"
+                isActive ? "text-primary" : "text-outline"
               }`}
             >
               <svg
