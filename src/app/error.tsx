@@ -25,22 +25,20 @@ export default function RouteError({ error, reset }: ErrorPageProps) {
           dukungan jika masalah berlanjut.
         </p>
         {error.digest ? (
-          <p className="text-on-surface-variant font-mono text-xs">
-            ID: {error.digest}
-          </p>
+          <p className="text-outline font-mono text-xs">ID: {error.digest}</p>
         ) : null}
       </div>
       <div className="flex gap-3">
         <button
           type="button"
           onClick={reset}
-          className="bg-primary text-on-primary rounded-full px-5 py-2 text-sm font-semibold"
+          className="bg-primary rounded-full px-5 py-2 text-sm font-semibold text-white"
         >
           Coba lagi
         </button>
         <Link
           href="/"
-          className="border-outline text-on-surface rounded-full border px-5 py-2 text-sm font-semibold"
+          className="border-border text-on-surface rounded-full border px-5 py-2 text-sm font-semibold"
         >
           Ke beranda
         </Link>

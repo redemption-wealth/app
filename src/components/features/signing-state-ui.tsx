@@ -73,14 +73,16 @@ export function SigningStateUI() {
         className="flex flex-col items-center gap-4 text-center"
       >
         {isError ? (
-          <div className="bg-error-container text-on-error-container flex h-10 w-10 items-center justify-center rounded-full text-xl font-bold">
+          <div className="bg-error-container text-error flex h-12 w-12 items-center justify-center rounded-full text-xl font-bold">
             !
           </div>
         ) : (
-          <div className="border-primary h-10 w-10 animate-spin rounded-full border-2 border-t-transparent" />
+          <div className="border-primary h-12 w-12 animate-spin rounded-full border-[3px] border-t-transparent" />
         )}
         <div className="space-y-1">
-          <h2 className="font-display text-lg font-bold">{copy.title}</h2>
+          <h2 className="font-display text-on-surface text-lg font-bold">
+            {copy.title}
+          </h2>
           <p className="text-on-surface-variant text-sm">{copy.subtitle}</p>
           {error ? <p className="text-error mt-2 text-xs">{error}</p> : null}
         </div>
@@ -89,7 +91,7 @@ export function SigningStateUI() {
           <button
             type="button"
             onClick={reset}
-            className="bg-primary text-on-primary rounded-full px-5 py-2 text-sm font-semibold"
+            className="bg-primary rounded-full px-5 py-2 text-sm font-semibold text-white"
           >
             Tutup
           </button>

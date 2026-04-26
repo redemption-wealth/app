@@ -25,7 +25,9 @@ export default function HistoryPage() {
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
-      <h1 className="font-display text-2xl font-bold">Riwayat Redemption</h1>
+      <h1 className="font-display text-on-surface text-2xl font-bold">
+        Riwayat Redemption
+      </h1>
 
       <div className="flex gap-2 overflow-x-auto pb-1">
         {FILTERS.map((f) => (
@@ -35,8 +37,8 @@ export default function HistoryPage() {
             onClick={() => setFilter(f.value)}
             className={`rounded-full px-4 py-2 text-sm font-medium whitespace-nowrap transition-colors ${
               filter === f.value
-                ? "bg-primary text-on-primary"
-                : "bg-surface-container-lowest text-on-surface-variant hover:bg-tertiary-container hover:text-on-tertiary-container"
+                ? "bg-primary text-white"
+                : "border-border text-on-surface-variant hover:border-surface-container-highest hover:bg-surface border bg-white"
             }`}
           >
             {f.label}
@@ -49,12 +51,12 @@ export default function HistoryPage() {
           {Array.from({ length: 4 }).map((_, i) => (
             <div
               key={i}
-              className="bg-surface-container-lowest h-24 animate-pulse rounded-[var(--radius-lg)] p-4"
+              className="border-border h-24 animate-pulse rounded-[var(--radius-lg)] border bg-white p-4"
             />
           ))}
         </div>
       ) : error ? (
-        <div className="bg-error-container text-on-error-container flex items-center justify-between rounded-[var(--radius-md)] p-4 text-sm">
+        <div className="bg-error-container text-error flex items-center justify-between rounded-[var(--radius-lg)] p-4 text-sm">
           <span>Gagal memuat riwayat.</span>
           <button
             type="button"
@@ -67,7 +69,7 @@ export default function HistoryPage() {
           </button>
         </div>
       ) : redemptions.length === 0 ? (
-        <div className="bg-surface-container-lowest space-y-3 rounded-[var(--radius-lg)] p-8 text-center">
+        <div className="border-border space-y-3 rounded-[var(--radius-lg)] border bg-white p-8 text-center">
           <p className="text-on-surface-variant text-sm">
             {filter === "all"
               ? "Belum ada riwayat redemption."
@@ -76,7 +78,7 @@ export default function HistoryPage() {
           {filter === "all" ? (
             <Link
               href="/merchants"
-              className="bg-primary text-on-primary inline-flex items-center rounded-full px-4 py-2 text-sm font-semibold"
+              className="bg-primary inline-flex items-center rounded-full px-4 py-2 text-sm font-semibold text-white"
             >
               Jelajahi merchant
             </Link>

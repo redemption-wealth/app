@@ -91,7 +91,7 @@ export default function LoginPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="nama@email.com"
                 required
-                className="bg-surface-container-high text-on-surface placeholder:text-outline focus:bg-surface-container-lowest focus:ring-primary mt-2 w-full rounded-[var(--radius-md)] px-4 py-3 transition-colors focus:ring-2 focus:outline-none"
+                className="focus:border-primary focus:ring-primary border-border bg-surface text-on-surface placeholder:text-outline-variant mt-2 w-full rounded-[var(--radius-md)] border px-4 py-3 transition-colors focus:bg-white focus:ring-2 focus:outline-none"
               />
             </div>
 
@@ -100,7 +100,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isLoading || !email}
-              className="from-primary to-primary-container text-on-primary font-display w-full rounded-full bg-gradient-to-r py-4 text-lg font-bold disabled:opacity-50"
+              className="font-display from-primary to-primary-container w-full rounded-full bg-gradient-to-r py-4 text-lg font-bold text-white disabled:opacity-50"
             >
               {isLoading ? "Mengirim..." : "Kirim Kode OTP"}
             </button>
@@ -122,7 +122,7 @@ export default function LoginPage() {
                 placeholder="123456"
                 required
                 maxLength={6}
-                className="bg-surface-container-high text-on-surface placeholder:text-outline focus:bg-surface-container-lowest focus:ring-primary mt-2 w-full rounded-[var(--radius-md)] px-4 py-3 text-center font-mono text-2xl tracking-[0.5em] transition-colors focus:ring-2 focus:outline-none"
+                className="focus:border-primary focus:ring-primary border-border bg-surface text-on-surface placeholder:text-outline-variant mt-2 w-full rounded-[var(--radius-md)] border px-4 py-3 text-center font-mono text-2xl tracking-[0.5em] transition-colors focus:bg-white focus:ring-2 focus:outline-none"
               />
             </div>
 
@@ -131,7 +131,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isLoading || otp.length < 6}
-              className="from-primary to-primary-container text-on-primary font-display w-full rounded-full bg-gradient-to-r py-4 text-lg font-bold disabled:opacity-50"
+              className="font-display from-primary to-primary-container w-full rounded-full bg-gradient-to-r py-4 text-lg font-bold text-white disabled:opacity-50"
             >
               {isLoading ? "Verifikasi..." : "Masuk"}
             </button>

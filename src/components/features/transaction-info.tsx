@@ -31,9 +31,9 @@ export function TransactionInfo({ txHash }: TransactionInfoProps) {
   const explorer = EXPLORERS[env.NEXT_PUBLIC_CHAIN];
 
   return (
-    <div className="bg-surface-container space-y-2 rounded-[var(--radius-md)] p-3 text-sm">
+    <div className="border-border space-y-2 rounded-[var(--radius-lg)] border bg-white p-4 text-sm">
       <div className="flex items-center justify-between gap-2">
-        <span className="text-on-surface-variant text-xs tracking-wide uppercase">
+        <span className="text-outline text-[10px] font-semibold tracking-wide uppercase">
           Hash Transaksi
         </span>
         <button
@@ -44,7 +44,9 @@ export function TransactionInfo({ txHash }: TransactionInfoProps) {
           {copied ? "Copied" : "Copy"}
         </button>
       </div>
-      <p className="font-mono text-xs break-all">{truncateAddress(txHash)}</p>
+      <p className="text-on-surface font-mono text-xs break-all">
+        {truncateAddress(txHash)}
+      </p>
       <a
         href={`${explorer.base}/tx/${txHash}`}
         target="_blank"

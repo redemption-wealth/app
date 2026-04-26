@@ -42,8 +42,8 @@ export default function VoucherDetailPage({
     return (
       <div className="mx-auto max-w-2xl space-y-6">
         <div className="bg-surface-container h-8 w-1/2 animate-pulse rounded" />
-        <div className="bg-surface-container-lowest space-y-4 rounded-[var(--radius-lg)] p-6">
-          <div className="bg-surface-container h-48 animate-pulse rounded-[var(--radius-md)]" />
+        <div className="border-border space-y-4 rounded-[var(--radius-lg)] border bg-white p-6">
+          <div className="bg-surface-container-low h-48 animate-pulse rounded-[var(--radius-md)]" />
           <div className="bg-surface-container h-6 w-3/4 animate-pulse rounded" />
           <div className="bg-surface-container h-4 w-1/2 animate-pulse rounded" />
         </div>
@@ -111,9 +111,11 @@ export default function VoucherDetailPage({
           </Link>
         ) : null}
         <div className="flex items-start justify-between gap-4">
-          <h1 className="font-display text-2xl font-bold">{voucher.title}</h1>
+          <h1 className="font-display text-on-surface text-2xl font-bold">
+            {voucher.title}
+          </h1>
           {isBogo ? (
-            <span className="bg-tertiary text-on-tertiary inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold tracking-wide uppercase">
+            <span className="bg-success-container text-on-success-container inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold tracking-wide uppercase">
               BOGO {voucher.qrPerSlot}x
             </span>
           ) : null}
@@ -125,12 +127,10 @@ export default function VoucherDetailPage({
         ) : null}
       </div>
 
-      <section className="bg-surface-container-lowest space-y-4 rounded-[var(--radius-lg)] p-6">
+      <section className="border-border space-y-4 rounded-[var(--radius-lg)] border bg-white p-6">
         <div>
-          <p className="text-on-surface-variant text-xs tracking-wide uppercase">
-            Harga
-          </p>
-          <p className="font-display text-3xl font-bold">
+          <p className="text-outline text-xs tracking-wide uppercase">Harga</p>
+          <p className="font-display text-on-surface text-3xl font-bold">
             {wealthAmount !== null ? formatWealth(wealthAmount) : "—"}{" "}
             <span className="text-on-surface-variant text-base">$WEALTH</span>
           </p>
@@ -139,25 +139,25 @@ export default function VoucherDetailPage({
           </p>
         </div>
 
-        <div className="border-outline-variant space-y-2 border-t pt-4 text-sm">
+        <div className="border-border space-y-2 border-t pt-4 text-sm">
           <FeeRow label="Harga dasar" valueIdr={basePriceIdr} />
           <FeeRow label="Biaya layanan" valueIdr={appFeeIdr} />
           <FeeRow label="Biaya jaringan" valueIdr={gasFeeIdr} />
-          <div className="border-outline-variant flex justify-between border-t pt-2 font-semibold">
+          <div className="border-border text-on-surface flex justify-between border-t pt-2 font-semibold">
             <span>Total</span>
             <span>{formatIdr(totalPriceIdr)}</span>
           </div>
         </div>
 
         {isBogo ? (
-          <div className="bg-tertiary-container text-on-tertiary-container rounded-[var(--radius-md)] p-3 text-xs">
+          <div className="bg-success-container text-on-success-container rounded-[var(--radius-md)] p-3 text-xs">
             Voucher BOGO: satu pembelian memberi{" "}
             <span className="font-semibold">{voucher.qrPerSlot} QR codes</span>{" "}
             yang bisa digunakan bergantian sampai habis.
           </div>
         ) : null}
 
-        <div className="text-on-surface-variant space-y-1 text-xs">
+        <div className="text-outline space-y-1 text-xs">
           <p>Berlaku hingga {formatDate(voucher.expiryDate)}</p>
           <p>
             Sisa stok: {voucher.remainingStock} / {voucher.totalStock}
@@ -166,7 +166,7 @@ export default function VoucherDetailPage({
       </section>
 
       {onWrongChain ? (
-        <div className="bg-error-container text-on-error-container flex items-start gap-2 rounded-[var(--radius-md)] p-3 text-sm">
+        <div className="bg-error-container text-error flex items-start gap-2 rounded-[var(--radius-lg)] p-3 text-sm">
           <span>⚠️</span>
           <div>
             <p className="font-semibold">Jaringan tidak sesuai</p>
@@ -184,7 +184,7 @@ export default function VoucherDetailPage({
         onClick={() => {
           void start(voucher.id);
         }}
-        className="from-primary to-primary-container text-on-primary font-display w-full rounded-full bg-gradient-to-r py-4 text-lg font-bold disabled:cursor-not-allowed disabled:opacity-50"
+        className="font-display from-primary to-primary-container w-full rounded-full bg-gradient-to-r py-4 text-lg font-bold text-white disabled:cursor-not-allowed disabled:opacity-50"
       >
         {redeemDisabledReason ?? "Redeem Voucher"}
       </button>

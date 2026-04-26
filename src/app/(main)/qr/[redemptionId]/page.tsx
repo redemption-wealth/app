@@ -80,11 +80,11 @@ export default function QrDisplayPage({
     <div className="mx-auto max-w-md space-y-5">
       <div className="space-y-1">
         {voucher ? (
-          <p className="text-on-surface-variant text-xs tracking-wide uppercase">
+          <p className="text-outline text-xs tracking-wide uppercase">
             {voucher.merchant?.name ?? "Voucher"}
           </p>
         ) : null}
-        <h1 className="font-display text-xl font-bold">
+        <h1 className="font-display text-on-surface text-xl font-bold">
           {voucher?.title ?? "Redemption"}
         </h1>
         <p className="text-on-surface-variant text-sm">

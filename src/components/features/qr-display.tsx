@@ -12,7 +12,7 @@ export function QrDisplay({ qrCodes }: QrDisplayProps) {
 
   if (qrCodes.length === 0) {
     return (
-      <div className="bg-surface-container text-on-surface-variant rounded-[var(--radius-lg)] p-6 text-center text-sm">
+      <div className="border-border text-on-surface-variant rounded-[var(--radius-lg)] border bg-white p-6 text-center text-sm">
         QR code belum siap. Mohon tunggu sebentar.
       </div>
     );
@@ -24,7 +24,7 @@ export function QrDisplay({ qrCodes }: QrDisplayProps) {
 
   return (
     <div className="space-y-3">
-      <div className="bg-surface flex flex-col items-center gap-3 rounded-[var(--radius-lg)] p-4">
+      <div className="border-border flex flex-col items-center gap-3 rounded-[var(--radius-lg)] border bg-white p-6">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={active.imageUrl}
@@ -36,15 +36,15 @@ export function QrDisplay({ qrCodes }: QrDisplayProps) {
             QR {activeIndex + 1} dari {qrCodes.length}
           </p>
         ) : null}
-        <p className="text-on-surface-variant text-xs">
+        <p className="text-outline text-xs">
           Status:{" "}
           <span
             className={
               active.status === "used"
-                ? "text-on-surface-variant line-through"
+                ? "text-outline-variant line-through"
                 : active.status === "redeemed"
                   ? "text-primary font-semibold"
-                  : "text-tertiary font-semibold"
+                  : "text-on-success-container font-semibold"
             }
           >
             {active.status === "used"

@@ -19,18 +19,20 @@ export default function ProfilePage() {
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
-      <h1 className="font-display text-2xl font-bold">Profil</h1>
+      <h1 className="font-display text-on-surface text-2xl font-bold">
+        Profil
+      </h1>
 
-      <section className="bg-surface-container-lowest space-y-5 rounded-[var(--radius-lg)] p-6">
+      <section className="border-border space-y-5 rounded-[var(--radius-lg)] border bg-white p-6">
         <div>
-          <label className="text-on-surface-variant text-[10px] font-bold tracking-widest uppercase">
+          <label className="text-outline text-[10px] font-bold tracking-widest uppercase">
             Email
           </label>
           <p className="text-on-surface mt-1 break-all">{email ?? "-"}</p>
         </div>
 
         <div className="space-y-2">
-          <label className="text-on-surface-variant text-[10px] font-bold tracking-widest uppercase">
+          <label className="text-outline text-[10px] font-bold tracking-widest uppercase">
             Wallet Address
           </label>
           {walletAddress ? (
@@ -49,7 +51,7 @@ export default function ProfilePage() {
           void handleLogout();
         }}
         disabled={loggingOut}
-        className="bg-surface-container-highest text-secondary font-display w-full rounded-full py-4 font-bold disabled:opacity-60"
+        className="font-display border-border text-error hover:bg-error-container w-full rounded-full border bg-white py-4 font-bold transition-colors disabled:opacity-60"
       >
         {loggingOut ? "Keluar..." : "Logout"}
       </button>

@@ -46,16 +46,16 @@ export function Modal({
           type="button"
           aria-label="Tutup"
           onClick={onClose}
-          className="absolute inset-0 cursor-default bg-black/60"
+          className="absolute inset-0 cursor-default bg-black/50"
         />
       ) : (
-        <div aria-hidden="true" className="absolute inset-0 bg-black/60" />
+        <div aria-hidden="true" className="absolute inset-0 bg-black/50" />
       )}
       <div
         role="dialog"
         aria-modal="true"
         aria-label={ariaLabel}
-        className="bg-surface relative w-full max-w-md rounded-[var(--radius-xl)] p-6 shadow-xl"
+        className="relative w-full max-w-md rounded-[var(--radius-lg)] bg-white p-6 shadow-[var(--shadow-modal)]"
       >
         {children}
       </div>

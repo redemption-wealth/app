@@ -37,14 +37,14 @@ export default function MerchantDetailPage({
       </Link>
 
       {merchantLoading ? (
-        <div className="bg-surface-container-lowest h-48 animate-pulse rounded-[var(--radius-lg)] p-6" />
+        <div className="border-border h-48 animate-pulse rounded-[var(--radius-lg)] border bg-white p-6" />
       ) : merchantError || !merchant ? (
-        <div className="bg-error-container text-on-error-container rounded-[var(--radius-md)] p-4 text-sm">
+        <div className="bg-error-container text-error rounded-[var(--radius-lg)] p-4 text-sm">
           Gagal memuat merchant.
         </div>
       ) : (
-        <section className="bg-surface-container-lowest flex items-start gap-4 rounded-[var(--radius-lg)] p-6">
-          <div className="bg-surface-container flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-[var(--radius-md)]">
+        <section className="border-border flex items-start gap-4 rounded-[var(--radius-lg)] border bg-white p-6">
+          <div className="bg-surface-container-low flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-[var(--radius-md)]">
             {merchant.logoUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
@@ -59,7 +59,9 @@ export default function MerchantDetailPage({
             )}
           </div>
           <div className="min-w-0">
-            <h1 className="font-display text-2xl font-bold">{merchant.name}</h1>
+            <h1 className="font-display text-on-surface text-2xl font-bold">
+              {merchant.name}
+            </h1>
             {merchant.category?.name ? (
               <p className="text-on-surface-variant mt-1 text-xs">
                 {merchant.category.name}
@@ -75,18 +77,20 @@ export default function MerchantDetailPage({
       )}
 
       <section className="space-y-4">
-        <h2 className="font-display text-xl font-bold">Voucher</h2>
+        <h2 className="font-display text-on-surface text-xl font-bold">
+          Voucher
+        </h2>
         {vouchersLoading ? (
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             {Array.from({ length: 4 }).map((_, i) => (
               <div
                 key={i}
-                className="bg-surface-container-lowest h-32 animate-pulse rounded-[var(--radius-lg)] p-6"
+                className="border-border h-32 animate-pulse rounded-[var(--radius-lg)] border bg-white p-6"
               />
             ))}
           </div>
         ) : vouchersError ? (
-          <div className="bg-error-container text-on-error-container flex items-center justify-between rounded-[var(--radius-md)] p-4 text-sm">
+          <div className="bg-error-container text-error flex items-center justify-between rounded-[var(--radius-lg)] p-4 text-sm">
             <span>Gagal memuat voucher.</span>
             <button
               type="button"
@@ -99,7 +103,7 @@ export default function MerchantDetailPage({
             </button>
           </div>
         ) : vouchers.length === 0 ? (
-          <div className="bg-surface-container-lowest rounded-[var(--radius-lg)] p-8 text-center">
+          <div className="border-border rounded-[var(--radius-lg)] border bg-white p-8 text-center">
             <p className="text-on-surface-variant text-sm">
               Belum ada voucher untuk merchant ini.
             </p>

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import type { Merchant } from "@/lib/schemas/merchant";
+import { CategoryTile } from "@/components/shared/category-tile";
 
 interface MerchantCardProps {
   merchant: Merchant;
@@ -11,9 +12,9 @@ export function MerchantCard({ merchant }: MerchantCardProps) {
   return (
     <Link
       href={`/merchants/${merchant.id}`}
-      className="bg-surface-container-lowest hover:bg-surface-container flex flex-col gap-2 rounded-[var(--radius-lg)] p-4 transition-colors"
+      className="border-border hover:border-surface-container-highest flex flex-col gap-2 rounded-[var(--radius-lg)] border bg-white p-4 transition-all hover:-translate-y-0.5 hover:shadow-sm"
     >
-      <div className="bg-surface-container flex aspect-square w-full items-center justify-center overflow-hidden rounded-[var(--radius-md)]">
+      <div className="flex aspect-square w-full items-center justify-center overflow-hidden rounded-[var(--radius-md)]">
         {merchant.logoUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -22,13 +23,11 @@ export function MerchantCard({ merchant }: MerchantCardProps) {
             className="h-full w-full object-cover"
           />
         ) : (
-          <span className="font-display text-on-surface-variant text-3xl font-bold">
-            {merchant.name.charAt(0)}
-          </span>
+          <CategoryTile name={merchant.name} size={80} />
         )}
       </div>
       <div>
-        <h4 className="font-display line-clamp-1 text-sm font-bold">
+        <h4 className="font-display text-on-surface line-clamp-1 text-sm font-bold">
           {merchant.name}
         </h4>
         {merchant.category?.name ? (

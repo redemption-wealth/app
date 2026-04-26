@@ -23,7 +23,7 @@ export default function OnboardingDepositPage() {
         <span className="text-primary inline-block text-xs font-semibold tracking-wider uppercase">
           Langkah Awal
         </span>
-        <h1 className="font-display text-3xl font-bold">
+        <h1 className="font-display text-on-surface text-3xl font-bold">
           Mari isi saldo $WEALTH Anda
         </h1>
         <p className="text-on-surface-variant text-sm">
@@ -33,7 +33,7 @@ export default function OnboardingDepositPage() {
         </p>
       </header>
 
-      <section className="from-primary to-primary-container text-on-primary space-y-1 rounded-[var(--radius-xl)] bg-gradient-to-br p-6">
+      <section className="from-on-primary-container to-primary space-y-1 rounded-[var(--radius-xl)] bg-gradient-to-br p-6 text-white">
         <p className="text-xs tracking-wide uppercase opacity-80">
           Saldo Saat Ini
         </p>
