@@ -24,7 +24,7 @@ export default function MerchantsPage() {
         Merchant
       </h1>
 
-      <div className="flex gap-2 overflow-x-auto pb-2">
+      <div className="scrollbar-hide flex gap-2 overflow-x-auto pb-2">
         <CategoryChip
           label="Semua"
           active={categoryId === undefined}
@@ -92,7 +92,7 @@ function CategoryChip({
     <button
       type="button"
       onClick={onClick}
-      className={`rounded-full px-4 py-2 text-sm font-medium whitespace-nowrap transition-colors ${
+      className={`rounded-full px-4 py-2 text-sm font-medium whitespace-nowrap capitalize transition-colors ${
         active
           ? "bg-primary text-white"
           : "border-border text-on-surface-variant hover:border-surface-container-highest hover:bg-surface border bg-white"

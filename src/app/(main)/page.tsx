@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { BalanceCard } from "@/components/features/balance-card";
 import { VoucherCard } from "@/components/features/voucher-card";
+import { QuickActionChips } from "@/components/shared/quick-action-chips";
 import { useAuth } from "@/hooks/use-auth";
 import { useRedemptions } from "@/hooks/use-redemptions";
 import { useVouchers } from "@/hooks/use-vouchers";
@@ -14,7 +15,8 @@ const ONBOARDING_DISMISSED_KEY = "onboarding-deposit-dismissed";
 
 export default function HomePage() {
   const router = useRouter();
-  const { walletAddress } = useAuth();
+  const { walletAddress, email } = useAuth();
+  const displayName = email ? email.split("@")[0] : null;
   const { rawBalance, isLoading: balanceLoading } =
     useWealthBalance(walletAddress);
   const { data: redemptions, isLoading: redemptionsLoading } = useRedemptions({
@@ -46,8 +48,21 @@ export default function HomePage() {
   const vouchers = voucherList?.vouchers ?? [];
 
   return (
-    <div className="mx-auto max-w-2xl space-y-8 md:max-w-7xl">
+    <div className="mx-auto max-w-2xl space-y-6 md:max-w-7xl">
+      <div>
+        {displayName ? (
+          <p className="text-on-surface-variant text-sm font-medium">
+            Halo, {displayName} 👋
+          </p>
+        ) : null}
+        <h2 className="font-display text-on-surface mt-1 text-xl font-bold">
+          Mau tukar apa hari ini?
+        </h2>
+      </div>
+
       <BalanceCard />
+
+      <QuickActionChips />
 
       <section>
         <div className="mb-4 flex items-center justify-between">

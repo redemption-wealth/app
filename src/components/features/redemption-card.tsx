@@ -23,6 +23,7 @@ const STATUS_LABELS: Record<Redemption["status"], string> = {
 
 export function RedemptionCard({ redemption }: RedemptionCardProps) {
   const merchantName = redemption.voucher?.merchant?.name ?? "Merchant";
+  const merchantLogoUrl = redemption.voucher?.merchant?.logoUrl;
 
   return (
     <Link
@@ -30,7 +31,16 @@ export function RedemptionCard({ redemption }: RedemptionCardProps) {
       className="border-border hover:border-surface-container-highest block rounded-[var(--radius-lg)] border bg-white p-4 transition-all hover:-translate-y-0.5 hover:shadow-sm"
     >
       <div className="flex items-start gap-3">
-        <CategoryTile name={merchantName} size={44} />
+        {merchantLogoUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={merchantLogoUrl}
+            alt={merchantName}
+            className="h-11 w-11 shrink-0 rounded-[var(--radius-sm)] object-cover"
+          />
+        ) : (
+          <CategoryTile name={merchantName} size={44} />
+        )}
         <div className="min-w-0 flex-1">
           <div className="flex items-start justify-between gap-2">
             <div className="min-w-0">
