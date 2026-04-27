@@ -16,13 +16,19 @@ export default function MerchantsPage() {
     error: merchantsError,
     refetch: refetchMerchants,
   } = useMerchants(categoryId ? { categoryId, limit: 24 } : { limit: 24 });
-  const { data: voucherData, isLoading: vouchersLoading } = useVouchers(
-    categoryId ? { category: categoryId, limit: 24 } : { limit: 24 },
-  );
+  const { data: voucherData, isLoading: vouchersLoading } = useVouchers({
+    limit: 100,
+  });
 
   const categories = categoryData?.data ?? [];
   const merchants = merchantData?.merchants ?? [];
-  const vouchers = voucherData?.vouchers ?? [];
+  const allVouchers = voucherData?.vouchers ?? [];
+
+  // Filter vouchers by displayed merchants when a category is selected
+  const merchantIds = new Set(merchants.map((m) => m.id));
+  const vouchers = categoryId
+    ? allVouchers.filter((v) => merchantIds.has(v.merchantId))
+    : allVouchers;
 
   const summaryParts: string[] = [];
   if (!merchantsLoading) summaryParts.push(`${merchants.length} merchant`);
@@ -117,7 +123,7 @@ export default function MerchantsPage() {
         ) : vouchers.length === 0 ? (
           <div className="border-border rounded-[var(--radius-lg)] border bg-white p-8 text-center">
             <p className="text-on-surface-variant text-sm">
-              Belum ada voucher pada kategori ini.
+              Belum ada voucher tersedia.
             </p>
           </div>
         ) : (
