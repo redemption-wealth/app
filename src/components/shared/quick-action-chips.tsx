@@ -33,7 +33,7 @@ export function QuickActionChips() {
           className="border-border flex flex-col items-center gap-2 rounded-[var(--radius-lg)] border bg-white p-3 transition-all hover:-translate-y-0.5 hover:shadow-sm"
         >
           <svg
-            className="text-primary h-6 w-6"
+            className="text-on-surface h-6 w-6"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
