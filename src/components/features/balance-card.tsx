@@ -36,19 +36,23 @@ export function BalanceCard({ variant = "full" }: BalanceCardProps) {
         style={{ background: "var(--color-primary-container)" }}
       />
 
-      <p className="relative text-sm opacity-80">Saldo $WEALTH</p>
-      <h2
-        className="font-display relative mt-2 font-bold tracking-tight"
-        style={{
-          fontSize: isCompact ? "28px" : "40px",
-          letterSpacing: "-0.02em",
-        }}
-      >
-        {formatWealth(balance)}
-      </h2>
-      <p className="relative mt-1 text-sm opacity-80">$WEALTH</p>
+      <p className="relative text-xs font-semibold tracking-wider uppercase opacity-80">
+        Saldo $WEALTH
+      </p>
+      <div className="relative mt-2 flex items-baseline gap-2">
+        <h2
+          className="font-display font-bold tracking-tight"
+          style={{
+            fontSize: isCompact ? "28px" : "40px",
+            letterSpacing: "-0.02em",
+          }}
+        >
+          {formatWealth(balance)}
+        </h2>
+        <span className="text-base font-semibold opacity-80">$WEALTH</span>
+      </div>
       {balanceIdr !== null ? (
-        <p className="relative mt-2 text-xs opacity-80">
+        <p className="relative mt-1 text-xs opacity-80">
           ≈ {formatIdr(balanceIdr)}
         </p>
       ) : null}
