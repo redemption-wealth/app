@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { use } from "react";
+import { use, useEffect } from "react";
 import { useChainId } from "wagmi";
 import { SigningStateUI } from "@/components/features/signing-state-ui";
 import { usePrice } from "@/hooks/use-price";
@@ -35,6 +35,14 @@ export default function VoucherDetailPage({
   const { data: priceData } = usePrice();
   const { start } = useRedeemVoucher();
   const isSigning = useRedemptionFlow(selectIsSigning);
+
+  // Reset stale redemption flow when navigating to a different voucher
+  useEffect(() => {
+    const store = useRedemptionFlow.getState();
+    if (store.state !== "idle" && store.voucherId !== id) {
+      store.reset();
+    }
+  }, [id]);
 
   const onWrongChain = chainId !== TARGET_CHAIN_ID;
 

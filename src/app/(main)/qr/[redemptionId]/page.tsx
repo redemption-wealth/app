@@ -8,6 +8,7 @@ import { TransactionInfo } from "@/components/features/transaction-info";
 import { useReconcileRedemption } from "@/hooks/use-reconcile-redemption";
 import { useRedemption } from "@/hooks/use-redemption";
 import { formatDate, formatWealth } from "@/lib/utils";
+import { useRedemptionFlow } from "@/stores/redemption-flow";
 
 function pickPollingInterval(
   status: string | undefined,
@@ -27,6 +28,11 @@ export default function QrDisplayPage({
 }) {
   const { redemptionId } = use(params);
   const [now, setNow] = useState(() => Date.now());
+
+  // Reset redemption flow store — user has landed on QR page, flow is complete
+  useEffect(() => {
+    useRedemptionFlow.getState().reset();
+  }, []);
 
   useEffect(() => {
     const id = setInterval(() => setNow(Date.now()), 5000);
