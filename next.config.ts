@@ -21,6 +21,7 @@ const connectSrc = [
   alchemyDomains,
   ethereumRpcDomains,
   walletConnectDomains,
+  r2Domains,
 ]
   .filter(Boolean)
   .join(" ");

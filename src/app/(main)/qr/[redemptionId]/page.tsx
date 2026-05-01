@@ -57,7 +57,7 @@ export default function QrDisplayPage({
 
   if (isLoading) {
     return (
-      <div className="mx-auto max-w-md space-y-6">
+      <div className="mx-auto max-w-md space-y-6 md:max-w-2xl">
         <div className="bg-surface-container h-8 w-1/2 animate-pulse rounded" />
         <div className="bg-surface-container mx-auto h-64 w-64 animate-pulse rounded-[var(--radius-lg)]" />
       </div>
@@ -66,7 +66,7 @@ export default function QrDisplayPage({
 
   if (error || !redemption) {
     return (
-      <div className="mx-auto max-w-md space-y-4 text-center">
+      <div className="mx-auto max-w-md space-y-4 text-center md:max-w-2xl">
         <h1 className="font-display text-2xl font-bold">
           Redemption tidak ditemukan
         </h1>
@@ -83,7 +83,7 @@ export default function QrDisplayPage({
   }
 
   return (
-    <div className="mx-auto max-w-md space-y-5">
+    <div className="mx-auto max-w-md space-y-5 md:max-w-2xl">
       <div className="space-y-1">
         {voucher ? (
           <p className="text-outline text-xs tracking-wide uppercase">
