@@ -39,5 +39,7 @@ export function isVoucherValid(voucher: {
     typeof voucher.expiryDate === "string"
       ? new Date(voucher.expiryDate)
       : voucher.expiryDate;
+  // expiryDate is a date (not datetime) — voucher is valid through the entire expiry day
+  end.setUTCHours(23, 59, 59, 999);
   return voucher.isActive && voucher.remainingStock > 0 && end >= now;
 }
