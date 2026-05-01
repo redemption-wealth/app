@@ -21,6 +21,7 @@ export function formatDate(dateStr: string | Date): string {
     day: "numeric",
     month: "short",
     year: "numeric",
+    timeZone: "Asia/Jakarta",
   }).format(date);
 }
 
@@ -39,7 +40,7 @@ export function isVoucherValid(voucher: {
     typeof voucher.expiryDate === "string"
       ? new Date(voucher.expiryDate)
       : voucher.expiryDate;
-  // expiryDate is a date (not datetime) — voucher is valid through the entire expiry day
-  end.setUTCHours(23, 59, 59, 999);
+  // Voucher is valid through the entire expiry day in WIB (UTC+7)
+  end.setUTCHours(16, 59, 59, 999); // 23:59:59 WIB = 16:59:59 UTC
   return voucher.isActive && voucher.remainingStock > 0 && end >= now;
 }
