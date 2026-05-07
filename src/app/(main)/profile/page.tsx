@@ -1,12 +1,43 @@
 "use client";
 
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { BalanceCard } from "@/components/features/balance-card";
 import { CopyableAddress } from "@/components/shared/copyable-address";
 import { useAuth } from "@/hooks/use-auth";
+import { useRequireAuth } from "@/hooks/use-require-auth";
 
 export default function ProfilePage() {
+  const authStatus = useRequireAuth();
   const { email, walletAddress, logout } = useAuth();
   const [loggingOut, setLoggingOut] = useState(false);
+
+  if (authStatus === "loading") {
+    return (
+      <div className="flex min-h-[40vh] items-center justify-center">
+        <div className="border-primary h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" />
+      </div>
+    );
+  }
+
+  if (authStatus === "timeout") {
+    return (
+      <div className="mx-auto max-w-md space-y-4 text-center">
+        <p className="text-on-surface text-sm">
+          Gagal memuat autentikasi. Coba refresh halaman.
+        </p>
+        <Button
+          type="button"
+          onClick={() => window.location.reload()}
+          className="rounded-full"
+        >
+          Reload
+        </Button>
+      </div>
+    );
+  }
+
+  if (authStatus === "redirecting") return null;
 
   const handleLogout = async () => {
     setLoggingOut(true);
@@ -22,6 +53,17 @@ export default function ProfilePage() {
       <h1 className="font-display text-on-surface text-2xl font-bold">
         Profil
       </h1>
+
+      <BalanceCard />
+
+      <section className="border-border space-y-3 rounded-[var(--radius-lg)] border bg-white p-6">
+        <h2 className="font-display text-on-surface text-lg font-bold">
+          Riwayat Transaksi
+        </h2>
+        <p className="text-on-surface-variant text-sm">
+          Memuat riwayat redemption…
+        </p>
+      </section>
 
       <section className="border-border space-y-5 rounded-[var(--radius-lg)] border bg-white p-6">
         <div>
@@ -45,16 +87,17 @@ export default function ProfilePage() {
         </div>
       </section>
 
-      <button
+      <Button
         type="button"
+        variant="outline"
         onClick={() => {
           void handleLogout();
         }}
         disabled={loggingOut}
-        className="font-display border-border text-error hover:bg-error-container w-full rounded-full border bg-white py-4 font-bold transition-colors disabled:opacity-60"
+        className="font-display border-border text-error hover:bg-error-container w-full rounded-full border bg-white py-6 font-bold"
       >
         {loggingOut ? "Keluar..." : "Logout"}
-      </button>
+      </Button>
     </div>
   );
 }
