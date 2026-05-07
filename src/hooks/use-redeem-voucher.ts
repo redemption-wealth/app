@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useCallback } from "react";
-import { parseUnits, UserRejectedRequestError } from "viem";
+import { parseUnits } from "viem";
 import { useWriteContract } from "wagmi";
 import { useAuth } from "@/hooks/use-auth";
 import { useWalletHealth } from "@/hooks/use-wallet-health";
@@ -11,6 +11,7 @@ import { endpoints } from "@/lib/api/endpoints";
 import { env } from "@/lib/env";
 import { ERC20_ABI } from "@/lib/erc20-abi";
 import { telemetry } from "@/lib/telemetry";
+import { isUserReject } from "@/lib/wallet-errors";
 import type {
   RedeemVoucherResponse,
   Redemption,
@@ -22,18 +23,6 @@ const SUBMIT_TX_BASE_DELAY_MS = 500;
 
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-function isUserReject(err: unknown): boolean {
-  if (err instanceof UserRejectedRequestError) return true;
-  if (err && typeof err === "object") {
-    const e = err as { code?: number; name?: string; message?: string };
-    if (e.code === 4001) return true;
-    if (e.name === "UserRejectedRequestError") return true;
-    if (typeof e.message === "string" && /user rejected/i.test(e.message))
-      return true;
-  }
-  return false;
 }
 
 async function submitTxWithRetry(

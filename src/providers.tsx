@@ -2,25 +2,14 @@
 
 import { PrivyProvider } from "@privy-io/react-auth";
 import { WagmiProvider } from "@privy-io/wagmi";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useState } from "react";
+import { QueryClientProvider } from "@tanstack/react-query";
 import { env } from "@/lib/env";
+import { getQueryClient } from "@/lib/get-query-client";
 import { wagmiConfig, targetChain } from "@/lib/wagmi";
 import { AccessTokenBridge } from "@/components/layout/access-token-bridge";
 
 export function Providers({ children }: { children: React.ReactNode }) {
-  const [queryClient] = useState(
-    () =>
-      new QueryClient({
-        defaultOptions: {
-          queries: {
-            staleTime: 60 * 1000,
-            retry: 1,
-            refetchOnWindowFocus: false,
-          },
-        },
-      }),
-  );
+  const queryClient = getQueryClient();
 
   return (
     <PrivyProvider

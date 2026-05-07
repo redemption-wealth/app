@@ -11,6 +11,8 @@ export function useWealthBalance(walletAddress?: string | null) {
   const {
     data: balance,
     isLoading,
+    isSuccess,
+    isError,
     refetch,
   } = useReadContract({
     address: tokenAddress,
@@ -29,6 +31,8 @@ export function useWealthBalance(walletAddress?: string | null) {
     balance: formatted,
     rawBalance: balance as bigint | undefined,
     isLoading,
+    isSuccess,
+    isError,
     refetch,
   };
 }
