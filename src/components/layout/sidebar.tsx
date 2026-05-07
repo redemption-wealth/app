@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { HeaderAuthControls } from "@/components/layout/header-auth-controls";
 import { useAuth } from "@/hooks/use-auth";
 import { targetChain } from "@/lib/wagmi";
 
@@ -37,16 +38,19 @@ export function Sidebar() {
 
   return (
     <aside className="border-border sticky top-0 hidden h-screen w-[248px] flex-col border-r bg-white md:flex">
-      <div className="p-6">
-        <Image
-          src="/image/logo.png"
-          alt="WEALTH"
-          width={160}
-          height={52}
-          priority
-          className="h-9 w-auto"
-        />
-        <p className="text-outline mt-2 text-xs">Redemption App</p>
+      <div className="flex items-start justify-between gap-3 p-6">
+        <div>
+          <Image
+            src="/image/logo.png"
+            alt="WEALTH"
+            width={160}
+            height={52}
+            priority
+            className="h-9 w-auto"
+          />
+          <p className="text-outline mt-2 text-xs">Redemption App</p>
+        </div>
+        <HeaderAuthControls />
       </div>
 
       <nav className="flex-1 px-3">
