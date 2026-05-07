@@ -4,7 +4,7 @@ import { usePrivy, useLoginWithEmail } from "@privy-io/react-auth";
 import { useCallback } from "react";
 
 export function useAuth() {
-  const { user, authenticated, ready, logout } = usePrivy();
+  const { user, authenticated, ready, login, logout } = usePrivy();
   const { sendCode, loginWithCode } = useLoginWithEmail();
 
   const handleLogout = useCallback(async () => {
@@ -15,6 +15,7 @@ export function useAuth() {
     user,
     authenticated,
     ready,
+    login,
     sendCode,
     loginWithCode,
     logout: handleLogout,

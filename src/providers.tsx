@@ -7,6 +7,7 @@ import { env } from "@/lib/env";
 import { getQueryClient } from "@/lib/get-query-client";
 import { wagmiConfig, targetChain } from "@/lib/wagmi";
 import { AccessTokenBridge } from "@/components/layout/access-token-bridge";
+import { UserSyncBridge } from "@/components/layout/user-sync-bridge";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const queryClient = getQueryClient();
@@ -34,6 +35,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
       <QueryClientProvider client={queryClient}>
         <WagmiProvider config={wagmiConfig}>
           <AccessTokenBridge />
+          <UserSyncBridge />
           {children}
         </WagmiProvider>
       </QueryClientProvider>
