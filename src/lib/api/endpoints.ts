@@ -20,10 +20,6 @@ import {
   type RedeemVoucherRequest,
   type RedemptionStatus,
 } from "@/lib/schemas/redemption";
-import {
-  transactionListResponseSchema,
-  type TransactionType,
-} from "@/lib/schemas/transaction";
 import { priceResponseSchema } from "@/lib/schemas/price";
 import { userSyncResponseSchema } from "@/lib/schemas/user";
 
@@ -140,18 +136,6 @@ export const endpoints = {
       method: "POST",
       path: `/api/redemptions/${id}/reconcile`,
       responseSchema: reconcileRedemptionResponseSchema,
-      requireAuth: true,
-    }),
-
-  // ── Transactions ──────────────────────────────────────────────────────────
-  listTransactions: (
-    params: PaginationParams & { type?: TransactionType } = {},
-  ) =>
-    apiRequest({
-      method: "GET",
-      path: "/api/transactions",
-      query: params as QueryParams,
-      responseSchema: transactionListResponseSchema,
       requireAuth: true,
     }),
 

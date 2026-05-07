@@ -7,6 +7,7 @@ import { RedemptionStatusBanner } from "@/components/features/redemption-status-
 import { TransactionInfo } from "@/components/features/transaction-info";
 import { useReconcileRedemption } from "@/hooks/use-reconcile-redemption";
 import { useRedemption } from "@/hooks/use-redemption";
+import { useRequireAuth } from "@/hooks/use-require-auth";
 import { formatDate, formatWealth } from "@/lib/utils";
 import { useRedemptionFlow } from "@/stores/redemption-flow";
 
@@ -27,6 +28,7 @@ export default function QrDisplayPage({
   params: Promise<{ redemptionId: string }>;
 }) {
   const { redemptionId } = use(params);
+  const authStatus = useRequireAuth();
   const [now, setNow] = useState(() => Date.now());
 
   // Reset redemption flow store — user has landed on QR page, flow is complete
@@ -55,6 +57,33 @@ export default function QrDisplayPage({
   const qrCodes = useMemo(() => redemption?.qrCodes ?? [], [redemption]);
   const elapsedMs = redemption ? now - Date.parse(redemption.createdAt) : 0;
 
+  if (authStatus === "loading") {
+    return (
+      <div className="flex min-h-[40vh] items-center justify-center">
+        <div className="border-primary h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" />
+      </div>
+    );
+  }
+
+  if (authStatus === "timeout") {
+    return (
+      <div className="mx-auto max-w-md space-y-4 text-center">
+        <p className="text-on-surface text-sm">
+          Gagal memuat autentikasi. Coba refresh halaman.
+        </p>
+        <button
+          type="button"
+          onClick={() => window.location.reload()}
+          className="bg-primary inline-flex items-center rounded-full px-4 py-2 text-sm font-semibold text-white"
+        >
+          Reload
+        </button>
+      </div>
+    );
+  }
+
+  if (authStatus === "redirecting") return null;
+
   if (isLoading) {
     return (
       <div className="mx-auto max-w-md space-y-6 md:max-w-2xl">
@@ -75,8 +104,8 @@ export default function QrDisplayPage({
             ? error.message
             : "Redemption ini tidak tersedia."}
         </p>
-        <Link href="/history" className="text-primary text-sm font-semibold">
-          ← Lihat riwayat
+        <Link href="/profile" className="text-primary text-sm font-semibold">
+          ← Lihat profil
         </Link>
       </div>
     );
@@ -127,8 +156,8 @@ export default function QrDisplayPage({
       ) : null}
 
       <div className="flex justify-between pt-2 text-sm">
-        <Link href="/history" className="text-on-surface-variant font-semibold">
-          ← Riwayat
+        <Link href="/profile" className="text-on-surface-variant font-semibold">
+          ← Profil
         </Link>
         <Link href="/merchants" className="text-primary font-semibold">
           Lihat merchant lain →

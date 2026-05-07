@@ -51,7 +51,7 @@ function existingRedemptionNeedsSignature(redemption: Redemption): boolean {
 
 export function useRedeemVoucher() {
   const router = useRouter();
-  const { walletAddress } = useAuth();
+  const { walletAddress, login } = useAuth();
   const { writeContractAsync } = useWriteContract();
   const walletHealth = useWalletHealth();
   const initiateStore = useRedemptionFlow((s) => s.initiate);
@@ -169,7 +169,7 @@ export function useRedeemVoucher() {
         }
         if (err instanceof ApiError && err.isUnauthorized) {
           reset();
-          router.push("/auth/login");
+          login();
           return;
         }
         telemetry.capture(err, { scope: "redeem-voucher", voucherId });
@@ -178,7 +178,7 @@ export function useRedeemVoucher() {
         setError(message);
       }
     },
-    [initiateStore, reset, router, setError, signAndSubmit, transition],
+    [initiateStore, login, reset, router, setError, signAndSubmit, transition],
   );
 
   const retry = useCallback(

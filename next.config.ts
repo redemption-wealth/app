@@ -49,6 +49,14 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "*.r2.cloudflarestorage.com" },
     ],
   },
+  async redirects() {
+    return [
+      { source: "/wallet", destination: "/profile", permanent: true },
+      { source: "/history", destination: "/profile", permanent: true },
+      { source: "/auth/login", destination: "/", permanent: true },
+      { source: "/onboarding/deposit", destination: "/", permanent: true },
+    ];
+  },
   async headers() {
     return [
       {

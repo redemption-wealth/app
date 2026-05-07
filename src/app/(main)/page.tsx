@@ -1,49 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-import { BalanceCard } from "@/components/features/balance-card";
 import { VoucherCard } from "@/components/features/voucher-card";
-import { QuickActionChips } from "@/components/shared/quick-action-chips";
 import { useAuth } from "@/hooks/use-auth";
-import { useRedemptions } from "@/hooks/use-redemptions";
 import { useVouchers } from "@/hooks/use-vouchers";
-import { useWealthBalance } from "@/hooks/use-wealth-balance";
-
-const ONBOARDING_DISMISSED_KEY = "onboarding-deposit-dismissed";
 
 export default function HomePage() {
-  const router = useRouter();
-  const { walletAddress, email } = useAuth();
-  const displayName = email ? email.split("@")[0] : null;
-  const { rawBalance, isLoading: balanceLoading } =
-    useWealthBalance(walletAddress);
-  const { data: redemptions, isLoading: redemptionsLoading } = useRedemptions({
-    limit: 1,
-  });
+  const { authenticated, email } = useAuth();
+  const displayName = authenticated && email ? email.split("@")[0] : null;
   const {
     data: voucherList,
     isLoading: vouchersLoading,
     error: vouchersError,
     refetch,
   } = useVouchers({ limit: 6 });
-
-  useEffect(() => {
-    if (balanceLoading || redemptionsLoading) return;
-
-    const dismissed =
-      typeof window !== "undefined" &&
-      window.localStorage.getItem(ONBOARDING_DISMISSED_KEY) === "1";
-    if (dismissed) return;
-
-    const hasBalance = typeof rawBalance === "bigint" && rawBalance > BigInt(0);
-    const hasHistory = (redemptions?.redemptions?.length ?? 0) > 0;
-
-    if (!hasBalance && !hasHistory) {
-      router.replace("/onboarding/deposit");
-    }
-  }, [balanceLoading, redemptionsLoading, rawBalance, redemptions, router]);
 
   const vouchers = voucherList?.vouchers ?? [];
 
@@ -59,10 +29,6 @@ export default function HomePage() {
           Mau tukar apa hari ini?
         </h2>
       </div>
-
-      <BalanceCard />
-
-      <QuickActionChips />
 
       <section>
         <div className="mb-4 flex items-center justify-between">
