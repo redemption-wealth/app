@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { BalanceCard } from "@/components/features/balance-card";
+import { TxHistoryCardList } from "@/components/features/tx-history-card-list";
+import { TxHistoryTable } from "@/components/features/tx-history-table";
 import { CopyableAddress } from "@/components/shared/copyable-address";
 import { useAuth } from "@/hooks/use-auth";
 import { useRequireAuth } from "@/hooks/use-require-auth";
@@ -56,13 +58,16 @@ export default function ProfilePage() {
 
       <BalanceCard />
 
-      <section className="border-border space-y-3 rounded-[var(--radius-lg)] border bg-white p-6">
+      <section className="border-border space-y-4 rounded-[var(--radius-lg)] border bg-white p-6">
         <h2 className="font-display text-on-surface text-lg font-bold">
           Riwayat Transaksi
         </h2>
-        <p className="text-on-surface-variant text-sm">
-          Memuat riwayat redemption…
-        </p>
+        <div className="md:hidden">
+          <TxHistoryCardList />
+        </div>
+        <div className="hidden md:block">
+          <TxHistoryTable />
+        </div>
       </section>
 
       <section className="border-border space-y-5 rounded-[var(--radius-lg)] border bg-white p-6">

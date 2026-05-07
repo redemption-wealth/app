@@ -6,6 +6,5 @@ export const queryKeys = {
   voucher: (id: string) => ["voucher", id] as const,
   redemptions: (params?: object) => ["redemptions", params ?? {}] as const,
   redemption: (id: string) => ["redemption", id] as const,
-  transactions: (params?: object) => ["transactions", params ?? {}] as const,
   price: () => ["price", "wealth"] as const,
 } as const;
