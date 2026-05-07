@@ -3,20 +3,18 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { DepositModal } from "@/components/features/deposit-modal";
+import { WithdrawModal } from "@/components/features/withdraw-modal";
 import { useAuth } from "@/hooks/use-auth";
 import { usePrice } from "@/hooks/use-price";
 import { useWealthBalance } from "@/hooks/use-wealth-balance";
 import { formatIdr, formatWealth } from "@/lib/utils";
 
-interface BalanceCardProps {
-  onWithdrawClick?: () => void;
-}
-
-export function BalanceCard({ onWithdrawClick }: BalanceCardProps) {
+export function BalanceCard() {
   const { walletAddress } = useAuth();
   const { balance } = useWealthBalance(walletAddress);
   const { data: priceData } = usePrice();
   const [depositOpen, setDepositOpen] = useState(false);
+  const [withdrawOpen, setWithdrawOpen] = useState(false);
 
   const balanceIdr = priceData ? Number(balance) * priceData.priceIdr : null;
 
@@ -69,8 +67,7 @@ export function BalanceCard({ onWithdrawClick }: BalanceCardProps) {
             variant="outline"
             size="sm"
             className="rounded-full border-white/40 bg-transparent text-white hover:bg-white/10 hover:text-white"
-            onClick={onWithdrawClick}
-            disabled={!onWithdrawClick}
+            onClick={() => setWithdrawOpen(true)}
           >
             Withdraw
           </Button>
@@ -78,6 +75,7 @@ export function BalanceCard({ onWithdrawClick }: BalanceCardProps) {
       </section>
 
       <DepositModal open={depositOpen} onOpenChange={setDepositOpen} />
+      <WithdrawModal open={withdrawOpen} onOpenChange={setWithdrawOpen} />
     </>
   );
 }
