@@ -1,121 +1,67 @@
-"use client";
+import { cache } from "react";
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
+import { endpoints } from "@/lib/api/endpoints";
+import { getQueryClient } from "@/lib/get-query-client";
+import { queryKeys } from "@/hooks/query-keys";
+import { ApiError } from "@/lib/api/errors";
+import { MerchantDetailInteractive } from "./merchant-detail-client";
 
-import Link from "next/link";
-import { use } from "react";
-import { VoucherCard } from "@/components/features/voucher-card";
-import { useMerchant } from "@/hooks/use-merchant";
-import { useVouchers } from "@/hooks/use-vouchers";
+const fetchMerchant = cache(async (id: string) => {
+  try {
+    return await endpoints.getMerchant(id);
+  } catch (err) {
+    if (err instanceof ApiError && err.status === 404) return null;
+    throw err;
+  }
+});
 
-export default function MerchantDetailPage({
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const data = await fetchMerchant(id);
+  const merchant = data?.merchant;
+  if (!merchant) {
+    return { title: "Merchant tidak ditemukan — Wealth Redemption" };
+  }
+  const title = `${merchant.name} — Wealth Redemption`;
+  const description =
+    merchant.description ??
+    `Voucher dari ${merchant.name} di marketplace Wealth.`;
+  const images = merchant.logoUrl
+    ? [{ url: merchant.logoUrl, alt: merchant.name }]
+    : [{ url: "/image/w-logo.png", alt: "Wealth Redemption" }];
+  return {
+    title,
+    description,
+    openGraph: { title, description, images },
+  };
+}
+
+export default async function MerchantDetailPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const { id } = use(params);
-  const {
-    data: merchantData,
-    isLoading: merchantLoading,
-    error: merchantError,
-  } = useMerchant(id);
-  const {
-    data: voucherData,
-    isLoading: vouchersLoading,
-    error: vouchersError,
-    refetch,
-  } = useVouchers({ merchantId: id, limit: 24 });
+  const { id } = await params;
+  const data = await fetchMerchant(id);
+  if (!data) notFound();
 
-  const merchant = merchantData?.merchant;
-  const vouchers = voucherData?.vouchers ?? [];
+  const queryClient = getQueryClient();
+  queryClient.setQueryData(queryKeys.merchant(id), data);
+
+  await queryClient.prefetchQuery({
+    queryKey: queryKeys.vouchers({ merchantId: id, limit: 24 }),
+    queryFn: () => endpoints.listVouchers({ merchantId: id, limit: 24 }),
+  });
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6 md:max-w-4xl">
-      <Link
-        href="/merchants"
-        className="text-primary inline-flex items-center gap-1 text-sm font-semibold"
-      >
-        ← Kembali
-      </Link>
-
-      {merchantLoading ? (
-        <div className="border-border h-48 animate-pulse rounded-[var(--radius-lg)] border bg-white p-6" />
-      ) : merchantError || !merchant ? (
-        <div className="bg-error-container text-error rounded-[var(--radius-lg)] p-4 text-sm">
-          Gagal memuat merchant.
-        </div>
-      ) : (
-        <section className="border-border flex items-start gap-4 rounded-[var(--radius-lg)] border bg-white p-6">
-          <div className="bg-surface-container-low flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-[var(--radius-md)]">
-            {merchant.logoUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={merchant.logoUrl}
-                alt={merchant.name}
-                className="h-full w-full object-cover"
-              />
-            ) : (
-              <span className="font-display text-on-surface-variant text-3xl font-bold">
-                {merchant.name.charAt(0)}
-              </span>
-            )}
-          </div>
-          <div className="min-w-0">
-            <h1 className="font-display text-on-surface text-2xl font-bold">
-              {merchant.name}
-            </h1>
-            {merchant.category?.name ? (
-              <p className="text-on-surface-variant mt-1 text-xs">
-                {merchant.category.name}
-              </p>
-            ) : null}
-            {merchant.description ? (
-              <p className="text-on-surface-variant mt-2 text-sm">
-                {merchant.description}
-              </p>
-            ) : null}
-          </div>
-        </section>
-      )}
-
-      <section className="space-y-4">
-        <h2 className="font-display text-on-surface text-xl font-bold">
-          Voucher
-        </h2>
-        {vouchersLoading ? (
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <div
-                key={i}
-                className="border-border h-32 animate-pulse rounded-[var(--radius-lg)] border bg-white p-6"
-              />
-            ))}
-          </div>
-        ) : vouchersError ? (
-          <div className="bg-error-container text-error flex items-center justify-between rounded-[var(--radius-lg)] p-4 text-sm">
-            <span>Gagal memuat voucher.</span>
-            <button
-              type="button"
-              onClick={() => {
-                void refetch();
-              }}
-              className="font-semibold underline"
-            >
-              Coba lagi
-            </button>
-          </div>
-        ) : vouchers.length === 0 ? (
-          <div className="border-border rounded-[var(--radius-lg)] border bg-white p-8 text-center">
-            <p className="text-on-surface-variant text-sm">
-              Belum ada voucher untuk merchant ini.
-            </p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            {vouchers.map((v) => (
-              <VoucherCard key={v.id} voucher={v} />
-            ))}
-          </div>
-        )}
-      </section>
-    </div>
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <MerchantDetailInteractive id={id} />
+    </HydrationBoundary>
   );
 }
