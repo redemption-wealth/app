@@ -51,7 +51,7 @@ function existingRedemptionNeedsSignature(redemption: Redemption): boolean {
 
 export function useRedeemVoucher() {
   const router = useRouter();
-  const { walletAddress, login } = useAuth();
+  const { walletAddress, login, authenticated } = useAuth();
   const { writeContractAsync } = useWriteContract();
   const walletHealth = useWalletHealth();
   const initiateStore = useRedemptionFlow((s) => s.initiate);
@@ -102,6 +102,9 @@ export function useRedeemVoucher() {
 
   const start = useCallback(
     async (voucherId: string) => {
+      // Defense-in-depth: button-level guard is primary; this prevents
+      // a redemption attempt if the consumer skips the button gating.
+      if (!authenticated) return;
       try {
         initiateStore(voucherId);
 
@@ -178,7 +181,16 @@ export function useRedeemVoucher() {
         setError(message);
       }
     },
-    [initiateStore, login, reset, router, setError, signAndSubmit, transition],
+    [
+      authenticated,
+      initiateStore,
+      login,
+      reset,
+      router,
+      setError,
+      signAndSubmit,
+      transition,
+    ],
   );
 
   const retry = useCallback(

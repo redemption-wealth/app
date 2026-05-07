@@ -1,13 +1,22 @@
 "use client";
 
 import Link from "next/link";
-import { use, useEffect } from "react";
+import { use, useEffect, useState } from "react";
 import { useChainId } from "wagmi";
+import { parseUnits } from "viem";
+import { Button } from "@/components/ui/button";
+import { DepositModal } from "@/components/features/deposit-modal";
 import { SigningStateUI } from "@/components/features/signing-state-ui";
+import { useAuth } from "@/hooks/use-auth";
 import { usePrice } from "@/hooks/use-price";
 import { useRedeemVoucher } from "@/hooks/use-redeem-voucher";
 import { useVoucher } from "@/hooks/use-voucher";
+import { useWealthBalance } from "@/hooks/use-wealth-balance";
 import { TARGET_CHAIN_ID, targetChain } from "@/lib/wagmi";
+import {
+  deriveRedeemState,
+  type RedeemState,
+} from "@/lib/voucher-redeem-state";
 import {
   formatDate,
   formatIdr,
@@ -15,6 +24,7 @@ import {
   isVoucherValid,
 } from "@/lib/utils";
 import { selectIsSigning, useRedemptionFlow } from "@/stores/redemption-flow";
+import { useUserSync } from "@/stores/user-sync";
 
 function subtractDecimalStrings(...values: string[]): string {
   const total = values.reduce((acc, v, i) => {
@@ -24,6 +34,12 @@ function subtractDecimalStrings(...values: string[]): string {
   return Number.isFinite(total) ? total.toFixed(2) : "0";
 }
 
+function toWealthAmountWei(amount: number | null): bigint | null {
+  if (amount === null || !Number.isFinite(amount)) return null;
+  // Round to 18-decimal precision to avoid floating point drift.
+  return parseUnits(amount.toFixed(18), 18);
+}
+
 export default function VoucherDetailPage({
   params,
 }: {
@@ -31,10 +47,14 @@ export default function VoucherDetailPage({
 }) {
   const { id } = use(params);
   const chainId = useChainId();
+  const { authenticated, login, walletAddress } = useAuth();
+  const userSynced = useUserSync((s) => s.isSynced);
   const { data, isLoading, error } = useVoucher(id);
   const { data: priceData } = usePrice();
+  const { rawBalance } = useWealthBalance(walletAddress);
   const { start } = useRedeemVoucher();
   const isSigning = useRedemptionFlow(selectIsSigning);
+  const [depositOpen, setDepositOpen] = useState(false);
 
   // Reset stale redemption flow when navigating to a different voucher
   useEffect(() => {
@@ -95,17 +115,67 @@ export default function VoucherDetailPage({
     priceData && priceData.priceIdr > 0
       ? totalPriceIdr / priceData.priceIdr
       : null;
+  const requiredAmountWei = toWealthAmountWei(wealthAmount);
 
-  const canRedeem = isValid && !onWrongChain && !isSigning;
-  const redeemDisabledReason = !isValid
-    ? voucher.remainingStock <= 0
-      ? "Stok habis"
-      : "Voucher tidak aktif"
-    : onWrongChain
-      ? "Pindah ke jaringan Ethereum untuk melanjutkan"
-      : isSigning
-        ? "Memproses..."
-        : null;
+  const redeemState: RedeemState = deriveRedeemState({
+    authenticated,
+    userSynced,
+    onWrongChain,
+    rawBalance,
+    requiredAmount: requiredAmountWei,
+  });
+
+  const cta = (() => {
+    if (!isValid) {
+      return {
+        label:
+          voucher.remainingStock <= 0 ? "Stok habis" : "Voucher tidak aktif",
+        disabled: true,
+        onClick: undefined,
+      } as const;
+    }
+    if (isSigning) {
+      return {
+        label: "Memproses…",
+        disabled: true,
+        onClick: undefined,
+      } as const;
+    }
+    switch (redeemState) {
+      case "unauth":
+        return {
+          label: "Login untuk Redeem",
+          disabled: false,
+          onClick: () => login(),
+        } as const;
+      case "wrong-chain":
+        return {
+          label: `Pindah ke ${targetChain.name}`,
+          disabled: true,
+          onClick: undefined,
+        } as const;
+      case "loading":
+        return {
+          label: "Memuat saldo…",
+          disabled: true,
+          onClick: undefined,
+        } as const;
+      case "insufficient":
+        return {
+          label: "Saldo Tidak Cukup, Deposit",
+          disabled: false,
+          onClick: () => setDepositOpen(true),
+        } as const;
+      case "redeem":
+        return {
+          label: "Redeem Voucher",
+          disabled: false,
+          onClick: () => {
+            void start(voucher.id);
+          },
+        } as const;
+    }
+  })();
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
@@ -173,31 +243,31 @@ export default function VoucherDetailPage({
         </div>
       </section>
 
-      {onWrongChain ? (
+      {redeemState === "wrong-chain" ? (
         <div className="bg-error-container text-error flex items-start gap-2 rounded-[var(--radius-lg)] p-3 text-sm">
           <span>⚠️</span>
           <div>
             <p className="font-semibold">Jaringan tidak sesuai</p>
             <p className="text-xs opacity-90">
               Pindah ke {targetChain.name} (chain ID {TARGET_CHAIN_ID}) di
-              dompet Anda sebelum melakukan redemption.
+              dompet kamu sebelum melakukan redemption.
             </p>
           </div>
         </div>
       ) : null}
 
-      <button
+      <Button
         type="button"
-        disabled={!canRedeem}
-        onClick={() => {
-          void start(voucher.id);
-        }}
-        className="font-display from-primary to-primary-container w-full rounded-full bg-gradient-to-r py-4 text-lg font-bold text-white disabled:cursor-not-allowed disabled:opacity-50"
+        size="lg"
+        disabled={cta.disabled}
+        onClick={cta.onClick}
+        className="font-display from-primary to-primary-container w-full rounded-full bg-gradient-to-r py-6 text-lg font-bold text-white"
       >
-        {redeemDisabledReason ?? "Redeem Voucher"}
-      </button>
+        {cta.label}
+      </Button>
 
       <SigningStateUI />
+      <DepositModal open={depositOpen} onOpenChange={setDepositOpen} />
     </div>
   );
 }
