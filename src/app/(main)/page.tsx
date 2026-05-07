@@ -1,19 +1,77 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { DepositModal } from "@/components/features/deposit-modal";
+import { HomeDepositCta } from "@/components/features/home-deposit-cta";
 import { VoucherCard } from "@/components/features/voucher-card";
+import { WelcomeOnboardingSheet } from "@/components/features/welcome-onboarding-sheet";
 import { useAuth } from "@/hooks/use-auth";
+import { useRedemptions } from "@/hooks/use-redemptions";
 import { useVouchers } from "@/hooks/use-vouchers";
+import { useWealthBalance } from "@/hooks/use-wealth-balance";
+import { shouldShowWelcomeSheet, welcomeFlagKey } from "@/lib/welcome-trigger";
 
 export default function HomePage() {
-  const { authenticated, email } = useAuth();
+  const { authenticated, ready, email, user, walletAddress } = useAuth();
   const displayName = authenticated && email ? email.split("@")[0] : null;
+  const userId = user?.id ?? null;
+
+  const balance = useWealthBalance(walletAddress);
+  const redemptions = useRedemptions({
+    limit: 1,
+    enabled: authenticated,
+  });
   const {
     data: voucherList,
     isLoading: vouchersLoading,
     error: vouchersError,
     refetch,
   } = useVouchers({ limit: 6 });
+
+  const [welcomeOpen, setWelcomeOpen] = useState(false);
+  const [depositOpen, setDepositOpen] = useState(false);
+  const [welcomeFlagPresent, setWelcomeFlagPresent] = useState(true);
+
+  // Read flag once we know which user we're dealing with.
+  useEffect(() => {
+    if (!authenticated || !userId || typeof window === "undefined") {
+      setWelcomeFlagPresent(true);
+      return;
+    }
+    const stored =
+      window.localStorage.getItem(welcomeFlagKey(userId)) === "true";
+    setWelcomeFlagPresent(stored);
+  }, [authenticated, userId]);
+
+  const triggerWelcome = shouldShowWelcomeSheet({
+    ready,
+    authenticated,
+    balanceIsSuccess: balance.isSuccess,
+    rawBalance: balance.rawBalance,
+    redemptionsIsSuccess: redemptions.isSuccess,
+    redemptionTotal: redemptions.data?.pagination.total,
+    flagSet: welcomeFlagPresent,
+  });
+
+  useEffect(() => {
+    if (triggerWelcome) setWelcomeOpen(true);
+  }, [triggerWelcome]);
+
+  const handleWelcomeClose = (next: boolean) => {
+    setWelcomeOpen(next);
+    if (!next && userId && typeof window !== "undefined") {
+      window.localStorage.setItem(welcomeFlagKey(userId), "true");
+      setWelcomeFlagPresent(true);
+    }
+  };
+
+  const showHomeDepositCta =
+    authenticated &&
+    welcomeFlagPresent &&
+    balance.isSuccess &&
+    balance.rawBalance !== undefined &&
+    balance.rawBalance === 0n;
 
   const vouchers = voucherList?.vouchers ?? [];
 
@@ -29,6 +87,10 @@ export default function HomePage() {
           Mau tukar apa hari ini?
         </h2>
       </div>
+
+      {showHomeDepositCta ? (
+        <HomeDepositCta onDeposit={() => setDepositOpen(true)} />
+      ) : null}
 
       <section>
         <div className="mb-4 flex items-center justify-between">
@@ -82,6 +144,13 @@ export default function HomePage() {
           </div>
         )}
       </section>
+
+      <WelcomeOnboardingSheet
+        open={welcomeOpen}
+        onOpenChange={handleWelcomeClose}
+        onDeposit={() => setDepositOpen(true)}
+      />
+      <DepositModal open={depositOpen} onOpenChange={setDepositOpen} />
     </div>
   );
 }
