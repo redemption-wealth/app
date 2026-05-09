@@ -11,13 +11,11 @@ export const merchantSchema = z.object({
   name: z.string(),
   logoUrl: z.string().nullable(),
   description: z.string().nullable(),
-  categoryId: z.string(),
+  category: z.string(), // Backend returns category as string (e.g., "kuliner"), not categoryId
   isActive: z.boolean(),
-  createdBy: z.string().nullable(),
   deletedAt: z.string().nullable(),
   createdAt: z.string(),
   updatedAt: z.string(),
-  category: embeddedCategorySchema.optional(),
 });
 
 export type Merchant = z.infer<typeof merchantSchema>;

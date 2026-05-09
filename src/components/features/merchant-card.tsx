@@ -30,9 +30,9 @@ export function MerchantCard({ merchant }: MerchantCardProps) {
         <h4 className="font-display text-on-surface line-clamp-1 text-sm font-bold capitalize">
           {merchant.name}
         </h4>
-        {merchant.category?.name ? (
+        {merchant.category ? (
           <p className="text-on-surface-variant line-clamp-1 text-xs capitalize">
-            {merchant.category.name}
+            {merchant.category}
           </p>
         ) : null}
       </div>

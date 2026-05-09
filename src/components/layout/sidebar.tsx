@@ -3,9 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { HeaderAuthControls } from "@/components/layout/header-auth-controls";
 import { useAuth } from "@/hooks/use-auth";
-import { targetChain } from "@/lib/wagmi";
+import { useSidebar } from "@/stores/sidebar";
 
 type NavItem = {
   href: string;
@@ -35,11 +34,25 @@ function isNavActive(pathname: string, href: string): boolean {
 export function Sidebar() {
   const pathname = usePathname();
   const { authenticated } = useAuth();
+  const isCollapsed = useSidebar((s) => s.isCollapsed);
 
   return (
-    <aside className="border-border sticky top-0 hidden h-screen w-[248px] flex-col border-r bg-white md:flex">
-      <div className="flex items-start justify-between gap-3 p-6">
-        <div>
+    <aside
+      className={`border-border sticky top-0 hidden h-screen flex-col border-r bg-white transition-all duration-300 md:flex ${
+        isCollapsed ? "w-[72px]" : "w-[248px]"
+      }`}
+    >
+      <div className="flex items-center p-6">
+        {isCollapsed ? (
+          <Image
+            src="/image/w-logo.png"
+            alt="W"
+            width={32}
+            height={32}
+            priority
+            className="h-8 w-8"
+          />
+        ) : (
           <Image
             src="/image/logo.png"
             alt="WEALTH"
@@ -48,9 +61,7 @@ export function Sidebar() {
             priority
             className="h-9 w-auto"
           />
-          <p className="text-outline mt-2 text-xs">Redemption App</p>
-        </div>
-        <HeaderAuthControls />
+        )}
       </div>
 
       <nav className="flex-1 px-3">
@@ -61,14 +72,15 @@ export function Sidebar() {
             <Link
               key={item.href}
               href={item.href}
-              className={`relative mb-1 flex items-center gap-3 rounded-[var(--radius-md)] px-4 py-3 transition-colors ${
+              className={`mb-1 flex items-center gap-3 rounded-full px-4 py-3 transition-colors ${
                 isActive
-                  ? "text-primary bg-surface-active font-bold"
+                  ? "bg-primary/10 text-primary font-semibold"
                   : "text-on-surface-variant hover:bg-surface-hover"
               }`}
+              title={isCollapsed ? item.label : undefined}
             >
               <svg
-                className="h-5 w-5"
+                className="h-5 w-5 flex-shrink-0"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -80,21 +92,11 @@ export function Sidebar() {
                   d={iconMap[item.icon]}
                 />
               </svg>
-              <span className="text-sm">{item.label}</span>
-              {isActive ? (
-                <span className="bg-primary absolute right-2 h-1.5 w-1.5 rounded-full" />
-              ) : null}
+              {!isCollapsed && <span className="text-sm">{item.label}</span>}
             </Link>
           );
         })}
       </nav>
-
-      <div className="border-border border-t px-6 py-4">
-        <div className="text-on-surface-variant flex items-center gap-2 text-xs">
-          <span className="bg-success h-2 w-2 rounded-full" />
-          <span>{targetChain.name}</span>
-        </div>
-      </div>
     </aside>
   );
 }

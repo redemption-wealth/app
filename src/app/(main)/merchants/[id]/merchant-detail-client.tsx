@@ -56,9 +56,9 @@ export function MerchantDetailInteractive({ id }: { id: string }) {
             <h1 className="font-display text-on-surface text-2xl font-bold">
               {merchant.name}
             </h1>
-            {merchant.category?.name ? (
-              <p className="text-on-surface-variant mt-1 text-xs">
-                {merchant.category.name}
+            {merchant.category ? (
+              <p className="text-on-surface-variant mt-1 text-xs capitalize">
+                {merchant.category}
               </p>
             ) : null}
             {merchant.description ? (

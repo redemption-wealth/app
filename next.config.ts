@@ -57,6 +57,18 @@ const nextConfig: NextConfig = {
       { source: "/onboarding/deposit", destination: "/", permanent: true },
     ];
   },
+  async rewrites() {
+    // Proxy API requests to backend production (bypass CORS in development)
+    // Always proxy to production backend, regardless of NEXT_PUBLIC_API_BASE_URL
+    const productionBackend = "https://backend-wealthcrypto-fund.vercel.app";
+
+    return [
+      {
+        source: "/api/:path*",
+        destination: `${productionBackend}/api/:path*`,
+      },
+    ];
+  },
   async headers() {
     return [
       {
