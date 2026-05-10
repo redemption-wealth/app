@@ -201,10 +201,7 @@ function RelatedVouchersSection({
     RELATED_LIMIT,
   );
 
-  const sectionTitle =
-    fromMerchant.length > 0
-      ? "Voucher lain dari merchant ini"
-      : "Jelajahi voucher";
+  const sectionTitle = "Voucher lain";
 
   if (list.length === 0) return null;
 

@@ -60,7 +60,7 @@ export function WithdrawModal({ open, onOpenChange }: WithdrawModalProps) {
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="flex max-h-[85vh] flex-col gap-0 p-0 sm:max-w-lg">
+      <DialogContent className="flex max-h-[85vh] flex-col gap-0 overflow-hidden p-0 sm:max-w-lg">
         <DialogHeader className="border-border space-y-1 border-b px-5 py-4 pr-12 sm:px-6 sm:py-5">
           <DialogTitle className="font-display text-on-surface text-lg font-bold md:text-xl">
             Tarik $WEALTH
