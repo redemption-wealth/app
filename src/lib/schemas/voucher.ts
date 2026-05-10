@@ -12,12 +12,22 @@ export const voucherSchema = z.object({
   totalStock: z.number().int(),
   remainingStock: z.number().int(),
   basePrice: decimalStringSchema,
-  appFeeRate: decimalStringSchema,
-  gasFeeAmount: decimalStringSchema,
-  totalPrice: decimalStringSchema,
+  // appFeeRate / gasFeeAmount / totalPrice are computed live by the BE
+  // pricing service and only injected on the public /api/vouchers/:id
+  // and /api/vouchers/ routes. When a voucher is nested inside a
+  // redemption response they are absent, so accept them as optional.
+  appFeeRate: decimalStringSchema.optional(),
+  gasFeeAmount: decimalStringSchema.optional(),
+  totalPrice: decimalStringSchema.optional(),
+  // Snapshot fields exist on the DB row (live-fee-rate refactor kept the
+  // columns for historical pricing) and come back through nested
+  // redemption.voucher payloads. Optional because public voucher
+  // endpoints do not include them after the live-fee migration.
+  appFeeSnapshot: decimalStringSchema.optional(),
+  gasFeeSnapshot: decimalStringSchema.optional(),
   qrPerSlot: z.number().int().positive(),
   isActive: z.boolean(),
-  deletedAt: z.string().nullable(),
+  deletedAt: z.string().nullable().optional(),
   createdAt: z.string(),
   updatedAt: z.string(),
   merchant: merchantSchema.optional(),
