@@ -49,6 +49,31 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "*.r2.cloudflarestorage.com" },
     ],
   },
+  async redirects() {
+    return [
+      { source: "/wallet", destination: "/profile", permanent: true },
+      { source: "/history", destination: "/profile", permanent: true },
+      { source: "/auth/login", destination: "/", permanent: true },
+      { source: "/onboarding/deposit", destination: "/", permanent: true },
+      { source: "/merchants", destination: "/", permanent: true },
+    ];
+  },
+  async rewrites() {
+    // Proxy API requests to backend (bypass CORS in development).
+    // BACKEND_PROXY_URL overrides the default (e.g. http://localhost:3001 for
+    // local-stack testing); falls back to production so existing deploys
+    // behave the same.
+    const backendUrl =
+      process.env.BACKEND_PROXY_URL?.replace(/\/$/, "") ??
+      "https://backend-wealthcrypto-fund.vercel.app";
+
+    return [
+      {
+        source: "/api/:path*",
+        destination: `${backendUrl}/api/:path*`,
+      },
+    ];
+  },
   async headers() {
     return [
       {

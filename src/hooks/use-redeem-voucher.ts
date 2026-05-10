@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useCallback } from "react";
-import { parseUnits, UserRejectedRequestError } from "viem";
+import { parseUnits } from "viem";
 import { useWriteContract } from "wagmi";
 import { useAuth } from "@/hooks/use-auth";
 import { useWalletHealth } from "@/hooks/use-wallet-health";
@@ -11,6 +11,7 @@ import { endpoints } from "@/lib/api/endpoints";
 import { env } from "@/lib/env";
 import { ERC20_ABI } from "@/lib/erc20-abi";
 import { telemetry } from "@/lib/telemetry";
+import { isUserReject } from "@/lib/wallet-errors";
 import type {
   RedeemVoucherResponse,
   Redemption,
@@ -22,18 +23,6 @@ const SUBMIT_TX_BASE_DELAY_MS = 500;
 
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-function isUserReject(err: unknown): boolean {
-  if (err instanceof UserRejectedRequestError) return true;
-  if (err && typeof err === "object") {
-    const e = err as { code?: number; name?: string; message?: string };
-    if (e.code === 4001) return true;
-    if (e.name === "UserRejectedRequestError") return true;
-    if (typeof e.message === "string" && /user rejected/i.test(e.message))
-      return true;
-  }
-  return false;
 }
 
 async function submitTxWithRetry(
@@ -62,7 +51,7 @@ function existingRedemptionNeedsSignature(redemption: Redemption): boolean {
 
 export function useRedeemVoucher() {
   const router = useRouter();
-  const { walletAddress } = useAuth();
+  const { walletAddress, login, authenticated } = useAuth();
   const { writeContractAsync } = useWriteContract();
   const walletHealth = useWalletHealth();
   const initiateStore = useRedemptionFlow((s) => s.initiate);
@@ -113,6 +102,9 @@ export function useRedeemVoucher() {
 
   const start = useCallback(
     async (voucherId: string) => {
+      // Defense-in-depth: button-level guard is primary; this prevents
+      // a redemption attempt if the consumer skips the button gating.
+      if (!authenticated) return;
       try {
         initiateStore(voucherId);
 
@@ -180,7 +172,7 @@ export function useRedeemVoucher() {
         }
         if (err instanceof ApiError && err.isUnauthorized) {
           reset();
-          router.push("/auth/login");
+          login();
           return;
         }
         telemetry.capture(err, { scope: "redeem-voucher", voucherId });
@@ -189,7 +181,16 @@ export function useRedeemVoucher() {
         setError(message);
       }
     },
-    [initiateStore, reset, router, setError, signAndSubmit, transition],
+    [
+      authenticated,
+      initiateStore,
+      login,
+      reset,
+      router,
+      setError,
+      signAndSubmit,
+      transition,
+    ],
   );
 
   const retry = useCallback(

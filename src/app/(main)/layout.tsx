@@ -1,8 +1,5 @@
-import { Sidebar } from "@/components/layout/sidebar";
-import { BottomNav } from "@/components/layout/bottom-nav";
-import { MobileHeader } from "@/components/layout/mobile-header";
-import { AuthGuard } from "@/components/layout/auth-guard";
 import { OfflineBanner } from "@/components/layout/offline-banner";
+import { TopNav } from "@/components/layout/top-nav";
 
 export default function MainLayout({
   children,
@@ -10,18 +7,10 @@ export default function MainLayout({
   children: React.ReactNode;
 }) {
   return (
-    <AuthGuard>
-      <div className="flex h-screen overflow-hidden">
-        <Sidebar />
-        <div className="flex flex-1 flex-col overflow-hidden">
-          <MobileHeader />
-          <main className="flex-1 overflow-y-auto p-4 pb-20 md:p-6 md:pb-6">
-            {children}
-          </main>
-        </div>
-        <BottomNav />
-        <OfflineBanner />
-      </div>
-    </AuthGuard>
+    <div className="flex min-h-screen flex-col">
+      <TopNav />
+      <main className="flex-1">{children}</main>
+      <OfflineBanner />
+    </div>
   );
 }

@@ -1,9 +1,5 @@
 import { apiRequest, type QueryParams } from "./client";
 import {
-  categoryDetailResponseSchema,
-  categoryListResponseSchema,
-} from "@/lib/schemas/category";
-import {
   merchantDetailResponseSchema,
   merchantListResponseSchema,
 } from "@/lib/schemas/merchant";
@@ -20,10 +16,6 @@ import {
   type RedeemVoucherRequest,
   type RedemptionStatus,
 } from "@/lib/schemas/redemption";
-import {
-  transactionListResponseSchema,
-  type TransactionType,
-} from "@/lib/schemas/transaction";
 import { priceResponseSchema } from "@/lib/schemas/price";
 import { userSyncResponseSchema } from "@/lib/schemas/user";
 
@@ -40,21 +32,6 @@ export const endpoints = {
       path: "/api/auth/user-sync",
       responseSchema: userSyncResponseSchema,
       requireAuth: true,
-    }),
-
-  // ── Categories ────────────────────────────────────────────────────────────
-  listCategories: () =>
-    apiRequest({
-      method: "GET",
-      path: "/api/categories",
-      responseSchema: categoryListResponseSchema,
-    }),
-
-  getCategory: (id: string) =>
-    apiRequest({
-      method: "GET",
-      path: `/api/categories/${id}`,
-      responseSchema: categoryDetailResponseSchema,
     }),
 
   // ── Merchants ─────────────────────────────────────────────────────────────
@@ -140,18 +117,6 @@ export const endpoints = {
       method: "POST",
       path: `/api/redemptions/${id}/reconcile`,
       responseSchema: reconcileRedemptionResponseSchema,
-      requireAuth: true,
-    }),
-
-  // ── Transactions ──────────────────────────────────────────────────────────
-  listTransactions: (
-    params: PaginationParams & { type?: TransactionType } = {},
-  ) =>
-    apiRequest({
-      method: "GET",
-      path: "/api/transactions",
-      query: params as QueryParams,
-      responseSchema: transactionListResponseSchema,
       requireAuth: true,
     }),
 

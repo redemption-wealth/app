@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 import { Providers } from "@/providers";
+import { env } from "@/lib/env";
 import "./globals.css";
 
 const inter = Inter({
@@ -15,6 +16,7 @@ const plusJakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(env.NEXT_PUBLIC_APP_URL),
   title: "WEALTH Redemption",
   description: "Redeem $WEALTH tokens for merchant vouchers",
 };

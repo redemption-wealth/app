@@ -1,212 +1,70 @@
-"use client";
+import { cache } from "react";
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
+import { endpoints } from "@/lib/api/endpoints";
+import { getQueryClient } from "@/lib/get-query-client";
+import { queryKeys } from "@/hooks/query-keys";
+import { ApiError } from "@/lib/api/errors";
+import { VoucherDetailInteractive } from "./voucher-detail-client";
 
-import Link from "next/link";
-import { use, useEffect } from "react";
-import { useChainId } from "wagmi";
-import { SigningStateUI } from "@/components/features/signing-state-ui";
-import { usePrice } from "@/hooks/use-price";
-import { useRedeemVoucher } from "@/hooks/use-redeem-voucher";
-import { useVoucher } from "@/hooks/use-voucher";
-import { TARGET_CHAIN_ID, targetChain } from "@/lib/wagmi";
-import {
-  formatDate,
-  formatIdr,
-  formatWealth,
-  isVoucherValid,
-} from "@/lib/utils";
-import { selectIsSigning, useRedemptionFlow } from "@/stores/redemption-flow";
+const fetchVoucher = cache(async (id: string) => {
+  try {
+    return await endpoints.getVoucher(id);
+  } catch (err) {
+    if (err instanceof ApiError && err.status === 404) return null;
+    throw err;
+  }
+});
 
-function subtractDecimalStrings(...values: string[]): string {
-  const total = values.reduce((acc, v, i) => {
-    const num = Number(v);
-    return i === 0 ? num : acc - num;
-  }, 0);
-  return Number.isFinite(total) ? total.toFixed(2) : "0";
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const data = await fetchVoucher(id);
+  const voucher = data?.voucher;
+  if (!voucher) {
+    return { title: "Voucher tidak ditemukan — Wealth Redemption" };
+  }
+  const merchantName = voucher.merchant?.name;
+  const title = merchantName
+    ? `${voucher.title} · ${merchantName} — Wealth Redemption`
+    : `${voucher.title} — Wealth Redemption`;
+  const description =
+    voucher.description ??
+    (merchantName
+      ? `Redeem ${voucher.title} dari ${merchantName} dengan $WEALTH.`
+      : `Redeem ${voucher.title} dengan $WEALTH.`);
+  const images = [{ url: "/image/w-logo.png", alt: voucher.title }];
+  return {
+    title,
+    description,
+    openGraph: { title, description, images },
+  };
 }
 
-export default function VoucherDetailPage({
+export default async function VoucherDetailPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const { id } = use(params);
-  const chainId = useChainId();
-  const { data, isLoading, error } = useVoucher(id);
-  const { data: priceData } = usePrice();
-  const { start } = useRedeemVoucher();
-  const isSigning = useRedemptionFlow(selectIsSigning);
+  const { id } = await params;
+  const data = await fetchVoucher(id);
+  if (!data) notFound();
 
-  // Reset stale redemption flow when navigating to a different voucher
-  useEffect(() => {
-    const store = useRedemptionFlow.getState();
-    if (store.state !== "idle" && store.voucherId !== id) {
-      store.reset();
-    }
-  }, [id]);
+  const queryClient = getQueryClient();
+  queryClient.setQueryData(queryKeys.voucher(id), data);
 
-  const onWrongChain = chainId !== TARGET_CHAIN_ID;
-
-  if (isLoading) {
-    return (
-      <div className="mx-auto max-w-2xl space-y-6">
-        <div className="bg-surface-container h-8 w-1/2 animate-pulse rounded" />
-        <div className="border-border space-y-4 rounded-[var(--radius-lg)] border bg-white p-6">
-          <div className="bg-surface-container-low h-48 animate-pulse rounded-[var(--radius-md)]" />
-          <div className="bg-surface-container h-6 w-3/4 animate-pulse rounded" />
-          <div className="bg-surface-container h-4 w-1/2 animate-pulse rounded" />
-        </div>
-      </div>
-    );
-  }
-
-  if (error || !data?.voucher) {
-    return (
-      <div className="mx-auto max-w-2xl space-y-4">
-        <h1 className="font-display text-2xl font-bold">
-          Voucher tidak ditemukan
-        </h1>
-        <p className="text-on-surface-variant">
-          {error instanceof Error
-            ? error.message
-            : "Voucher ini tidak tersedia."}
-        </p>
-        <Link href="/merchants" className="text-primary text-sm font-semibold">
-          ← Kembali ke merchant
-        </Link>
-      </div>
-    );
-  }
-
-  const voucher = data.voucher;
-  const merchant = voucher.merchant;
-  const isBogo = voucher.qrPerSlot > 1;
-  const isValid = isVoucherValid(voucher);
-  const totalPriceIdr = Number(voucher.totalPrice);
-  const basePriceIdr = Number(voucher.basePrice);
-  const gasFeeIdr = Number(voucher.gasFeeAmount);
-  const appFeeIdr = Number(
-    subtractDecimalStrings(
-      voucher.totalPrice,
-      voucher.basePrice,
-      voucher.gasFeeAmount,
-    ),
-  );
-  const wealthAmount =
-    priceData && priceData.priceIdr > 0
-      ? totalPriceIdr / priceData.priceIdr
-      : null;
-
-  const canRedeem = isValid && !onWrongChain && !isSigning;
-  const redeemDisabledReason = !isValid
-    ? voucher.remainingStock <= 0
-      ? "Stok habis"
-      : "Voucher tidak aktif"
-    : onWrongChain
-      ? "Pindah ke jaringan Ethereum untuk melanjutkan"
-      : isSigning
-        ? "Memproses..."
-        : null;
+  await queryClient.prefetchQuery({
+    queryKey: queryKeys.price(),
+    queryFn: () => endpoints.getWealthPrice(),
+  });
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
-      <div className="space-y-2">
-        {merchant ? (
-          <Link
-            href={`/merchants/${merchant.id}`}
-            className="text-on-surface-variant hover:text-on-surface text-xs font-semibold tracking-wider uppercase"
-          >
-            ← {merchant.name}
-          </Link>
-        ) : null}
-        <div className="flex items-start justify-between gap-4">
-          <h1 className="font-display text-on-surface text-2xl font-bold">
-            {voucher.title}
-          </h1>
-          {isBogo ? (
-            <span className="bg-success-container text-on-success-container inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold tracking-wide uppercase">
-              BOGO {voucher.qrPerSlot}x
-            </span>
-          ) : null}
-        </div>
-        {voucher.description ? (
-          <p className="text-on-surface-variant text-sm">
-            {voucher.description}
-          </p>
-        ) : null}
-      </div>
-
-      <section className="border-border space-y-4 rounded-[var(--radius-lg)] border bg-white p-6">
-        <div>
-          <p className="text-outline text-xs tracking-wide uppercase">Harga</p>
-          <p className="font-display text-on-surface text-3xl font-bold">
-            {wealthAmount !== null ? formatWealth(wealthAmount) : "—"}{" "}
-            <span className="text-on-surface-variant text-base">$WEALTH</span>
-          </p>
-          <p className="text-on-surface-variant text-sm">
-            ≈ {formatIdr(totalPriceIdr)}
-          </p>
-        </div>
-
-        <div className="border-border space-y-2 border-t pt-4 text-sm">
-          <FeeRow label="Harga dasar" valueIdr={basePriceIdr} />
-          <FeeRow label="Biaya layanan" valueIdr={appFeeIdr} />
-          <FeeRow label="Biaya jaringan" valueIdr={gasFeeIdr} />
-          <div className="border-border text-on-surface flex justify-between border-t pt-2 font-semibold">
-            <span>Total</span>
-            <span>{formatIdr(totalPriceIdr)}</span>
-          </div>
-        </div>
-
-        {isBogo ? (
-          <div className="bg-success-container text-on-success-container rounded-[var(--radius-md)] p-3 text-xs">
-            Voucher BOGO: satu pembelian memberi{" "}
-            <span className="font-semibold">{voucher.qrPerSlot} QR codes</span>{" "}
-            yang bisa digunakan bergantian sampai habis.
-          </div>
-        ) : null}
-
-        <div className="text-outline space-y-1 text-xs">
-          <p>Berlaku hingga {formatDate(voucher.expiryDate)}</p>
-          <p>
-            Sisa stok: {voucher.remainingStock} / {voucher.totalStock}
-          </p>
-        </div>
-      </section>
-
-      {onWrongChain ? (
-        <div className="bg-error-container text-error flex items-start gap-2 rounded-[var(--radius-lg)] p-3 text-sm">
-          <span>⚠️</span>
-          <div>
-            <p className="font-semibold">Jaringan tidak sesuai</p>
-            <p className="text-xs opacity-90">
-              Pindah ke {targetChain.name} (chain ID {TARGET_CHAIN_ID}) di
-              dompet Anda sebelum melakukan redemption.
-            </p>
-          </div>
-        </div>
-      ) : null}
-
-      <button
-        type="button"
-        disabled={!canRedeem}
-        onClick={() => {
-          void start(voucher.id);
-        }}
-        className="font-display from-primary to-primary-container w-full rounded-full bg-gradient-to-r py-4 text-lg font-bold text-white disabled:cursor-not-allowed disabled:opacity-50"
-      >
-        {redeemDisabledReason ?? "Redeem Voucher"}
-      </button>
-
-      <SigningStateUI />
-    </div>
-  );
-}
-
-function FeeRow({ label, valueIdr }: { label: string; valueIdr: number }) {
-  return (
-    <div className="text-on-surface-variant flex justify-between">
-      <span>{label}</span>
-      <span>{formatIdr(valueIdr)}</span>
-    </div>
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <VoucherDetailInteractive id={id} />
+    </HydrationBoundary>
   );
 }
