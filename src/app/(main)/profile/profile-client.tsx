@@ -24,7 +24,7 @@ export function ProfileInteractive() {
 
   if (authStatus === "timeout") {
     return (
-      <div className="mx-auto max-w-md space-y-4 text-center">
+      <div className="mx-auto max-w-md space-y-4 px-4 py-12 text-center md:px-8">
         <p className="text-on-surface text-sm">
           Gagal memuat autentikasi. Coba refresh halaman.
         </p>
@@ -51,58 +51,62 @@ export function ProfileInteractive() {
   };
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
-      <h1 className="font-display text-on-surface text-2xl font-bold">
-        Profil
-      </h1>
+    <div className="mx-auto w-full max-w-3xl px-4 py-6 md:px-8 md:py-8">
+      <div className="space-y-6">
+        <h1 className="font-display text-on-surface text-2xl font-bold md:text-3xl">
+          Profil
+        </h1>
 
-      <BalanceCard />
+        <BalanceCard />
 
-      <section className="border-border space-y-4 rounded-[var(--radius-lg)] border bg-white p-6">
-        <h2 className="font-display text-on-surface text-lg font-bold">
-          Riwayat Transaksi
-        </h2>
-        <div className="md:hidden">
-          <TxHistoryCardList />
-        </div>
-        <div className="hidden md:block">
-          <TxHistoryTable />
-        </div>
-      </section>
+        <section className="border-border space-y-4 rounded-[var(--radius-lg)] border bg-white p-5 md:p-6">
+          <h2 className="font-display text-on-surface text-lg font-bold">
+            Riwayat Transaksi
+          </h2>
+          <div className="md:hidden">
+            <TxHistoryCardList />
+          </div>
+          <div className="hidden md:block">
+            <TxHistoryTable />
+          </div>
+        </section>
 
-      <section className="border-border space-y-5 rounded-[var(--radius-lg)] border bg-white p-6">
-        <div>
-          <label className="text-outline text-[10px] font-bold tracking-widest uppercase">
-            Email
-          </label>
-          <p className="text-on-surface mt-1 break-all">{email ?? "-"}</p>
-        </div>
-
-        <div className="space-y-2">
-          <label className="text-outline text-[10px] font-bold tracking-widest uppercase">
-            Wallet Address
-          </label>
-          {walletAddress ? (
-            <CopyableAddress value={walletAddress} truncate={false} />
-          ) : (
-            <p className="text-on-surface-variant text-sm">
-              Dompet belum siap.
+        <section className="border-border space-y-5 rounded-[var(--radius-lg)] border bg-white p-5 md:p-6">
+          <div>
+            <label className="text-on-surface-variant text-[10px] font-bold tracking-widest uppercase">
+              Email
+            </label>
+            <p className="text-on-surface mt-1 text-sm break-all">
+              {email ?? "-"}
             </p>
-          )}
-        </div>
-      </section>
+          </div>
 
-      <Button
-        type="button"
-        variant="outline"
-        onClick={() => {
-          void handleLogout();
-        }}
-        disabled={loggingOut}
-        className="font-display border-border text-error hover:bg-error-container w-full rounded-full border bg-white py-6 font-bold"
-      >
-        {loggingOut ? "Keluar..." : "Logout"}
-      </Button>
+          <div className="space-y-2">
+            <label className="text-on-surface-variant text-[10px] font-bold tracking-widest uppercase">
+              Wallet Address
+            </label>
+            {walletAddress ? (
+              <CopyableAddress value={walletAddress} truncate={false} />
+            ) : (
+              <p className="text-on-surface-variant text-sm">
+                Dompet belum siap.
+              </p>
+            )}
+          </div>
+        </section>
+
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => {
+            void handleLogout();
+          }}
+          disabled={loggingOut}
+          className="font-display border-border text-error hover:bg-error-container w-full rounded-full bg-white py-6 font-bold"
+        >
+          {loggingOut ? "Keluar..." : "Logout"}
+        </Button>
+      </div>
     </div>
   );
 }

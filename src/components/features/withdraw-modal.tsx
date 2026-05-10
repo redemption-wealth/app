@@ -15,7 +15,6 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -61,23 +60,25 @@ export function WithdrawModal({ open, onOpenChange }: WithdrawModalProps) {
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-lg">
-        <DialogHeader>
-          <DialogTitle>Tarik $WEALTH</DialogTitle>
-          <DialogDescription>
+      <DialogContent className="flex max-h-[85vh] flex-col gap-0 p-0 sm:max-w-lg">
+        <DialogHeader className="border-border space-y-1 border-b px-5 py-4 pr-12 sm:px-6 sm:py-5">
+          <DialogTitle className="font-display text-on-surface text-lg font-bold md:text-xl">
+            Tarik $WEALTH
+          </DialogTitle>
+          <DialogDescription className="text-on-surface-variant text-sm">
             Kirim $WEALTH ke alamat lain. Pastikan alamat benar — transaksi
             tidak bisa dibatalkan.
           </DialogDescription>
         </DialogHeader>
 
-        {isSuccess ? (
-          <div className="space-y-4">
-            <p className="text-on-surface text-sm">
-              Transaksi berhasil dikirim. Catat hash di bawah sebelum menutup —
-              ini bukti transaksi kamu.
-            </p>
-            <TransactionInfo txHash={state.txHash} />
-            <DialogFooter>
+        <div className="flex-1 overflow-y-auto px-5 py-5 sm:px-6 sm:py-6">
+          {isSuccess ? (
+            <div className="space-y-4">
+              <p className="text-on-surface text-sm">
+                Transaksi berhasil dikirim. Catat hash di bawah sebelum menutup
+                — ini bukti transaksi kamu.
+              </p>
+              <TransactionInfo txHash={state.txHash} />
               <Button
                 type="button"
                 onClick={() => handleClose(false)}
@@ -85,23 +86,23 @@ export function WithdrawModal({ open, onOpenChange }: WithdrawModalProps) {
               >
                 Tutup
               </Button>
-            </DialogFooter>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            {isError ? (
-              <div className="bg-error-container text-on-error-container rounded-[var(--radius-md)] p-3 text-sm">
-                {state.message}
-              </div>
-            ) : null}
-            <WithdrawForm
-              rawBalance={rawBalance}
-              formattedBalance={balance}
-              isSubmitting={isSigning}
-              onSubmit={(values) => setPending(values)}
-            />
-          </div>
-        )}
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {isError ? (
+                <div className="bg-error-container text-on-error-container rounded-[var(--radius-md)] p-3 text-sm">
+                  {state.message}
+                </div>
+              ) : null}
+              <WithdrawForm
+                rawBalance={rawBalance}
+                formattedBalance={balance}
+                isSubmitting={isSigning}
+                onSubmit={(values) => setPending(values)}
+              />
+            </div>
+          )}
+        </div>
       </DialogContent>
 
       <AlertDialog

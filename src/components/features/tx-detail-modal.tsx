@@ -1,11 +1,12 @@
 "use client";
 
+import { XIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -38,58 +39,71 @@ export function TxDetailModal({ entry, onOpenChange }: TxDetailModalProps) {
 
   return (
     <Dialog open={true} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>
+      <DialogContent
+        showCloseButton={false}
+        className="flex max-h-[85vh] flex-col gap-0 p-0 sm:max-w-md"
+      >
+        {/* Custom close button — desktop only */}
+        <DialogClose asChild>
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            className="absolute top-2 right-2 hidden md:flex"
+            aria-label="Tutup"
+          >
+            <XIcon />
+          </Button>
+        </DialogClose>
+
+        <DialogHeader className="border-border space-y-1 border-b px-5 py-4 pr-12 sm:px-6 sm:py-5">
+          <DialogTitle className="font-display text-on-surface text-lg font-bold md:text-xl">
             {entry.kind === "redeem" ? "Redeem" : entry.kind}
             {entry.merchantName ? ` — ${entry.merchantName}` : ""}
           </DialogTitle>
-          <DialogDescription>{formatDate(entry.createdAt)}</DialogDescription>
+          <DialogDescription className="text-on-surface-variant text-sm">
+            {formatDate(entry.createdAt)}
+          </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-3 text-sm">
-          <div className="flex items-center justify-between">
-            <span className="text-muted-foreground">Jumlah</span>
-            <span className="font-semibold">
-              {formatWealth(entry.amountWealth)} $WEALTH
-            </span>
-          </div>
-          {entry.voucherTitle ? (
+        <div className="flex-1 space-y-4 overflow-y-auto px-5 py-5 sm:px-6 sm:py-6">
+          <div className="space-y-3 text-sm">
             <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">Voucher</span>
-              <span className="text-on-surface">{entry.voucherTitle}</span>
+              <span className="text-on-surface-variant">Jumlah</span>
+              <span className="font-semibold">
+                {formatWealth(entry.amountWealth)} $WEALTH
+              </span>
             </div>
-          ) : null}
-          <div className="flex items-center justify-between">
-            <span className="text-muted-foreground">Status</span>
-            <TxStatusPill status={entry.status} />
+            {entry.voucherTitle ? (
+              <div className="flex items-center justify-between">
+                <span className="text-on-surface-variant">Voucher</span>
+                <span className="text-on-surface text-right">
+                  {entry.voucherTitle}
+                </span>
+              </div>
+            ) : null}
+            <div className="flex items-center justify-between">
+              <span className="text-on-surface-variant">Status</span>
+              <TxStatusPill status={entry.status} />
+            </div>
           </div>
 
           {entry.txHash ? <TransactionInfo txHash={entry.txHash} /> : null}
         </div>
 
-        <DialogFooter className="gap-2 sm:gap-2">
-          {showQrButton ? (
+        {showQrButton ? (
+          <div className="border-border border-t bg-white px-5 py-4 sm:px-6 sm:py-5">
             <Button
               type="button"
               onClick={() => {
                 onOpenChange(false);
                 router.push(`/qr/${entry.redemptionId}`);
               }}
-              className="rounded-full"
+              className="w-full rounded-full"
             >
               Lihat QR
             </Button>
-          ) : null}
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => onOpenChange(false)}
-            className="rounded-full"
-          >
-            Tutup
-          </Button>
-        </DialogFooter>
+          </div>
+        ) : null}
       </DialogContent>
     </Dialog>
   );
