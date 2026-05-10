@@ -9,9 +9,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { TransactionInfo } from "@/components/features/transaction-info";
+import { TxStatusPill } from "@/components/features/tx-status-pill";
 import type { HistoryEntry } from "@/lib/schemas/history-entry";
 import { formatDate, formatWealth } from "@/lib/utils";
 
@@ -19,21 +19,6 @@ interface TxDetailModalProps {
   entry: HistoryEntry | null;
   onOpenChange: (open: boolean) => void;
 }
-
-const STATUS_LABEL: Record<HistoryEntry["status"], string> = {
-  pending: "Pending",
-  confirmed: "Selesai",
-  failed: "Gagal",
-};
-
-const STATUS_VARIANT: Record<
-  HistoryEntry["status"],
-  "default" | "secondary" | "destructive"
-> = {
-  pending: "secondary",
-  confirmed: "default",
-  failed: "destructive",
-};
 
 export function TxDetailModal({ entry, onOpenChange }: TxDetailModalProps) {
   const router = useRouter();
@@ -77,9 +62,7 @@ export function TxDetailModal({ entry, onOpenChange }: TxDetailModalProps) {
           ) : null}
           <div className="flex items-center justify-between">
             <span className="text-muted-foreground">Status</span>
-            <Badge variant={STATUS_VARIANT[entry.status]}>
-              {STATUS_LABEL[entry.status]}
-            </Badge>
+            <TxStatusPill status={entry.status} />
           </div>
 
           {entry.txHash ? <TransactionInfo txHash={entry.txHash} /> : null}

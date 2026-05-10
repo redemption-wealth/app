@@ -74,7 +74,7 @@ export function Sidebar() {
               href={item.href}
               className={`mb-1 flex items-center gap-3 rounded-full px-4 py-3 transition-colors ${
                 isActive
-                  ? "bg-primary/10 text-primary font-semibold"
+                  ? "bg-surface-active text-primary font-semibold"
                   : "text-on-surface-variant hover:bg-surface-hover"
               }`}
               title={isCollapsed ? item.label : undefined}
@@ -84,7 +84,7 @@ export function Sidebar() {
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
-                strokeWidth={1.5}
+                strokeWidth={isActive ? 2 : 1.5}
               >
                 <path
                   strokeLinecap="round"
@@ -92,7 +92,17 @@ export function Sidebar() {
                   d={iconMap[item.icon]}
                 />
               </svg>
-              {!isCollapsed && <span className="text-sm">{item.label}</span>}
+              {!isCollapsed && (
+                <>
+                  <span className="text-sm">{item.label}</span>
+                  {isActive && (
+                    <span
+                      className="bg-primary ml-auto h-1.5 w-1.5 rounded-full"
+                      aria-hidden
+                    />
+                  )}
+                </>
+              )}
             </Link>
           );
         })}

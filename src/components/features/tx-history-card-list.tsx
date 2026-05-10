@@ -1,10 +1,11 @@
 "use client";
 
+import { Search, X } from "lucide-react";
 import { useMemo, useState } from "react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { TxDetailModal } from "@/components/features/tx-detail-modal";
+import { TxStatusPill } from "@/components/features/tx-status-pill";
 import type { HistoryEntry } from "@/lib/schemas/history-entry";
 import { useTxHistory } from "@/hooks/use-tx-history";
 import { formatDate, formatWealth } from "@/lib/utils";
@@ -12,25 +13,10 @@ import type { RedemptionStatus } from "@/lib/schemas/redemption";
 
 type StatusFilter = "all" | RedemptionStatus;
 
-const STATUS_LABEL: Record<HistoryEntry["status"], string> = {
-  pending: "Pending",
-  confirmed: "Selesai",
-  failed: "Gagal",
-};
-
-const STATUS_VARIANT: Record<
-  HistoryEntry["status"],
-  "default" | "secondary" | "destructive"
-> = {
-  pending: "secondary",
-  confirmed: "default",
-  failed: "destructive",
-};
-
 const FILTER_CHIPS: Array<{ value: StatusFilter; label: string }> = [
   { value: "all", label: "Semua" },
-  { value: "pending", label: "Pending" },
-  { value: "confirmed", label: "Selesai" },
+  { value: "pending", label: "Menunggu" },
+  { value: "confirmed", label: "Berhasil" },
   { value: "failed", label: "Gagal" },
 ];
 
@@ -86,7 +72,7 @@ export function TxHistoryCardList() {
               });
             }}
           >
-            <span aria-hidden>🔍</span>
+            {searchOpen ? <X aria-hidden /> : <Search aria-hidden />}
           </Button>
         </div>
 
@@ -114,7 +100,7 @@ export function TxHistoryCardList() {
                 <button
                   type="button"
                   onClick={() => setSelected(entry)}
-                  className="border-border hover:bg-muted w-full rounded-[var(--radius-md)] border bg-white p-4 text-left transition-colors"
+                  className="border-border hover:border-surface-container-highest w-full rounded-[var(--radius-lg)] border bg-white p-4 text-left transition-all hover:-translate-y-0.5 hover:shadow-sm"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
@@ -122,16 +108,17 @@ export function TxHistoryCardList() {
                         Redeem
                         {entry.merchantName ? ` — ${entry.merchantName}` : ""}
                       </p>
-                      <p className="text-muted-foreground mt-0.5 text-xs">
+                      <p className="text-on-surface-variant mt-0.5 text-xs">
                         {formatDate(entry.createdAt)}
                       </p>
                     </div>
-                    <Badge variant={STATUS_VARIANT[entry.status]}>
-                      {STATUS_LABEL[entry.status]}
-                    </Badge>
+                    <TxStatusPill status={entry.status} />
                   </div>
-                  <p className="text-on-surface mt-2 text-sm">
-                    {formatWealth(entry.amountWealth)} $WEALTH
+                  <p className="font-display text-on-surface mt-2 text-sm font-bold">
+                    {formatWealth(entry.amountWealth)}{" "}
+                    <span className="text-on-surface-variant text-[10px] font-medium">
+                      $WEALTH
+                    </span>
                   </p>
                 </button>
               </li>

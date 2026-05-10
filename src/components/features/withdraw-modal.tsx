@@ -90,7 +90,7 @@ export function WithdrawModal({ open, onOpenChange }: WithdrawModalProps) {
         ) : (
           <div className="space-y-4">
             {isError ? (
-              <div className="border-destructive/40 bg-destructive/5 text-destructive rounded-md border p-3 text-sm">
+              <div className="bg-error-container text-on-error-container rounded-[var(--radius-md)] p-3 text-sm">
                 {state.message}
               </div>
             ) : null}

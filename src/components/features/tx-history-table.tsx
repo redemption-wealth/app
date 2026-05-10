@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -20,27 +19,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { TxDetailModal } from "@/components/features/tx-detail-modal";
+import { TxStatusPill } from "@/components/features/tx-status-pill";
 import type { HistoryEntry } from "@/lib/schemas/history-entry";
 import { useTxHistory } from "@/hooks/use-tx-history";
 import { formatDate, formatWealth, truncateAddress } from "@/lib/utils";
 import type { RedemptionStatus } from "@/lib/schemas/redemption";
 
 type StatusFilter = "all" | RedemptionStatus;
-
-const STATUS_LABEL: Record<HistoryEntry["status"], string> = {
-  pending: "Pending",
-  confirmed: "Selesai",
-  failed: "Gagal",
-};
-
-const STATUS_VARIANT: Record<
-  HistoryEntry["status"],
-  "default" | "secondary" | "destructive"
-> = {
-  pending: "secondary",
-  confirmed: "default",
-  failed: "destructive",
-};
 
 export function TxHistoryTable() {
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
@@ -136,9 +121,7 @@ export function TxHistoryTable() {
                   <TableCell>{formatWealth(entry.amountWealth)}</TableCell>
                   <TableCell>{formatDate(entry.createdAt)}</TableCell>
                   <TableCell>
-                    <Badge variant={STATUS_VARIANT[entry.status]}>
-                      {STATUS_LABEL[entry.status]}
-                    </Badge>
+                    <TxStatusPill status={entry.status} />
                   </TableCell>
                   <TableCell className="font-mono text-xs">
                     {entry.txHash ? truncateAddress(entry.txHash) : "—"}

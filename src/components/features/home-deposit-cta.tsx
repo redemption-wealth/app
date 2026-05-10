@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 
 interface HomeDepositCtaProps {
   onDeposit: () => void;
@@ -9,15 +8,31 @@ interface HomeDepositCtaProps {
 
 export function HomeDepositCta({ onDeposit }: HomeDepositCtaProps) {
   return (
-    <Card className="border-primary/20 bg-primary/5">
-      <CardContent className="flex flex-col gap-3 py-6 sm:flex-row sm:items-center sm:justify-between">
-        <div className="space-y-1">
-          <p className="font-display text-on-surface text-base font-bold">
-            Deposit $WEALTH untuk mulai redeem
-          </p>
-          <p className="text-on-surface-variant text-sm">
-            Saldo masih kosong. Top up dulu, lalu pilih voucher favoritmu.
-          </p>
+    <section
+      className="border-primary/15 relative overflow-hidden rounded-[var(--radius-lg)] border p-5 sm:p-6"
+      style={{
+        background:
+          "linear-gradient(120deg, var(--color-surface-active) 0%, var(--color-surface-container-lowest) 100%)",
+      }}
+    >
+      <div
+        className="pointer-events-none absolute -top-10 -right-10 h-32 w-32 rounded-full opacity-30"
+        style={{ background: "var(--color-primary-container)" }}
+      />
+      <div className="relative flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-start gap-3">
+          <span
+            className="bg-primary mt-1 inline-flex h-2.5 w-2.5 flex-shrink-0 rounded-full"
+            aria-hidden
+          />
+          <div className="space-y-1">
+            <p className="font-display text-on-surface text-base font-bold">
+              Saldo masih kosong
+            </p>
+            <p className="text-on-surface-variant text-sm">
+              Deposit $WEALTH dulu, lalu pilih voucher favoritmu.
+            </p>
+          </div>
         </div>
         <Button
           type="button"
@@ -26,7 +41,7 @@ export function HomeDepositCta({ onDeposit }: HomeDepositCtaProps) {
         >
           Deposit
         </Button>
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }
