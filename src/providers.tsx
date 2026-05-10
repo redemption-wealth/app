@@ -7,6 +7,7 @@ import { env } from "@/lib/env";
 import { getQueryClient } from "@/lib/get-query-client";
 import { wagmiConfig, targetChain } from "@/lib/wagmi";
 import { AccessTokenBridge } from "@/components/layout/access-token-bridge";
+import { EmbeddedWalletBridge } from "@/components/layout/embedded-wallet-bridge";
 import { UserSyncBridge } from "@/components/layout/user-sync-bridge";
 
 export function Providers({ children }: { children: React.ReactNode }) {
@@ -36,6 +37,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
         <WagmiProvider config={wagmiConfig}>
           <AccessTokenBridge />
           <UserSyncBridge />
+          <EmbeddedWalletBridge />
           {children}
         </WagmiProvider>
       </QueryClientProvider>
