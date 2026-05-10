@@ -17,6 +17,10 @@ const STATUS_STYLES: Record<
     label: "Gagal",
     classes: "bg-error-container text-on-error-container",
   },
+  expired: {
+    label: "Kedaluwarsa",
+    classes: "bg-surface-container-high text-outline-variant",
+  },
 };
 
 export function TxStatusPill({
