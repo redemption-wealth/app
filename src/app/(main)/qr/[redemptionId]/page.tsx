@@ -159,8 +159,8 @@ export default function QrDisplayPage({
         <Link href="/profile" className="text-on-surface-variant font-semibold">
           ← Profil
         </Link>
-        <Link href="/merchants" className="text-primary font-semibold">
-          Lihat merchant lain →
+        <Link href="/" className="text-primary font-semibold">
+          Jelajahi voucher →
         </Link>
       </div>
     </div>

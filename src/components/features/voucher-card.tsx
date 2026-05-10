@@ -3,9 +3,36 @@
 import Link from "next/link";
 import { usePrice } from "@/hooks/use-price";
 import type { Voucher } from "@/lib/schemas/voucher";
-import { formatIdr, formatWealth, isVoucherValid } from "@/lib/utils";
-import { CategoryTile } from "@/components/shared/category-tile";
-import { StockProgressBar } from "@/components/shared/stock-progress-bar";
+import { formatWealth, isVoucherValid } from "@/lib/utils";
+
+const TOP_ITEM_MIN_STOCK = 50;
+const TOP_ITEM_MAX_REMAINING = 10;
+
+const FALLBACK_TILE_COLORS = [
+  "#8ee6c8",
+  "#fdcfd9",
+  "#a7f3d0",
+  "#f9ffc4",
+  "#c4b5fd",
+  "#fde68a",
+  "#bae6fd",
+  "#fecaca",
+];
+
+function fallbackColor(name: string): string {
+  const idx =
+    name.split("").reduce((sum, c) => sum + c.charCodeAt(0), 0) %
+    FALLBACK_TILE_COLORS.length;
+  return FALLBACK_TILE_COLORS[idx]!;
+}
+
+export function isTopItem(voucher: Voucher): boolean {
+  return (
+    voucher.totalStock >= TOP_ITEM_MIN_STOCK &&
+    voucher.remainingStock > 0 &&
+    voucher.remainingStock <= TOP_ITEM_MAX_REMAINING
+  );
+}
 
 interface VoucherCardProps {
   voucher: Voucher;
@@ -13,86 +40,67 @@ interface VoucherCardProps {
 
 export function VoucherCard({ voucher }: VoucherCardProps) {
   const { data: priceData } = usePrice();
-  const valid = isVoucherValid(voucher);
-  const isBogo = voucher.qrPerSlot > 1;
   const totalPriceIdr = Number(voucher.totalPrice);
   const wealthAmount =
     priceData && priceData.priceIdr > 0
       ? totalPriceIdr / priceData.priceIdr
       : null;
-
-  const stockPct =
-    voucher.totalStock > 0
-      ? (voucher.remainingStock / voucher.totalStock) * 100
-      : 0;
-  const isLowStock = stockPct <= 20 && stockPct > 0;
+  const merchantName = voucher.merchant?.name ?? "Voucher";
+  const valid = isVoucherValid(voucher);
+  const showTopItem = valid && isTopItem(voucher);
 
   return (
     <Link
       href={`/vouchers/${voucher.id}`}
-      className="border-border hover:border-surface-container-highest flex flex-col justify-between gap-3 rounded-[var(--radius-lg)] border bg-white p-3.5 transition-all hover:-translate-y-0.5 hover:shadow-sm"
+      aria-label={`${voucher.title} dari ${merchantName}`}
+      className="group/voucher-card border-border hover:border-primary/30 flex flex-col overflow-hidden rounded-[var(--radius-lg)] border bg-white transition-all hover:-translate-y-0.5 hover:shadow-[0_12px_28px_-16px_rgba(0,108,72,0.35)]"
     >
-      <div className="flex items-start gap-3">
+      <div className="relative aspect-[4/3] overflow-hidden">
+        {showTopItem ? (
+          <span className="bg-tertiary-container text-on-tertiary-container absolute top-3 left-3 z-10 inline-flex items-center rounded-full px-2.5 py-1 text-[10px] font-bold tracking-wider uppercase shadow-sm">
+            Top item
+          </span>
+        ) : null}
         {voucher.merchant?.logoUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={voucher.merchant.logoUrl}
-            alt={voucher.merchant.name}
-            className="h-12 w-12 shrink-0 rounded-[var(--radius-sm)] object-cover"
+            alt={merchantName}
+            loading="lazy"
+            className="h-full w-full object-cover transition-transform duration-300 group-hover/voucher-card:scale-105"
           />
         ) : (
-          <CategoryTile name={voucher.merchant?.name ?? "V"} size={48} />
+          <div
+            className="flex h-full w-full items-center justify-center transition-transform duration-300 group-hover/voucher-card:scale-105"
+            style={{ backgroundColor: fallbackColor(merchantName) }}
+          >
+            <span className="font-display text-tile-text text-6xl font-extrabold tracking-tight">
+              {merchantName.charAt(0).toUpperCase()}
+            </span>
+          </div>
         )}
-        <div className="min-w-0 flex-1">
-          <p className="text-on-surface-variant text-xs">
-            {voucher.merchant?.name ?? "Voucher"}
+      </div>
+
+      <div className="flex flex-1 flex-col gap-2 p-4">
+        <p className="text-on-surface-variant truncate text-xs font-semibold">
+          {merchantName}
+        </p>
+        <h4 className="font-display text-on-surface line-clamp-2 min-h-[2.6em] text-sm leading-snug font-bold">
+          {voucher.title}
+        </h4>
+        <div className="mt-auto flex items-end justify-between gap-2 pt-1">
+          <p className="font-display text-primary text-xl leading-none font-extrabold tracking-tight tabular-nums">
+            {wealthAmount !== null ? formatWealth(wealthAmount) : "—"}
+            <span className="text-on-surface-variant ml-1.5 align-baseline text-[10px] font-semibold">
+              $WEALTH
+            </span>
           </p>
-          <h4 className="font-display text-on-surface mt-0.5 line-clamp-2 text-sm font-bold">
-            {voucher.title}
-          </h4>
-          {isBogo ? (
-            <span className="bg-success-container text-on-success-container mt-1 inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold">
-              BOGO
+          {!valid ? (
+            <span className="bg-surface-container-high text-outline-variant rounded-full px-2.5 py-1 text-[10px] font-bold tracking-wider uppercase">
+              Habis
             </span>
           ) : null}
         </div>
-      </div>
-
-      <div className="space-y-2">
-        <StockProgressBar
-          remaining={voucher.remainingStock}
-          total={voucher.totalStock}
-        />
-        <div className="text-on-surface-variant flex items-center justify-between text-[10px]">
-          <span>
-            {isLowStock
-              ? "Terbatas"
-              : voucher.remainingStock <= 0
-                ? "Stok habis"
-                : `Tersisa ${voucher.remainingStock}`}
-          </span>
-        </div>
-      </div>
-
-      <div className="flex items-end justify-between">
-        <div>
-          <p className="font-display text-on-surface text-base font-bold">
-            {wealthAmount !== null ? formatWealth(wealthAmount) : "—"}{" "}
-            <span className="text-on-surface-variant text-xs">$WEALTH</span>
-          </p>
-          <p className="text-outline text-[10px]">
-            ≈ {formatIdr(totalPriceIdr)}
-          </p>
-        </div>
-        {valid ? (
-          <span className="bg-primary rounded-full px-3 py-1 text-[11px] font-bold text-white">
-            Tukar
-          </span>
-        ) : (
-          <span className="bg-surface-container-high text-outline-variant rounded-full px-3 py-1 text-[11px] font-bold">
-            Habis
-          </span>
-        )}
       </div>
     </Link>
   );

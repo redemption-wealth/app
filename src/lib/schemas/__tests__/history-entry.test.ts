@@ -33,8 +33,6 @@ describe("redemptionToHistoryEntry", () => {
         totalStock: 100,
         remainingStock: 50,
         basePrice: "10",
-        appFeeSnapshot: "0.05",
-        gasFeeSnapshot: "1",
         appFeeRate: "0.05",
         gasFeeAmount: "1",
         totalPrice: "11.5",

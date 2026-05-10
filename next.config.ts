@@ -55,6 +55,7 @@ const nextConfig: NextConfig = {
       { source: "/history", destination: "/profile", permanent: true },
       { source: "/auth/login", destination: "/", permanent: true },
       { source: "/onboarding/deposit", destination: "/", permanent: true },
+      { source: "/merchants", destination: "/", permanent: true },
     ];
   },
   async rewrites() {

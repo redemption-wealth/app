@@ -85,8 +85,8 @@ export function VoucherDetailInteractive({ id }: { id: string }) {
             ? error.message
             : "Voucher ini tidak tersedia."}
         </p>
-        <Link href="/merchants" className="text-primary text-sm font-semibold">
-          ← Kembali ke merchant
+        <Link href="/" className="text-primary text-sm font-semibold">
+          ← Kembali ke marketplace
         </Link>
       </div>
     );

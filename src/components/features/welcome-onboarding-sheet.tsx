@@ -77,7 +77,7 @@ export function WelcomeOnboardingSheet({
             className="w-full rounded-full py-6 text-base font-semibold"
             onClick={() => {
               onOpenChange(false);
-              router.push("/merchants");
+              router.push("/");
             }}
           >
             Jelajahi Voucher

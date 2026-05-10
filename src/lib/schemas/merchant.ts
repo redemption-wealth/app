@@ -1,11 +1,6 @@
 import { z } from "zod";
 import { paginationSchema } from "./common";
 
-const embeddedCategorySchema = z.object({
-  id: z.string().optional(),
-  name: z.string(),
-});
-
 export const merchantSchema = z.object({
   id: z.string(),
   name: z.string(),

@@ -1,9 +1,5 @@
 import { apiRequest, type QueryParams } from "./client";
 import {
-  categoryDetailResponseSchema,
-  categoryListResponseSchema,
-} from "@/lib/schemas/category";
-import {
   merchantDetailResponseSchema,
   merchantListResponseSchema,
 } from "@/lib/schemas/merchant";
@@ -36,21 +32,6 @@ export const endpoints = {
       path: "/api/auth/user-sync",
       responseSchema: userSyncResponseSchema,
       requireAuth: true,
-    }),
-
-  // ── Categories ────────────────────────────────────────────────────────────
-  listCategories: () =>
-    apiRequest({
-      method: "GET",
-      path: "/api/categories",
-      responseSchema: categoryListResponseSchema,
-    }),
-
-  getCategory: (id: string) =>
-    apiRequest({
-      method: "GET",
-      path: `/api/categories/${id}`,
-      responseSchema: categoryDetailResponseSchema,
     }),
 
   // ── Merchants ─────────────────────────────────────────────────────────────

@@ -12,8 +12,6 @@ export const voucherSchema = z.object({
   totalStock: z.number().int(),
   remainingStock: z.number().int(),
   basePrice: decimalStringSchema,
-  appFeeSnapshot: decimalStringSchema,
-  gasFeeSnapshot: decimalStringSchema,
   appFeeRate: decimalStringSchema,
   gasFeeAmount: decimalStringSchema,
   totalPrice: decimalStringSchema,
