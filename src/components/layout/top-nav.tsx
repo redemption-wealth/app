@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Search } from "lucide-react";
+import { Search, Wallet } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -28,19 +28,15 @@ function deriveInitial(email: string | null): string {
 
 function BalancePill({ value }: { value: string }) {
   return (
-    <span
-      className="border-primary/30 text-primary inline-flex items-center gap-1.5 rounded-full border bg-white px-3 py-1.5 text-sm font-bold whitespace-nowrap tabular-nums"
-      title={`${formatWealth(value)} $WEALTH`}
+    <Link
+      href="/profile"
+      title={`${formatWealth(value)} $WEALTH — buka profil`}
+      aria-label={`Saldo ${formatWealth(value)} $WEALTH, buka profil`}
+      className="font-display from-primary to-primary-container inline-flex items-center gap-2 rounded-full bg-gradient-to-r px-3.5 py-2 text-sm font-extrabold whitespace-nowrap text-white tabular-nums shadow-[0_4px_14px_-4px_rgba(0,108,72,0.45)] transition-shadow hover:shadow-[0_6px_18px_-4px_rgba(0,108,72,0.55)]"
     >
-      <span
-        aria-hidden
-        className="bg-primary inline-block h-1.5 w-1.5 rounded-full"
-      />
-      {formatWealth(value)}
-      <span className="text-on-surface-variant text-[10px] font-semibold">
-        $WEALTH
-      </span>
-    </span>
+      <Wallet className="h-4 w-4 flex-shrink-0" aria-hidden />
+      <span className="leading-none">{formatWealth(value)}</span>
+    </Link>
   );
 }
 

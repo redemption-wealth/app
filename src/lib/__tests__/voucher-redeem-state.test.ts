@@ -8,19 +8,6 @@ describe("deriveRedeemState", () => {
     expect(
       deriveRedeemState({
         authenticated: false,
-        userSynced: false,
-        onWrongChain: false,
-        rawBalance: REQ,
-        requiredAmount: REQ,
-      }),
-    ).toBe("unauth");
-  });
-
-  it("returns 'unauth' when authenticated but sync still pending", () => {
-    expect(
-      deriveRedeemState({
-        authenticated: true,
-        userSynced: false,
         onWrongChain: false,
         rawBalance: REQ,
         requiredAmount: REQ,
@@ -32,7 +19,6 @@ describe("deriveRedeemState", () => {
     expect(
       deriveRedeemState({
         authenticated: true,
-        userSynced: true,
         onWrongChain: true,
         rawBalance: 0n,
         requiredAmount: REQ,
@@ -44,7 +30,6 @@ describe("deriveRedeemState", () => {
     expect(
       deriveRedeemState({
         authenticated: true,
-        userSynced: true,
         onWrongChain: false,
         rawBalance: undefined,
         requiredAmount: REQ,
@@ -56,7 +41,6 @@ describe("deriveRedeemState", () => {
     expect(
       deriveRedeemState({
         authenticated: true,
-        userSynced: true,
         onWrongChain: false,
         rawBalance: REQ,
         requiredAmount: null,
@@ -68,7 +52,6 @@ describe("deriveRedeemState", () => {
     expect(
       deriveRedeemState({
         authenticated: true,
-        userSynced: true,
         onWrongChain: false,
         rawBalance: REQ - 1n,
         requiredAmount: REQ,
@@ -80,7 +63,6 @@ describe("deriveRedeemState", () => {
     expect(
       deriveRedeemState({
         authenticated: true,
-        userSynced: true,
         onWrongChain: false,
         rawBalance: REQ,
         requiredAmount: REQ,
@@ -89,7 +71,6 @@ describe("deriveRedeemState", () => {
     expect(
       deriveRedeemState({
         authenticated: true,
-        userSynced: true,
         onWrongChain: false,
         rawBalance: REQ * 2n,
         requiredAmount: REQ,

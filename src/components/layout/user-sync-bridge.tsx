@@ -7,7 +7,7 @@ import { useUserSync } from "@/stores/user-sync";
 
 export function UserSyncBridge() {
   const { ready, authenticated, user } = useAuth();
-  const { mutate: syncUser, isSuccess } = useSyncUser();
+  const { mutate: syncUser } = useSyncUser();
   const markSynced = useUserSync((s) => s.markSynced);
   const resetSync = useUserSync((s) => s.reset);
   const lastSyncedUserIdRef = useRef<string | null>(null);
@@ -29,15 +29,17 @@ export function UserSyncBridge() {
       lastSyncedUserIdRef.current = userId;
       syncUser(undefined, {
         onSuccess: () => markSynced(userId),
+        // Treat sync failure as best-effort: if the BE endpoint is missing or
+        // returns an error, still mark synced so the redeem CTA isn't stuck on
+        // "Login untuk Redeem" forever. The actual /redeem call will surface a
+        // real BE error if the user record is genuinely missing.
+        onError: (err) => {
+          console.warn("[user-sync] failed; proceeding optimistically:", err);
+          markSynced(userId);
+        },
       });
     }
   }, [ready, authenticated, userId, syncUser, markSynced, resetSync]);
-
-  useEffect(() => {
-    if (isSuccess && userId) {
-      markSynced(userId);
-    }
-  }, [isSuccess, userId, markSynced]);
 
   return null;
 }

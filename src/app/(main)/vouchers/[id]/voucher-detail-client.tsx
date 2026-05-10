@@ -23,27 +23,41 @@ import {
   formatWealth,
   isVoucherValid,
 } from "@/lib/utils";
+import type { Voucher } from "@/lib/schemas/voucher";
 import { selectIsSigning, useRedemptionFlow } from "@/stores/redemption-flow";
-import { useUserSync } from "@/stores/user-sync";
 
-function subtractDecimalStrings(...values: string[]): string {
-  const total = values.reduce((acc, v, i) => {
-    const num = Number(v);
-    return i === 0 ? num : acc - num;
-  }, 0);
-  return Number.isFinite(total) ? total.toFixed(2) : "0";
+const FALLBACK_TILE_COLORS = [
+  "#8ee6c8",
+  "#fdcfd9",
+  "#a7f3d0",
+  "#f9ffc4",
+  "#c4b5fd",
+  "#fde68a",
+  "#bae6fd",
+  "#fecaca",
+];
+
+function fallbackColor(name: string): string {
+  const idx =
+    name.split("").reduce((sum, c) => sum + c.charCodeAt(0), 0) %
+    FALLBACK_TILE_COLORS.length;
+  return FALLBACK_TILE_COLORS[idx]!;
 }
 
 function toWealthAmountWei(amount: number | null): bigint | null {
   if (amount === null || !Number.isFinite(amount)) return null;
-  // Round to 18-decimal precision to avoid floating point drift.
   return parseUnits(amount.toFixed(18), 18);
+}
+
+interface CtaSpec {
+  label: string;
+  disabled: boolean;
+  onClick: (() => void) | undefined;
 }
 
 export function VoucherDetailInteractive({ id }: { id: string }) {
   const chainId = useChainId();
   const { authenticated, login, walletAddress } = useAuth();
-  const userSynced = useUserSync((s) => s.isSynced);
   const { data, isLoading, error } = useVoucher(id);
   const { data: priceData } = usePrice();
   const { rawBalance } = useWealthBalance(walletAddress);
@@ -61,22 +75,11 @@ export function VoucherDetailInteractive({ id }: { id: string }) {
 
   const onWrongChain = chainId !== TARGET_CHAIN_ID;
 
-  if (isLoading) {
-    return (
-      <div className="mx-auto max-w-2xl space-y-6">
-        <div className="bg-surface-container h-8 w-1/2 animate-pulse rounded" />
-        <div className="border-border space-y-4 rounded-[var(--radius-lg)] border bg-white p-6">
-          <div className="bg-surface-container-low h-48 animate-pulse rounded-[var(--radius-md)]" />
-          <div className="bg-surface-container h-6 w-3/4 animate-pulse rounded" />
-          <div className="bg-surface-container h-4 w-1/2 animate-pulse rounded" />
-        </div>
-      </div>
-    );
-  }
+  if (isLoading) return <DetailSkeleton />;
 
   if (error || !data?.voucher) {
     return (
-      <div className="mx-auto max-w-2xl space-y-4">
+      <div className="mx-auto max-w-2xl space-y-4 px-4 py-8 md:px-8">
         <h1 className="font-display text-2xl font-bold">
           Voucher tidak ditemukan
         </h1>
@@ -94,18 +97,8 @@ export function VoucherDetailInteractive({ id }: { id: string }) {
 
   const voucher = data.voucher;
   const merchant = voucher.merchant;
-  const isBogo = voucher.qrPerSlot > 1;
   const isValid = isVoucherValid(voucher);
   const totalPriceIdr = Number(voucher.totalPrice);
-  const basePriceIdr = Number(voucher.basePrice);
-  const gasFeeIdr = Number(voucher.gasFeeAmount);
-  const appFeeIdr = Number(
-    subtractDecimalStrings(
-      voucher.totalPrice,
-      voucher.basePrice,
-      voucher.gasFeeAmount,
-    ),
-  );
   const wealthAmount =
     priceData && priceData.priceIdr > 0
       ? totalPriceIdr / priceData.priceIdr
@@ -114,152 +107,75 @@ export function VoucherDetailInteractive({ id }: { id: string }) {
 
   const redeemState: RedeemState = deriveRedeemState({
     authenticated,
-    userSynced,
     onWrongChain,
     rawBalance,
     requiredAmount: requiredAmountWei,
   });
 
-  const cta = (() => {
-    if (!isValid) {
-      return {
-        label:
-          voucher.remainingStock <= 0 ? "Stok habis" : "Voucher tidak aktif",
-        disabled: true,
-        onClick: undefined,
-      } as const;
-    }
-    if (isSigning) {
-      return {
-        label: "Memproses…",
-        disabled: true,
-        onClick: undefined,
-      } as const;
-    }
-    switch (redeemState) {
-      case "unauth":
-        return {
-          label: "Login untuk Redeem",
-          disabled: false,
-          onClick: () => login(),
-        } as const;
-      case "wrong-chain":
-        return {
-          label: `Pindah ke ${targetChain.name}`,
-          disabled: true,
-          onClick: undefined,
-        } as const;
-      case "loading":
-        return {
-          label: "Memuat saldo…",
-          disabled: true,
-          onClick: undefined,
-        } as const;
-      case "insufficient":
-        return {
-          label: "Saldo Tidak Cukup, Deposit",
-          disabled: false,
-          onClick: () => setDepositOpen(true),
-        } as const;
-      case "redeem":
-        return {
-          label: "Redeem Voucher",
-          disabled: false,
-          onClick: () => {
-            void start(voucher.id);
-          },
-        } as const;
-    }
-  })();
+  const cta = computeCta({
+    isValid,
+    isSigning,
+    voucher,
+    redeemState,
+    targetChainName: targetChain.name,
+    onLogin: () => login(),
+    onDeposit: () => setDepositOpen(true),
+    onRedeem: () => {
+      void start(voucher.id);
+    },
+  });
+
+  const showWrongChainBanner = redeemState === "wrong-chain";
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
-      <div className="space-y-2">
-        {merchant ? (
-          <Link
-            href={`/merchants/${merchant.id}`}
-            className="text-on-surface-variant hover:text-on-surface text-xs font-semibold tracking-wider uppercase"
-          >
-            ← {merchant.name}
-          </Link>
-        ) : null}
-        <div className="flex items-start justify-between gap-4">
-          <h1 className="font-display text-on-surface text-2xl font-bold">
-            {voucher.title}
-          </h1>
-          {isBogo ? (
-            <span className="bg-success-container text-on-success-container inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold tracking-wide uppercase">
-              BOGO {voucher.qrPerSlot}x
-            </span>
+    <div className="mx-auto w-full max-w-7xl px-4 pt-6 pb-32 md:px-8 md:pt-8 md:pb-12">
+      <div className="grid gap-6 md:grid-cols-12 md:gap-10">
+        <HeroImage voucher={voucher} />
+
+        <div className="md:col-span-8 md:space-y-6">
+          <div className="space-y-3">
+            <div className="flex items-center gap-3">
+              <MerchantAvatar voucher={voucher} className="md:hidden" />
+              {merchant ? (
+                <p className="text-on-surface-variant text-sm font-semibold">
+                  {merchant.name}
+                </p>
+              ) : null}
+            </div>
+            <h1 className="font-display text-on-surface text-3xl leading-tight font-bold tracking-tight md:text-4xl">
+              {voucher.title}
+            </h1>
+            {voucher.description ? (
+              <p className="text-on-surface-variant text-sm leading-relaxed md:text-base">
+                {voucher.description}
+              </p>
+            ) : null}
+          </div>
+
+          {showWrongChainBanner ? (
+            <div className="bg-error-container text-on-error-container mt-6 flex items-start gap-2 rounded-[var(--radius-lg)] p-3 text-sm md:mt-0">
+              <span aria-hidden>⚠️</span>
+              <div>
+                <p className="font-semibold">Jaringan tidak sesuai</p>
+                <p className="text-xs opacity-90">
+                  Pindah ke {targetChain.name} (chain ID {TARGET_CHAIN_ID}) di
+                  dompet kamu sebelum melakukan redemption.
+                </p>
+              </div>
+            </div>
           ) : null}
+
+          <PriceCard
+            wealthAmount={wealthAmount}
+            totalPriceIdr={totalPriceIdr}
+            voucher={voucher}
+            cta={cta}
+            inlineCtaOnMobile={false}
+          />
         </div>
-        {voucher.description ? (
-          <p className="text-on-surface-variant text-sm">
-            {voucher.description}
-          </p>
-        ) : null}
       </div>
 
-      <section className="border-border space-y-4 rounded-[var(--radius-lg)] border bg-white p-6">
-        <div>
-          <p className="text-outline text-xs tracking-wide uppercase">Harga</p>
-          <p className="font-display text-on-surface text-3xl font-bold">
-            {wealthAmount !== null ? formatWealth(wealthAmount) : "—"}{" "}
-            <span className="text-on-surface-variant text-base">$WEALTH</span>
-          </p>
-          <p className="text-on-surface-variant text-sm">
-            ≈ {formatIdr(totalPriceIdr)}
-          </p>
-        </div>
-
-        <div className="border-border space-y-2 border-t pt-4 text-sm">
-          <FeeRow label="Harga dasar" valueIdr={basePriceIdr} />
-          <FeeRow label="Biaya layanan" valueIdr={appFeeIdr} />
-          <FeeRow label="Biaya jaringan" valueIdr={gasFeeIdr} />
-          <div className="border-border text-on-surface flex justify-between border-t pt-2 font-semibold">
-            <span>Total</span>
-            <span>{formatIdr(totalPriceIdr)}</span>
-          </div>
-        </div>
-
-        {isBogo ? (
-          <div className="bg-success-container text-on-success-container rounded-[var(--radius-md)] p-3 text-xs">
-            Voucher BOGO: satu pembelian memberi{" "}
-            <span className="font-semibold">{voucher.qrPerSlot} QR codes</span>{" "}
-            yang bisa digunakan bergantian sampai habis.
-          </div>
-        ) : null}
-
-        <div className="text-outline space-y-1 text-xs">
-          <p>Berlaku hingga {formatDate(voucher.expiryDate)}</p>
-          <p>
-            Sisa stok: {voucher.remainingStock} / {voucher.totalStock}
-          </p>
-        </div>
-      </section>
-
-      {redeemState === "wrong-chain" ? (
-        <div className="bg-error-container text-error flex items-start gap-2 rounded-[var(--radius-lg)] p-3 text-sm">
-          <span>⚠️</span>
-          <div>
-            <p className="font-semibold">Jaringan tidak sesuai</p>
-            <p className="text-xs opacity-90">
-              Pindah ke {targetChain.name} (chain ID {TARGET_CHAIN_ID}) di
-              dompet kamu sebelum melakukan redemption.
-            </p>
-          </div>
-        </div>
-      ) : null}
-
-      <Button
-        type="button"
-        size="lg"
-        disabled={cta.disabled}
-        onClick={cta.onClick}
-        className="font-display from-primary to-primary-container w-full rounded-full bg-gradient-to-r py-6 text-lg font-bold text-white"
-      >
-        {cta.label}
-      </Button>
+      <StickyMobileCta cta={cta} />
 
       <SigningStateUI />
       <DepositModal open={depositOpen} onOpenChange={setDepositOpen} />
@@ -267,11 +183,222 @@ export function VoucherDetailInteractive({ id }: { id: string }) {
   );
 }
 
-function FeeRow({ label, valueIdr }: { label: string; valueIdr: number }) {
+function HeroImage({ voucher }: { voucher: Voucher }) {
+  const merchantName = voucher.merchant?.name ?? "Voucher";
   return (
-    <div className="text-on-surface-variant flex justify-between">
-      <span>{label}</span>
-      <span>{formatIdr(valueIdr)}</span>
+    <div className="hidden md:col-span-4 md:block">
+      <div className="md:sticky md:top-20">
+        <div className="border-border relative aspect-square overflow-hidden rounded-[var(--radius-xl)] border bg-white">
+          {voucher.merchant?.logoUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={voucher.merchant.logoUrl}
+              alt={merchantName}
+              className="h-full w-full object-cover"
+            />
+          ) : (
+            <div
+              className="flex h-full w-full items-center justify-center"
+              style={{ backgroundColor: fallbackColor(merchantName) }}
+            >
+              <span className="font-display text-tile-text text-9xl font-extrabold tracking-tight">
+                {merchantName.charAt(0).toUpperCase()}
+              </span>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function MerchantAvatar({
+  voucher,
+  className,
+}: {
+  voucher: Voucher;
+  className?: string;
+}) {
+  const merchantName = voucher.merchant?.name ?? "Voucher";
+  return (
+    <div
+      className={`relative h-10 w-10 flex-shrink-0 overflow-hidden rounded-full ${className ?? ""}`}
+    >
+      {voucher.merchant?.logoUrl ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={voucher.merchant.logoUrl}
+          alt={merchantName}
+          className="h-full w-full object-cover"
+        />
+      ) : (
+        <div
+          className="flex h-full w-full items-center justify-center"
+          style={{ backgroundColor: fallbackColor(merchantName) }}
+        >
+          <span className="font-display text-tile-text text-base font-extrabold">
+            {merchantName.charAt(0).toUpperCase()}
+          </span>
+        </div>
+      )}
+    </div>
+  );
+}
+
+interface PriceCardProps {
+  wealthAmount: number | null;
+  totalPriceIdr: number;
+  voucher: Voucher;
+  cta: CtaSpec;
+  inlineCtaOnMobile: boolean;
+}
+
+function PriceCard({
+  wealthAmount,
+  totalPriceIdr,
+  voucher,
+  cta,
+  inlineCtaOnMobile,
+}: PriceCardProps) {
+  return (
+    <section className="border-border mt-6 space-y-4 rounded-[var(--radius-lg)] border bg-white p-5 md:mt-0 md:p-6">
+      <div>
+        <p className="text-on-surface-variant text-[10px] font-bold tracking-widest uppercase">
+          Harga
+        </p>
+        <p className="font-display text-primary mt-1 text-3xl leading-none font-extrabold tracking-tight tabular-nums md:text-4xl">
+          {wealthAmount !== null ? formatWealth(wealthAmount) : "—"}
+          <span className="text-on-surface-variant ml-2 align-baseline text-xs font-semibold md:text-sm">
+            $WEALTH
+          </span>
+        </p>
+        <p className="text-on-surface-variant mt-1 text-sm">
+          ≈ {formatIdr(totalPriceIdr)}
+        </p>
+      </div>
+
+      <div className="border-border text-on-surface-variant grid grid-cols-2 gap-3 border-t pt-4 text-xs md:text-sm">
+        <div>
+          <p className="text-[10px] font-semibold tracking-wider uppercase">
+            Stok tersisa
+          </p>
+          <p className="text-on-surface mt-1 font-bold">
+            {voucher.remainingStock} / {voucher.totalStock}
+          </p>
+        </div>
+        <div>
+          <p className="text-[10px] font-semibold tracking-wider uppercase">
+            Berlaku hingga
+          </p>
+          <p className="text-on-surface mt-1 font-bold">
+            {formatDate(voucher.expiryDate)}
+          </p>
+        </div>
+      </div>
+
+      <Button
+        type="button"
+        size="lg"
+        disabled={cta.disabled}
+        onClick={cta.onClick}
+        className={
+          inlineCtaOnMobile
+            ? "font-display from-primary to-primary-container w-full rounded-full bg-gradient-to-r py-6 text-base font-bold text-white"
+            : "font-display from-primary to-primary-container hidden w-full rounded-full bg-gradient-to-r py-6 text-base font-bold text-white md:flex"
+        }
+      >
+        {cta.label}
+      </Button>
+    </section>
+  );
+}
+
+function StickyMobileCta({ cta }: { cta: CtaSpec }) {
+  return (
+    <div className="border-border fixed inset-x-0 bottom-0 z-40 border-t bg-white px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] md:hidden">
+      <Button
+        type="button"
+        size="lg"
+        disabled={cta.disabled}
+        onClick={cta.onClick}
+        className="font-display from-primary to-primary-container w-full rounded-full bg-gradient-to-r py-6 text-base font-bold text-white"
+      >
+        {cta.label}
+      </Button>
+    </div>
+  );
+}
+
+interface ComputeCtaArgs {
+  isValid: boolean;
+  isSigning: boolean;
+  voucher: Voucher;
+  redeemState: RedeemState;
+  targetChainName: string;
+  onLogin: () => void;
+  onDeposit: () => void;
+  onRedeem: () => void;
+}
+
+function computeCta({
+  isValid,
+  isSigning,
+  voucher,
+  redeemState,
+  targetChainName,
+  onLogin,
+  onDeposit,
+  onRedeem,
+}: ComputeCtaArgs): CtaSpec {
+  if (!isValid) {
+    return {
+      label: voucher.remainingStock <= 0 ? "Stok habis" : "Voucher tidak aktif",
+      disabled: true,
+      onClick: undefined,
+    };
+  }
+  if (isSigning) {
+    return { label: "Memproses…", disabled: true, onClick: undefined };
+  }
+  switch (redeemState) {
+    case "unauth":
+      return { label: "Login untuk Redeem", disabled: false, onClick: onLogin };
+    case "wrong-chain":
+      return {
+        label: `Pindah ke ${targetChainName}`,
+        disabled: true,
+        onClick: undefined,
+      };
+    case "loading":
+      return { label: "Memuat saldo…", disabled: true, onClick: undefined };
+    case "insufficient":
+      return {
+        label: "Saldo Tidak Cukup, Deposit",
+        disabled: false,
+        onClick: onDeposit,
+      };
+    case "redeem":
+      return { label: "Redeem Voucher", disabled: false, onClick: onRedeem };
+  }
+}
+
+function DetailSkeleton() {
+  return (
+    <div className="mx-auto w-full max-w-7xl px-4 pt-6 pb-32 md:px-8 md:pt-8 md:pb-12">
+      <div className="grid gap-6 md:grid-cols-12 md:gap-10">
+        <div className="hidden md:col-span-4 md:block">
+          <div className="bg-surface-container-low aspect-square animate-pulse rounded-[var(--radius-xl)]" />
+        </div>
+        <div className="space-y-4 md:col-span-8">
+          <div className="flex items-center gap-3">
+            <div className="bg-surface-container-low h-10 w-10 animate-pulse rounded-full md:hidden" />
+            <div className="bg-surface-container h-4 w-32 animate-pulse rounded" />
+          </div>
+          <div className="bg-surface-container h-9 w-3/4 animate-pulse rounded" />
+          <div className="bg-surface-container-low h-20 animate-pulse rounded" />
+          <div className="bg-surface-container-low h-44 animate-pulse rounded-[var(--radius-lg)]" />
+        </div>
+      </div>
     </div>
   );
 }

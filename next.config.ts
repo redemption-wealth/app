@@ -59,14 +59,18 @@ const nextConfig: NextConfig = {
     ];
   },
   async rewrites() {
-    // Proxy API requests to backend production (bypass CORS in development)
-    // Always proxy to production backend, regardless of NEXT_PUBLIC_API_BASE_URL
-    const productionBackend = "https://backend-wealthcrypto-fund.vercel.app";
+    // Proxy API requests to backend (bypass CORS in development).
+    // BACKEND_PROXY_URL overrides the default (e.g. http://localhost:3001 for
+    // local-stack testing); falls back to production so existing deploys
+    // behave the same.
+    const backendUrl =
+      process.env.BACKEND_PROXY_URL?.replace(/\/$/, "") ??
+      "https://backend-wealthcrypto-fund.vercel.app";
 
     return [
       {
         source: "/api/:path*",
-        destination: `${productionBackend}/api/:path*`,
+        destination: `${backendUrl}/api/:path*`,
       },
     ];
   },

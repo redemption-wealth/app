@@ -21,15 +21,20 @@ interface TxDetails {
   wealthAmount: string;
 }
 
+// All optional fields are typed `T | undefined` (rather than `T?`) so we can
+// assign `undefined` explicitly during reset/initiate. Without this Zustand's
+// shallow `set(...)` would leave stale values from a previous run — most
+// visibly, an old `error` message keeps rendering inside the modal when a
+// new redemption attempt starts.
 interface RedemptionFlowState {
   state: SigningState;
-  voucherId?: string;
-  redemptionId?: string;
-  txDetails?: TxDetails;
-  txHash?: string;
-  error?: string;
-  priceLock?: number;
-  startedAt?: number;
+  voucherId: string | undefined;
+  redemptionId: string | undefined;
+  txDetails: TxDetails | undefined;
+  txHash: string | undefined;
+  error: string | undefined;
+  priceLock: number | undefined;
+  startedAt: number | undefined;
 }
 
 interface RedemptionFlowActions {
@@ -72,18 +77,25 @@ const MID_FLOW_STATES: readonly SigningState[] = [
   "wallet-recovering",
 ];
 
-const initialState: RedemptionFlowState = {
+const idleState: RedemptionFlowState = {
   state: "idle",
+  voucherId: undefined,
+  redemptionId: undefined,
+  txDetails: undefined,
+  txHash: undefined,
+  error: undefined,
+  priceLock: undefined,
+  startedAt: undefined,
 };
 
 export const useRedemptionFlow = create<
   RedemptionFlowState & RedemptionFlowActions
 >((set, get) => ({
-  ...initialState,
+  ...idleState,
 
   initiate: (voucherId) =>
     set({
-      ...initialState,
+      ...idleState,
       voucherId,
       startedAt: Date.now(),
       state: "price-quote",
@@ -106,7 +118,7 @@ export const useRedemptionFlow = create<
   setError: (message) =>
     set((prev) => ({ ...prev, state: "error", error: message })),
 
-  reset: () => set({ ...initialState }),
+  reset: () => set(idleState),
 }));
 
 export function selectIsSigning(state: RedemptionFlowState): boolean {

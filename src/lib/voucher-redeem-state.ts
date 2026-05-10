@@ -7,7 +7,6 @@ export type RedeemState =
 
 export interface DeriveRedeemStateInput {
   authenticated: boolean;
-  userSynced: boolean;
   onWrongChain: boolean;
   rawBalance: bigint | undefined;
   requiredAmount: bigint | null;
@@ -15,12 +14,11 @@ export interface DeriveRedeemStateInput {
 
 export function deriveRedeemState({
   authenticated,
-  userSynced,
   onWrongChain,
   rawBalance,
   requiredAmount,
 }: DeriveRedeemStateInput): RedeemState {
-  if (!authenticated || !userSynced) return "unauth";
+  if (!authenticated) return "unauth";
   if (onWrongChain) return "wrong-chain";
   if (rawBalance === undefined || requiredAmount === null) return "loading";
   if (rawBalance < requiredAmount) return "insufficient";
