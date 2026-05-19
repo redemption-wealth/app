@@ -22,7 +22,7 @@ This app is a **thin client**. All data reads and writes go through the Hono bac
 
 ```
 [User Browser]                           [Backend]                          [On-chain]
-  Next.js App  ─── REST (Hono) ──▶   Hono + Prisma + PG  ◀── Alchemy ──▶   Base Mainnet
+  Next.js App  ─── REST (Hono) ──▶   Hono + Prisma + PG  ◀── Alchemy ──▶   Ethereum (mainnet/Sepolia)
        │                                    │                                   │
        │  wagmi + viem (ERC-20 transfer)    │                                   │
        └────────────────────────────────────┼───────────────────────────────────┘
@@ -36,16 +36,16 @@ This app is a **thin client**. All data reads and writes go through the Hono bac
 
 ## Tech Stack
 
-| Layer           | Technology                                |
-| --------------- | ----------------------------------------- |
-| Framework       | Next.js 16 (App Router, Turbopack)        |
-| Language        | TypeScript                                |
-| Styling         | Tailwind CSS v4                           |
-| Auth            | Privy v3 (email OTP, embedded wallet)     |
-| Blockchain      | wagmi v3 + viem (ERC-20 transfer on Base) |
-| Data Fetching   | @tanstack/react-query v5                  |
-| Flow State      | Zustand (redemption flow state machine)   |
-| Package Manager | pnpm                                      |
+| Layer           | Technology                                                    |
+| --------------- | ------------------------------------------------------------- |
+| Framework       | Next.js 16 (App Router, Turbopack)                            |
+| Language        | TypeScript                                                    |
+| Styling         | Tailwind CSS v4                                               |
+| Auth            | Privy v3 (email OTP, embedded wallet)                         |
+| Blockchain      | wagmi v3 + viem (ERC-20 transfer on Ethereum mainnet/Sepolia) |
+| Data Fetching   | @tanstack/react-query v5                                      |
+| Flow State      | Zustand (redemption flow state machine)                       |
+| Package Manager | pnpm                                                          |
 
 ## Directory Layout
 
@@ -74,7 +74,7 @@ src/
 │   ├── env.ts                 # Zod-validated public env
 │   ├── erc20-abi.ts           # Minimal transfer ABI
 │   ├── utils.ts               # Format helpers (IDR, WEALTH, date)
-│   └── wagmi.ts               # Single-chain Base wagmi config via Privy connector
+│   └── wagmi.ts               # Single-chain (Ethereum mainnet/Sepolia) wagmi config via Privy connector
 ├── stores/
 │   └── redemption-flow.ts     # Zustand state machine (idle → signing → polling → done)
 └── providers.tsx              # PrivyProvider + WagmiProvider + QueryClient
@@ -86,13 +86,13 @@ src/
 cp .env.example .env.local
 ```
 
-| Variable                             | Required | Description                                               |
-| ------------------------------------ | -------- | --------------------------------------------------------- |
-| `NEXT_PUBLIC_PRIVY_APP_ID`           | yes      | Privy app ID for email OTP + embedded wallets             |
-| `NEXT_PUBLIC_API_BASE_URL`           | yes      | Hono backend base URL (e.g. `http://localhost:3001`)      |
-| `NEXT_PUBLIC_TOKEN_CONTRACT_ADDRESS` | yes      | `$WEALTH` ERC-20 address on Base mainnet                  |
-| `NEXT_PUBLIC_APP_URL`                | yes      | Public app URL (used in metadata)                         |
-| `NEXT_PUBLIC_ALCHEMY_RPC_URL`        | no       | Optional custom Base RPC; defaults to the public Base RPC |
+| Variable                             | Required | Description                                              |
+| ------------------------------------ | -------- | -------------------------------------------------------- |
+| `NEXT_PUBLIC_PRIVY_APP_ID`           | yes      | Privy app ID for email OTP + embedded wallets            |
+| `NEXT_PUBLIC_API_BASE_URL`           | yes      | Hono backend base URL (e.g. `http://localhost:3001`)     |
+| `NEXT_PUBLIC_TOKEN_CONTRACT_ADDRESS` | yes      | `$WEALTH` ERC-20 address (Ethereum mainnet or Sepolia)   |
+| `NEXT_PUBLIC_APP_URL`                | yes      | Public app URL (used in metadata)                        |
+| `NEXT_PUBLIC_ALCHEMY_RPC_URL`        | no       | Optional custom Ethereum RPC; defaults to the public RPC |
 
 The treasury wallet address is returned by the backend in the redeem response (`txDetails.treasuryWalletAddress`) and is intentionally **not** an environment variable — the backend is the authoritative source.
 
@@ -119,4 +119,3 @@ By default the app expects the backend at `http://localhost:3001`. Override via 
 ## Where to look for more
 
 - Backend contracts: `wealth-redemption/backend/src/routes/**`
-- Plan + brainstorm: `docs/plans/*`, `docs/brainstorms/*`
