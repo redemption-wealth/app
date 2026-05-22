@@ -20,6 +20,7 @@ import { useRedemptions } from "@/hooks/use-redemptions";
 import { useWealthBalance } from "@/hooks/use-wealth-balance";
 import type { Merchant } from "@/lib/schemas/merchant";
 import type { Voucher } from "@/lib/schemas/voucher";
+import { isVoucherValid } from "@/lib/utils";
 import { shouldShowWelcomeSheet, welcomeFlagKey } from "@/lib/welcome-trigger";
 import { useMarketplaceFilter } from "@/stores/marketplace-filter";
 
@@ -136,6 +137,8 @@ export function MarketplaceInteractive() {
     const query = filter.searchQuery.trim().toLowerCase();
 
     return vouchers.filter((v) => {
+      // Hide expired / inactive / sold-out vouchers
+      if (!isVoucherValid(v)) return false;
       // Category filter via merchant.category
       if (activeCategoryKey) {
         const vCat = normalizeCategoryName(v.merchant?.category);
