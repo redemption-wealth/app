@@ -9,6 +9,5 @@ export function useVoucher(id: string | undefined) {
     queryKey: queryKeys.voucher(id ?? ""),
     queryFn: () => endpoints.getVoucher(id as string),
     enabled: Boolean(id),
-    staleTime: 30_000,
   });
 }

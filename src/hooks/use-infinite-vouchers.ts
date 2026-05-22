@@ -18,7 +18,6 @@ export function useInfiniteVouchers() {
       const { page, totalPages } = lastPage.pagination;
       return page < totalPages ? page + 1 : undefined;
     },
-    staleTime: 30_000,
   });
 
   const vouchers = useMemo<Voucher[]>(() => {

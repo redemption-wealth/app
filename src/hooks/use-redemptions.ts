@@ -17,6 +17,5 @@ export function useRedemptions(params: UseRedemptionsParams = {}) {
     queryKey: queryKeys.redemptions(queryParams),
     queryFn: () => endpoints.listRedemptions(queryParams),
     enabled,
-    staleTime: 30_000,
   });
 }

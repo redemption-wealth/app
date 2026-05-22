@@ -40,7 +40,6 @@ export function useTxHistory({
       return page < totalPages ? page + 1 : undefined;
     },
     enabled,
-    staleTime: 30_000,
   });
 
   const entries = useMemo<HistoryEntry[]>(() => {

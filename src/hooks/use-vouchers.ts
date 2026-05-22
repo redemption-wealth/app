@@ -14,6 +14,5 @@ export function useVouchers(params: UseVouchersParams = {}) {
   return useQuery({
     queryKey: queryKeys.vouchers(params),
     queryFn: () => endpoints.listVouchers(params),
-    staleTime: 30_000,
   });
 }

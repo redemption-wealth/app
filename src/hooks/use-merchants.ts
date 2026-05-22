@@ -13,6 +13,5 @@ export function useMerchants(params: UseMerchantsParams = {}) {
   return useQuery({
     queryKey: queryKeys.merchants(params),
     queryFn: () => endpoints.listMerchants(params),
-    staleTime: 60_000,
   });
 }

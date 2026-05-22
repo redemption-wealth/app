@@ -9,6 +9,5 @@ export function useMerchant(id: string | undefined) {
     queryKey: queryKeys.merchant(id ?? ""),
     queryFn: () => endpoints.getMerchant(id as string),
     enabled: Boolean(id),
-    staleTime: 60_000,
   });
 }
