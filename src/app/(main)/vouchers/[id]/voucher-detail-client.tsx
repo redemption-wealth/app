@@ -260,6 +260,12 @@ function PriceCard({
   cta,
   inlineCtaOnMobile,
 }: PriceCardProps) {
+  const basePriceIdr = Number(voucher.basePrice);
+  const appFeeRate = Number(voucher.appFeeRate ?? "0");
+  const appFeeIdr = Math.round((basePriceIdr * appFeeRate) / 100);
+  const gasFeeIdr = Math.round(Number(voucher.gasFeeAmount ?? "0"));
+  const hasFeeBreakdown = appFeeIdr > 0 || gasFeeIdr > 0;
+
   return (
     <section className="border-border mt-6 space-y-4 rounded-[var(--radius-lg)] border bg-white p-5 md:mt-0 md:p-6">
       <div>
@@ -276,6 +282,46 @@ function PriceCard({
           ≈ {formatIdr(totalPriceIdr)}
         </p>
       </div>
+
+      {hasFeeBreakdown && (
+        <div className="border-border space-y-2 border-t pt-4">
+          <p className="text-on-surface-variant text-[10px] font-bold tracking-widest uppercase">
+            Rincian Harga
+          </p>
+          <div className="space-y-1.5 text-sm">
+            <div className="flex items-center justify-between">
+              <span className="text-on-surface-variant">Harga Voucher</span>
+              <span className="text-on-surface font-medium">
+                {formatIdr(basePriceIdr)}
+              </span>
+            </div>
+            {appFeeIdr > 0 && (
+              <div className="flex items-center justify-between">
+                <span className="text-on-surface-variant">
+                  Biaya Layanan ({appFeeRate}%)
+                </span>
+                <span className="text-on-surface font-medium">
+                  {formatIdr(appFeeIdr)}
+                </span>
+              </div>
+            )}
+            {gasFeeIdr > 0 && (
+              <div className="flex items-center justify-between">
+                <span className="text-on-surface-variant">Biaya Jaringan</span>
+                <span className="text-on-surface font-medium">
+                  {formatIdr(gasFeeIdr)}
+                </span>
+              </div>
+            )}
+            <div className="border-border flex items-center justify-between border-t pt-1.5">
+              <span className="text-on-surface font-semibold">Total</span>
+              <span className="text-on-surface font-semibold">
+                {formatIdr(totalPriceIdr)}
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="border-border text-on-surface-variant grid grid-cols-2 gap-3 border-t pt-4 text-xs md:text-sm">
         <div>
