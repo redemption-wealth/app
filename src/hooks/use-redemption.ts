@@ -26,6 +26,8 @@ export function useRedemption(
     enabled: enabled && Boolean(id),
     refetchInterval,
     refetchOnWindowFocus: true,
-    staleTime: 10_000,
+    // staleTime 0 so every refocus refetches immediately (used/redeemed status
+    // can change while the tab is backgrounded — e.g. the merchant scans it).
+    staleTime: 0,
   });
 }
