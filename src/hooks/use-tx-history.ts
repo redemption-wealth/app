@@ -40,6 +40,16 @@ export function useTxHistory({
       return page < totalPages ? page + 1 : undefined;
     },
     enabled,
+    // Pending redemptions confirm/fail server-side (webhook or reconcile), so
+    // poll while any entry is still pending and refetch on focus to keep the
+    // list status truthful without the user opening the QR detail.
+    refetchOnWindowFocus: true,
+    refetchInterval: (query) =>
+      query.state.data?.pages.some((p) =>
+        p.redemptions.some((r) => r.status === "pending"),
+      )
+        ? 15_000
+        : false,
   });
 
   const entries = useMemo<HistoryEntry[]>(() => {

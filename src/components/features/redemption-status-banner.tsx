@@ -77,7 +77,7 @@ function pickConfig(
 const TONE_CLASSES: Record<BannerConfig["tone"], string> = {
   info: "bg-surface-container text-on-surface",
   warning: "bg-tertiary-container text-on-tertiary-container",
-  error: "bg-error-container text-error",
+  error: "bg-error-container text-on-error-container",
   success: "bg-success-container text-on-success-container",
 };
 
