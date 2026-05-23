@@ -113,7 +113,7 @@ export function WithdrawModal({ open, onOpenChange }: WithdrawModalProps) {
         </div>
 
         {isSuccess ? null : (
-          <DialogFooter className="border-border border-t px-5 py-4 sm:px-6">
+          <DialogFooter className="border-border border-t bg-white px-5 py-4 sm:px-6 sm:py-5">
             <Button
               type="submit"
               form={WITHDRAW_FORM_ID}
