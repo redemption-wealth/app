@@ -113,11 +113,11 @@ export function WithdrawModal({ open, onOpenChange }: WithdrawModalProps) {
         </div>
 
         {isSuccess ? null : (
-          <DialogFooter className="border-border border-t bg-white px-5 py-4 sm:px-6 sm:py-5">
+          <DialogFooter className="border-border mx-0 mb-0 bg-white px-5 py-4 sm:px-6">
             <Button
               type="submit"
               form={WITHDRAW_FORM_ID}
-              className="w-full rounded-full"
+              className="h-11 w-full rounded-full"
               disabled={onWrongChain || isSigning}
             >
               {onWrongChain
