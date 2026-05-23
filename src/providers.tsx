@@ -23,6 +23,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
           accentColor: "#006c48",
         },
         embeddedWallets: {
+          // Privy's built-in wallet UIs (tx confirmation/error prompts) are
+          // English-only and not localizable. Disable them so our own
+          // Indonesian flow (SigningStateUI / WithdrawModal + classifyWalletError)
+          // owns confirmation and error messaging end-to-end.
+          showWalletUIs: false,
           ethereum: {
             createOnLogin: "all-users",
           },

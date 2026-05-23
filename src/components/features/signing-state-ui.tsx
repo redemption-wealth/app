@@ -27,8 +27,8 @@ const STATE_COPY: Record<Exclude<SigningState, "idle" | "done">, StateCopy> = {
     subtitle: "Dompet embedded Anda sedang dihubungkan.",
   },
   "awaiting-signature": {
-    title: "Konfirmasi di dompet",
-    subtitle: "Setujui transfer $WEALTH di popup dompet.",
+    title: "Menandatangani transaksi",
+    subtitle: "Dompet sedang menandatangani transfer $WEALTH Anda.",
   },
   broadcasting: {
     title: "Menyiarkan transaksi",
