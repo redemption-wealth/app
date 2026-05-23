@@ -1,3 +1,4 @@
+import { z } from "zod";
 import { apiRequest, type QueryParams } from "./client";
 import {
   merchantDetailResponseSchema,
@@ -117,6 +118,14 @@ export const endpoints = {
       method: "POST",
       path: `/api/redemptions/${id}/reconcile`,
       responseSchema: reconcileRedemptionResponseSchema,
+      requireAuth: true,
+    }),
+
+  cancelRedemption: (id: string) =>
+    apiRequest({
+      method: "POST",
+      path: `/api/redemptions/${id}/cancel`,
+      responseSchema: z.object({ ok: z.boolean() }),
       requireAuth: true,
     }),
 

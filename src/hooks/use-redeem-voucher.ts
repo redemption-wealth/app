@@ -65,6 +65,7 @@ export function useRedeemVoucher() {
       amountWealth: string,
       treasury: `0x${string}`,
       tokenAddress: `0x${string}`,
+      onBroadcast: () => void,
     ) => {
       transition("opening-wallet", { redemptionId });
       if (!walletAddress) {
@@ -89,6 +90,8 @@ export function useRedeemVoucher() {
         functionName: "transfer",
         args: [treasury, parsedAmount],
       });
+      // Past this point a transaction exists on-chain — it must NOT be cancelled.
+      onBroadcast();
 
       transition("broadcasting", { txHash });
       transition("submitting-hash");
@@ -105,6 +108,8 @@ export function useRedeemVoucher() {
       // Defense-in-depth: button-level guard is primary; this prevents
       // a redemption attempt if the consumer skips the button gating.
       if (!authenticated) return;
+      let pendingRedemptionId: string | null = null;
+      let broadcasted = false;
       try {
         initiateStore(voucherId);
 
@@ -164,8 +169,22 @@ export function useRedeemVoucher() {
         }
         const amount = txDetails?.wealthAmount ?? redemption.wealthAmount;
 
-        await signAndSubmit(redemption.id, amount, treasury, tokenAddress);
+        pendingRedemptionId = redemption.id;
+        await signAndSubmit(
+          redemption.id,
+          amount,
+          treasury,
+          tokenAddress,
+          () => {
+            broadcasted = true;
+          },
+        );
       } catch (err) {
+        // If the wallet never broadcast a tx (gas too low, user reject, wallet
+        // error), release the reserved pending so no orphan transaction lingers.
+        if (pendingRedemptionId && !broadcasted) {
+          await endpoints.cancelRedemption(pendingRedemptionId).catch(() => {});
+        }
         if (isUserReject(err)) {
           reset();
           return;
