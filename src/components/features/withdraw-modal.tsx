@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useChainId } from "wagmi";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,6 +16,7 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -27,6 +29,9 @@ import { TransactionInfo } from "@/components/features/transaction-info";
 import { useAuth } from "@/hooks/use-auth";
 import { useWealthBalance } from "@/hooks/use-wealth-balance";
 import { useWithdraw } from "@/hooks/use-withdraw";
+import { TARGET_CHAIN_ID, targetChain } from "@/lib/wagmi";
+
+const WITHDRAW_FORM_ID = "withdraw-form";
 
 interface WithdrawModalProps {
   open: boolean;
@@ -38,6 +43,8 @@ export function WithdrawModal({ open, onOpenChange }: WithdrawModalProps) {
   const { rawBalance, balance } = useWealthBalance(walletAddress);
   const { state, start, reset } = useWithdraw();
   const [pending, setPending] = useState<WithdrawFormSubmit | null>(null);
+  const chainId = useChainId();
+  const onWrongChain = chainId !== TARGET_CHAIN_ID;
 
   const handleClose = (next: boolean) => {
     if (state.kind === "signing") return;
@@ -95,6 +102,7 @@ export function WithdrawModal({ open, onOpenChange }: WithdrawModalProps) {
                 </div>
               ) : null}
               <WithdrawForm
+                formId={WITHDRAW_FORM_ID}
                 rawBalance={rawBalance}
                 formattedBalance={balance}
                 isSubmitting={isSigning}
@@ -103,6 +111,23 @@ export function WithdrawModal({ open, onOpenChange }: WithdrawModalProps) {
             </div>
           )}
         </div>
+
+        {isSuccess ? null : (
+          <DialogFooter className="border-border mx-0 mb-0 px-5 py-4 sm:px-6 sm:py-5">
+            <Button
+              type="submit"
+              form={WITHDRAW_FORM_ID}
+              className="rounded-full max-sm:w-full sm:min-w-40"
+              disabled={onWrongChain || isSigning}
+            >
+              {onWrongChain
+                ? `Pindah ke ${targetChain.name}`
+                : isSigning
+                  ? "Memproses…"
+                  : "Lanjutkan"}
+            </Button>
+          </DialogFooter>
+        )}
       </DialogContent>
 
       <AlertDialog

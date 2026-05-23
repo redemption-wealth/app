@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { BaseError, UserRejectedRequestError } from "viem";
 import {
+  classifyWalletError,
   isContractRevert,
   isInsufficientFunds,
   isUserReject,
@@ -88,5 +89,40 @@ describe("isContractRevert", () => {
   it("returns reverted:false otherwise", () => {
     expect(isContractRevert(new Error("network"))).toEqual({ reverted: false });
     expect(isContractRevert(null)).toEqual({ reverted: false });
+  });
+});
+
+describe("classifyWalletError", () => {
+  it("maps the raw insufficient-funds gas error to a friendly message", () => {
+    const err = new Error(
+      "insufficient funds for gas * price + value: have 0 want 45295404479905",
+    );
+    expect(classifyWalletError(err)).toEqual({
+      reason: "insufficient_gas",
+      message: "Saldo ETH tidak cukup untuk biaya gas. Top up gas dulu.",
+    });
+  });
+
+  it("maps a contract revert to its reason", () => {
+    const inner = {
+      name: "ContractFunctionRevertedError",
+      reason: "ERC20: transfer amount exceeds balance",
+    };
+    const wrapped = new FakeBaseError("outer", inner);
+    expect(classifyWalletError(wrapped)).toEqual({
+      reason: "transfer_failed",
+      message: "ERC20: transfer amount exceeds balance",
+    });
+  });
+
+  it("falls back to a generic network message and never leaks raw errors", () => {
+    expect(classifyWalletError(new Error("ECONNRESET blah blah"))).toEqual({
+      reason: "rpc_error",
+      message: "Terjadi kesalahan jaringan. Coba lagi.",
+    });
+    expect(classifyWalletError(null)).toEqual({
+      reason: "rpc_error",
+      message: "Terjadi kesalahan jaringan. Coba lagi.",
+    });
   });
 });

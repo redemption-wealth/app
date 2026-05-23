@@ -11,7 +11,7 @@ import { endpoints } from "@/lib/api/endpoints";
 import { env } from "@/lib/env";
 import { ERC20_ABI } from "@/lib/erc20-abi";
 import { telemetry } from "@/lib/telemetry";
-import { isUserReject } from "@/lib/wallet-errors";
+import { classifyWalletError, isUserReject } from "@/lib/wallet-errors";
 import type {
   RedeemVoucherResponse,
   Redemption,
@@ -176,9 +176,7 @@ export function useRedeemVoucher() {
           return;
         }
         telemetry.capture(err, { scope: "redeem-voucher", voucherId });
-        const message =
-          err instanceof Error ? err.message : "Terjadi kesalahan. Coba lagi.";
-        setError(message);
+        setError(classifyWalletError(err).message);
       }
     },
     [

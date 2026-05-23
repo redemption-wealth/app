@@ -2,7 +2,6 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMemo } from "react";
-import { useChainId } from "wagmi";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,7 +18,6 @@ import {
   parseWithdrawAmount,
   type WithdrawFormValues,
 } from "@/lib/schemas/withdraw";
-import { TARGET_CHAIN_ID, targetChain } from "@/lib/wagmi";
 import { formatWealth } from "@/lib/utils";
 
 export interface WithdrawFormSubmit {
@@ -28,6 +26,8 @@ export interface WithdrawFormSubmit {
 }
 
 interface WithdrawFormProps {
+  /** Associates the modal-footer submit button with this form. */
+  formId: string;
   rawBalance: bigint | undefined;
   formattedBalance: string;
   isSubmitting: boolean;
@@ -35,14 +35,12 @@ interface WithdrawFormProps {
 }
 
 export function WithdrawForm({
+  formId,
   rawBalance,
   formattedBalance,
   isSubmitting,
   onSubmit,
 }: WithdrawFormProps) {
-  const chainId = useChainId();
-  const onWrongChain = chainId !== TARGET_CHAIN_ID;
-
   const schema = useMemo(
     () => makeWithdrawSchema({ rawBalance }),
     [rawBalance],
@@ -72,7 +70,7 @@ export function WithdrawForm({
 
   return (
     <Form {...form}>
-      <form onSubmit={handleSubmit} className="space-y-5">
+      <form id={formId} onSubmit={handleSubmit} className="space-y-5">
         <FormField
           control={form.control}
           name="amount"
@@ -85,6 +83,7 @@ export function WithdrawForm({
                     inputMode="decimal"
                     placeholder="0.00"
                     autoComplete="off"
+                    disabled={isSubmitting}
                     {...field}
                   />
                 </FormControl>
@@ -92,7 +91,7 @@ export function WithdrawForm({
                   type="button"
                   variant="outline"
                   onClick={handleMax}
-                  disabled={!rawBalance || rawBalance === 0n}
+                  disabled={isSubmitting || !rawBalance || rawBalance === 0n}
                 >
                   Max
                 </Button>
@@ -116,6 +115,7 @@ export function WithdrawForm({
                   placeholder="0x..."
                   autoComplete="off"
                   spellCheck={false}
+                  disabled={isSubmitting}
                   {...field}
                 />
               </FormControl>
@@ -123,18 +123,6 @@ export function WithdrawForm({
             </FormItem>
           )}
         />
-
-        <Button
-          type="submit"
-          className="w-full rounded-full"
-          disabled={onWrongChain || isSubmitting}
-        >
-          {onWrongChain
-            ? `Pindah ke ${targetChain.name}`
-            : isSubmitting
-              ? "Memproses…"
-              : "Lanjutkan"}
-        </Button>
       </form>
     </Form>
   );

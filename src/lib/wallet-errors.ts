@@ -71,3 +71,37 @@ export function isContractRevert(err: unknown): ContractRevertResult {
   }
   return { reverted: false };
 }
+
+export type WalletErrorReason =
+  | "insufficient_gas"
+  | "transfer_failed"
+  | "rpc_error";
+
+export interface WalletErrorInfo {
+  reason: WalletErrorReason;
+  message: string;
+}
+
+/**
+ * Maps a thrown wallet/transaction error to a friendly Indonesian message.
+ * Caller should handle `isUserReject` separately (it is not an error to show).
+ */
+export function classifyWalletError(err: unknown): WalletErrorInfo {
+  if (isInsufficientFunds(err)) {
+    return {
+      reason: "insufficient_gas",
+      message: "Saldo ETH tidak cukup untuk biaya gas. Top up gas dulu.",
+    };
+  }
+  const revert = isContractRevert(err);
+  if (revert.reverted) {
+    return {
+      reason: "transfer_failed",
+      message: revert.reason ?? "Transaksi ditolak oleh kontrak. Coba lagi.",
+    };
+  }
+  return {
+    reason: "rpc_error",
+    message: "Terjadi kesalahan jaringan. Coba lagi.",
+  };
+}

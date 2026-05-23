@@ -7,11 +7,7 @@ import { env } from "@/lib/env";
 import { ERC20_ABI } from "@/lib/erc20-abi";
 import { hasGasBudget } from "@/lib/schemas/withdraw";
 import { telemetry } from "@/lib/telemetry";
-import {
-  isContractRevert,
-  isInsufficientFunds,
-  isUserReject,
-} from "@/lib/wallet-errors";
+import { classifyWalletError, isUserReject } from "@/lib/wallet-errors";
 
 export type WithdrawState =
   | { kind: "idle" }
@@ -90,28 +86,11 @@ export function useWithdraw() {
           setState({ kind: "idle" });
           return;
         }
-        if (isInsufficientFunds(err)) {
-          setState({
-            kind: "error",
-            reason: "insufficient_gas",
-            message: "Saldo ETH tidak cukup untuk biaya gas. Top up gas dulu.",
-          });
-          return;
+        const { reason, message } = classifyWalletError(err);
+        if (reason === "rpc_error") {
+          telemetry.capture(err, { scope: "useWithdraw" });
         }
-        const revert = isContractRevert(err);
-        if (revert.reverted) {
-          setState({
-            kind: "error",
-            reason: "transfer_failed",
-            message:
-              revert.reason ?? "Transaksi ditolak oleh kontrak. Coba lagi.",
-          });
-          return;
-        }
-        telemetry.capture(err, { scope: "useWithdraw" });
-        const message =
-          err instanceof Error ? err.message : "Terjadi kesalahan jaringan.";
-        setState({ kind: "error", reason: "rpc_error", message });
+        setState({ kind: "error", reason, message });
       }
     },
     [publicClient, walletAddress, writeContractAsync],
