@@ -25,6 +25,7 @@ export function useRedemption(
     queryFn: () => endpoints.getRedemption(id as string),
     enabled: enabled && Boolean(id),
     refetchInterval,
+    refetchOnWindowFocus: true,
     staleTime: 10_000,
   });
 }

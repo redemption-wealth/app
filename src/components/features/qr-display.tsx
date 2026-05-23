@@ -5,6 +5,8 @@ import type { QrCode } from "@/lib/schemas/redemption";
 
 interface QrDisplayProps {
   qrCodes: QrCode[];
+  onReload?: () => void;
+  isReloading?: boolean;
 }
 
 async function downloadQr(imageUrl: string, filename: string) {
@@ -83,13 +85,26 @@ function QrCard({ qr, label }: { qr: QrCode; label?: string }) {
   );
 }
 
-export function QrDisplay({ qrCodes }: QrDisplayProps) {
+export function QrDisplay({ qrCodes, onReload, isReloading }: QrDisplayProps) {
   const [activeIndex, setActiveIndex] = useState(0);
 
   if (qrCodes.length === 0) {
     return (
-      <div className="border-border text-on-surface-variant rounded-[var(--radius-lg)] border bg-white p-6 text-center text-sm">
-        QR code belum siap. Mohon tunggu sebentar.
+      <div className="border-border rounded-[var(--radius-lg)] border bg-white p-6 text-center">
+        <div className="border-primary mx-auto mb-3 h-6 w-6 animate-spin rounded-full border-2 border-t-transparent" />
+        <p className="text-on-surface-variant text-sm">
+          Menyiapkan QR code kamu… Halaman ini akan memperbarui otomatis.
+        </p>
+        {onReload ? (
+          <button
+            type="button"
+            onClick={onReload}
+            disabled={isReloading}
+            className="text-primary mt-3 inline-flex items-center text-xs font-semibold disabled:opacity-50"
+          >
+            {isReloading ? "Memuat…" : "Muat ulang QR"}
+          </button>
+        ) : null}
       </div>
     );
   }

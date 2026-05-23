@@ -15,15 +15,26 @@ import { useRedemptionFlow } from "@/stores/redemption-flow";
 
 const RELATED_LIMIT = 4;
 
+// Poll based on whether the QR is actually ready, not just the redemption
+// status. A CONFIRMED redemption whose QR codes haven't been generated yet
+// (e.g. the post-confirm assignment is still in flight) must keep polling —
+// each fetch also triggers the backend's lazy-heal (ensureQrAssigned), so the
+// QR self-heals without a manual refresh. Stop only once the QR is in hand or
+// the redemption terminally failed.
 function pickPollingInterval(
-  status: string | undefined,
+  redemption:
+    | { status?: string | undefined; qrCodes?: unknown[] | undefined }
+    | undefined,
   elapsedMs: number,
 ): number | false {
-  if (!status) return 3000;
-  if (status !== "pending") return false;
+  if (!redemption) return 3000;
+  const qrReady = (redemption.qrCodes?.length ?? 0) > 0;
+  if (qrReady) return false;
+  if (redemption.status === "failed" || redemption.status === "expired")
+    return false;
   if (elapsedMs < 30_000) return 3000;
-  if (elapsedMs < 300_000) return 10_000;
-  return false;
+  if (elapsedMs < 180_000) return 8_000;
+  return 20_000; // slow heartbeat — never hard-stop while the QR is still missing
 }
 
 export default function QrDisplayPage({
@@ -45,14 +56,17 @@ export default function QrDisplayPage({
     return () => clearInterval(id);
   }, []);
 
-  const { data, isLoading, error } = useRedemption(redemptionId, {
-    refetchInterval: (query) => {
-      const status = query.state.data?.redemption?.status;
-      const createdAt = query.state.data?.redemption?.createdAt;
-      const elapsed = createdAt ? Date.now() - Date.parse(createdAt) : 0;
-      return pickPollingInterval(status, elapsed);
+  const { data, isLoading, error, refetch, isFetching } = useRedemption(
+    redemptionId,
+    {
+      refetchInterval: (query) => {
+        const redemption = query.state.data?.redemption;
+        const createdAt = redemption?.createdAt;
+        const elapsed = createdAt ? Date.now() - Date.parse(createdAt) : 0;
+        return pickPollingInterval(redemption, elapsed);
+      },
     },
-  });
+  );
   const { reconcile, isReconciling, isCoolingDown, fallbackMessage } =
     useReconcileRedemption();
 
@@ -153,7 +167,11 @@ export default function QrDisplayPage({
         ) : null}
 
         {redemption.status === "confirmed" ? (
-          <QrDisplay qrCodes={qrCodes} />
+          <QrDisplay
+            qrCodes={qrCodes}
+            onReload={() => refetch()}
+            isReloading={isFetching}
+          />
         ) : null}
 
         <TransactionInfo txHash={redemption.txHash} />
