@@ -15,26 +15,40 @@ import { useRedemptionFlow } from "@/stores/redemption-flow";
 
 const RELATED_LIMIT = 4;
 
-// Poll based on whether the QR is actually ready, not just the redemption
-// status. A CONFIRMED redemption whose QR codes haven't been generated yet
-// (e.g. the post-confirm assignment is still in flight) must keep polling —
-// each fetch also triggers the backend's lazy-heal (ensureQrAssigned), so the
-// QR self-heals without a manual refresh. Stop only once the QR is in hand or
-// the redemption terminally failed.
+// Drive polling off what we're actually waiting for, in two phases:
+//  1. QR not generated yet → poll fast (each fetch also lazy-heals on the
+//     backend, so the QR self-heals without a manual refresh).
+//  2. QR in hand but not yet redeemed at the counter → keep a calm poll so the
+//     screen flips to "Sudah Dipakai" on its own the moment the merchant scans.
+// Stop once every QR is used, or the redemption terminally failed.
 function pickPollingInterval(
   redemption:
-    | { status?: string | undefined; qrCodes?: unknown[] | undefined }
+    | {
+        status?: string | undefined;
+        qrCodes?: { status?: string }[] | undefined;
+      }
     | undefined,
   elapsedMs: number,
 ): number | false {
   if (!redemption) return 3000;
-  const qrReady = (redemption.qrCodes?.length ?? 0) > 0;
-  if (qrReady) return false;
   if (redemption.status === "failed" || redemption.status === "expired")
     return false;
-  if (elapsedMs < 30_000) return 3000;
-  if (elapsedMs < 180_000) return 8_000;
-  return 20_000; // slow heartbeat — never hard-stop while the QR is still missing
+
+  const qrCodes = redemption.qrCodes ?? [];
+  const qrReady = qrCodes.length > 0;
+  if (!qrReady) {
+    // Phase 1: waiting for confirmation + QR generation.
+    if (elapsedMs < 30_000) return 3000;
+    if (elapsedMs < 180_000) return 8_000;
+    return 20_000;
+  }
+
+  // Phase 2: QR is ready — watch until it's scanned/used.
+  const allUsed = qrCodes.every(
+    (q) => q.status === "used" || q.status === "fully_used",
+  );
+  if (allUsed) return false;
+  return 15_000;
 }
 
 export default function QrDisplayPage({

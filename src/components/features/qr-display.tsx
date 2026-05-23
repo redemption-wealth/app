@@ -26,20 +26,23 @@ async function downloadQr(imageUrl: string, filename: string) {
   }
 }
 
-function StatusText({ status }: { status: QrCode["status"] }) {
-  const className =
-    status === "used"
-      ? "text-outline-variant line-through"
-      : status === "redeemed"
-        ? "text-primary font-semibold"
-        : "text-on-success-container font-semibold";
+function isUsedStatus(status: QrCode["status"]): boolean {
+  return status === "used" || status === "fully_used";
+}
 
-  const label =
-    status === "used"
-      ? "Sudah dipakai"
-      : status === "redeemed"
-        ? "Siap digunakan"
-        : "Tersedia";
+function StatusText({ status }: { status: QrCode["status"] }) {
+  const used = isUsedStatus(status);
+  const className = used
+    ? "text-error font-semibold"
+    : status === "redeemed"
+      ? "text-primary font-semibold"
+      : "text-on-success-container font-semibold";
+
+  const label = used
+    ? "Sudah dipakai"
+    : status === "redeemed"
+      ? "Siap digunakan"
+      : "Tersedia";
 
   return (
     <p className="text-outline text-xs">
@@ -49,38 +52,75 @@ function StatusText({ status }: { status: QrCode["status"] }) {
 }
 
 function QrCard({ qr, label }: { qr: QrCode; label?: string }) {
+  const used = isUsedStatus(qr.status);
   return (
-    <div className="border-border flex flex-col items-center gap-3 rounded-[var(--radius-lg)] border bg-white p-6">
+    <div
+      className={`flex flex-col items-center gap-3 rounded-[var(--radius-lg)] border bg-white p-6 ${
+        used ? "border-error/40" : "border-border"
+      }`}
+    >
       {label ? (
         <p className="text-on-surface-variant text-xs font-semibold">{label}</p>
       ) : null}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={qr.imageUrl}
-        alt={`QR code ${qr.qrNumber}`}
-        className="h-64 w-64 object-contain"
-      />
+      <div className="relative">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={qr.imageUrl}
+          alt={`QR code ${qr.qrNumber}`}
+          className={`h-64 w-64 object-contain transition ${
+            used ? "opacity-20 grayscale" : ""
+          }`}
+        />
+        {used ? (
+          <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+            <div className="text-error border-error flex -rotate-12 items-center gap-1.5 rounded-xl border-2 bg-white/85 px-4 py-2 shadow-sm">
+              <svg
+                className="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2.5}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <span className="text-base font-extrabold tracking-wide uppercase">
+                Sudah Dipakai
+              </span>
+            </div>
+          </div>
+        ) : null}
+      </div>
       <StatusText status={qr.status} />
-      <button
-        type="button"
-        onClick={() => downloadQr(qr.imageUrl, `qr-${qr.qrNumber}.png`)}
-        className="text-primary inline-flex items-center gap-1.5 text-xs font-semibold"
-      >
-        <svg
-          className="h-4 w-4"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          strokeWidth={1.5}
+      {used ? (
+        <p className="text-on-surface-variant text-center text-xs">
+          Voucher ini telah diredem di merchant.
+        </p>
+      ) : (
+        <button
+          type="button"
+          onClick={() => downloadQr(qr.imageUrl, `qr-${qr.qrNumber}.png`)}
+          className="text-primary inline-flex items-center gap-1.5 text-xs font-semibold"
         >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"
-          />
-        </svg>
-        Simpan QR
-      </button>
+          <svg
+            className="h-4 w-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={1.5}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"
+            />
+          </svg>
+          Simpan QR
+        </button>
+      )}
     </div>
   );
 }
