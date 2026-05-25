@@ -30,7 +30,7 @@ This app is a **thin client**. All data reads and writes go through the Hono bac
                                     Webhook confirms tx
 ```
 
-- **Auth**: Privy email OTP → embedded MPC wallet. `privy:token` in cookies is used as a bearer token to call the backend.
+- **Auth**: Privy email OTP → embedded MPC wallet. The Privy access token is obtained via `getAccessToken()` (`src/components/layout/access-token-bridge.tsx`) and sent on every backend request as an `Authorization: Bearer <token>` header (`src/lib/api/client.ts`). No cookie token is read.
 - **Writes**: `POST /vouchers/:id/redeem` → user signs → `POST /redemptions/:id/submit-tx` → adaptive polling on `/redemptions/:id`.
 - **Migrations**: The backend owns the Prisma schema and migrations. This app never runs migrations.
 
@@ -38,7 +38,7 @@ This app is a **thin client**. All data reads and writes go through the Hono bac
 
 | Layer           | Technology                                                    |
 | --------------- | ------------------------------------------------------------- |
-| Framework       | Next.js 16 (App Router, Turbopack)                            |
+| Framework       | Next.js 16 (App Router)                                       |
 | Language        | TypeScript                                                    |
 | Styling         | Tailwind CSS v4                                               |
 | Auth            | Privy v3 (email OTP, embedded wallet)                         |
@@ -52,31 +52,39 @@ This app is a **thin client**. All data reads and writes go through the Hono bac
 ```
 src/
 ├── app/
-│   ├── (main)/              # Authenticated user pages
-│   │   ├── page.tsx           # Home: balance + featured vouchers
-│   │   ├── merchants/         # Merchant listing & detail
-│   │   ├── vouchers/[id]/     # Voucher detail + redeem CTA
-│   │   ├── qr/[redemptionId]  # Redemption polling + QR display
-│   │   ├── wallet/            # Balance + deposit panel + tx list
-│   │   ├── history/           # Redemption history
-│   │   ├── profile/           # Account info + logout
-│   │   └── onboarding/deposit # First-time deposit guide
-│   └── auth/login/            # Email OTP login
+│   ├── (main)/                  # User pages (single nav group)
+│   │   ├── page.tsx               # Home / marketplace (merchants + vouchers)
+│   │   ├── marketplace-client.tsx # Interactive marketplace island
+│   │   ├── merchants/[id]/        # Merchant detail (no listing route; /merchants → /)
+│   │   ├── vouchers/[id]/         # Voucher detail + redeem CTA
+│   │   ├── qr/[redemptionId]/     # Redemption polling + QR display
+│   │   ├── profile/               # Account info + balance + logout
+│   │   └── layout.tsx             # (main) layout (top nav)
+│   ├── preview/welcome/           # Design preview page (not a user route)
+│   ├── preview/withdraw/          # Design preview page (not a user route)
+│   └── layout.tsx                 # Root layout + providers
+│   # Login is an inline Privy modal — there is no /auth/login route.
+│   # /wallet, /history, /auth/login, /onboarding/deposit, /merchants are
+│   # redirects defined in next.config.ts (mostly → /profile or /).
 ├── components/
 │   ├── features/              # Domain components (voucher-card, qr-display, ...)
-│   ├── layout/                # Sidebar, BottomNav, MobileHeader, AuthGuard, OfflineBanner
+│   ├── layout/                # access-token-bridge, embedded-wallet-bridge,
+│   │                          #   offline-banner, top-nav, user-sync-bridge
 │   └── shared/                # Generic UI primitives (modal, copyable-address)
 ├── hooks/                     # React-query wrappers over endpoints.* + wallet hooks
 ├── lib/
 │   ├── api/                   # client.ts (fetch), endpoints.ts (typed calls), errors.ts
 │   ├── schemas/               # Zod response schemas matching backend contracts
-│   ├── auth-errors.ts         # Privy error → Indonesian copy mapping
+│   ├── wallet-errors.ts       # Wallet/Privy error → Indonesian copy mapping
+│   ├── chain.ts               # Single source of truth for selected network
 │   ├── env.ts                 # Zod-validated public env
 │   ├── erc20-abi.ts           # Minimal transfer ABI
 │   ├── utils.ts               # Format helpers (IDR, WEALTH, date)
-│   └── wagmi.ts               # Single-chain (Ethereum mainnet/Sepolia) wagmi config via Privy connector
+│   └── wagmi.ts               # Single-chain (mainnet/Sepolia) wagmi config via Privy connector
 ├── stores/
-│   └── redemption-flow.ts     # Zustand state machine (idle → signing → polling → done)
+│   ├── redemption-flow.ts     # Zustand state machine (idle → signing → polling → done)
+│   ├── marketplace-filter.ts  # Marketplace filter/search state
+│   └── user-sync.ts           # User-sync best-effort state
 └── providers.tsx              # PrivyProvider + WagmiProvider + QueryClient
 ```
 
@@ -86,13 +94,15 @@ src/
 cp .env.example .env.local
 ```
 
-| Variable                             | Required | Description                                              |
-| ------------------------------------ | -------- | -------------------------------------------------------- |
-| `NEXT_PUBLIC_PRIVY_APP_ID`           | yes      | Privy app ID for email OTP + embedded wallets            |
-| `NEXT_PUBLIC_API_BASE_URL`           | yes      | Hono backend base URL (e.g. `http://localhost:3001`)     |
-| `NEXT_PUBLIC_TOKEN_CONTRACT_ADDRESS` | yes      | `$WEALTH` ERC-20 address (Ethereum mainnet or Sepolia)   |
-| `NEXT_PUBLIC_APP_URL`                | yes      | Public app URL (used in metadata)                        |
-| `NEXT_PUBLIC_ALCHEMY_RPC_URL`        | no       | Optional custom Ethereum RPC; defaults to the public RPC |
+| Variable                             | Required | Description                                                                                                                        |
+| ------------------------------------ | -------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `NEXT_PUBLIC_PRIVY_APP_ID`           | yes      | Privy app ID for email OTP + embedded wallets                                                                                      |
+| `NEXT_PUBLIC_API_BASE_URL`           | yes      | Hono backend base URL (`.env.example` defaults to the prod URL)                                                                    |
+| `NEXT_PUBLIC_TOKEN_CONTRACT_ADDRESS` | yes      | `$WEALTH` ERC-20 address (Ethereum mainnet or Sepolia)                                                                             |
+| `NEXT_PUBLIC_APP_URL`                | yes      | Public app URL (used in metadata)                                                                                                  |
+| `NEXT_PUBLIC_CHAIN`                  | yes      | Target network enum: `mainnet` or `sepolia` (defaults to `mainnet`). Drives `chain.ts` + `wagmi.ts`                                |
+| `NEXT_PUBLIC_ALCHEMY_RPC_URL`        | no       | Optional custom Ethereum RPC; defaults to the public RPC                                                                           |
+| `BACKEND_PROXY_URL`                  | no       | Dev-only. Overrides the `/api/*` rewrite target in `next.config.ts` (e.g. `http://localhost:3001`); falls back to the prod backend |
 
 The treasury wallet address is returned by the backend in the redeem response (`txDetails.treasuryWalletAddress`) and is intentionally **not** an environment variable — the backend is the authoritative source.
 
@@ -104,10 +114,10 @@ Start the backend first (see `../backend`), then:
 pnpm install
 pnpm dev        # dev server on http://localhost:3000
 pnpm lint       # eslint
-pnpm build      # production build (Next.js + Turbopack)
+pnpm build      # production build (next build)
 ```
 
-By default the app expects the backend at `http://localhost:3001`. Override via `NEXT_PUBLIC_API_BASE_URL` in `.env.local`.
+By default the app points at the production backend (`https://backend-wealthcrypto-fund.vercel.app`) — both `NEXT_PUBLIC_API_BASE_URL` in `.env.example` and the `/api/*` rewrite fallback in `next.config.ts`. For local-stack testing, set `NEXT_PUBLIC_API_BASE_URL` (and `BACKEND_PROXY_URL` for the dev rewrite) to `http://localhost:3001` in `.env.local`.
 
 ## Troubleshooting
 
