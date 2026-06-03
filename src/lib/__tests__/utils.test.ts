@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import {
   formatIdr,
+  formatDateTime,
   formatWealth,
   truncateAddress,
   isVoucherValid,
@@ -39,6 +40,19 @@ describe("formatIdr — 0 decimals", () => {
   it("edge: zero and large grouped", () => {
     expect(formatIdr(0)).toMatch(/Rp\s?0/);
     expect(formatIdr(1000000)).toMatch(/1\.000\.000/);
+  });
+});
+
+describe("formatDateTime — '12 Agu 2026 15:45:30' (WIB, 24h, seconds)", () => {
+  it("formats date + colon time with seconds in WIB", () => {
+    // 08:45:30 UTC = 15:45:30 WIB on 12 Aug 2026
+    expect(formatDateTime("2026-08-12T08:45:30Z")).toBe("12 Agu 2026 15:45:30");
+  });
+  it("applies UTC+7 offset and zero-pads", () => {
+    // 00:00:00 UTC = 07:00:00 WIB
+    expect(formatDateTime(new Date("2024-01-15T00:00:00Z"))).toBe(
+      "15 Jan 2024 07:00:00",
+    );
   });
 });
 

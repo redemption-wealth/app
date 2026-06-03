@@ -22,7 +22,7 @@ import { TxDetailModal } from "@/components/features/tx-detail-modal";
 import { TxStatusPill } from "@/components/features/tx-status-pill";
 import type { HistoryEntry } from "@/lib/schemas/history-entry";
 import { useTxHistory } from "@/hooks/use-tx-history";
-import { formatDate, formatWealth, truncateAddress } from "@/lib/utils";
+import { formatDateTime, formatWealth, truncateAddress } from "@/lib/utils";
 import type { RedemptionStatus } from "@/lib/schemas/redemption";
 
 type StatusFilter = "all" | RedemptionStatus;
@@ -119,7 +119,7 @@ export function TxHistoryTable() {
                 >
                   <TableCell className="font-medium">Redeem</TableCell>
                   <TableCell>{formatWealth(entry.amountWealth)}</TableCell>
-                  <TableCell>{formatDate(entry.createdAt)}</TableCell>
+                  <TableCell>{formatDateTime(entry.createdAt)}</TableCell>
                   <TableCell>
                     <TxStatusPill status={entry.status} />
                   </TableCell>

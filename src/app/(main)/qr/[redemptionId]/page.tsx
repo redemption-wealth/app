@@ -10,7 +10,12 @@ import { useReconcileRedemption } from "@/hooks/use-reconcile-redemption";
 import { useRedemption } from "@/hooks/use-redemption";
 import { useRequireAuth } from "@/hooks/use-require-auth";
 import { useVouchers } from "@/hooks/use-vouchers";
-import { formatDate, formatWealth, isVoucherExpired } from "@/lib/utils";
+import {
+  formatDate,
+  formatDateTime,
+  formatWealth,
+  isVoucherExpired,
+} from "@/lib/utils";
 import { useRedemptionFlow } from "@/stores/redemption-flow";
 
 const RELATED_LIMIT = 4;
@@ -160,9 +165,22 @@ export default function QrDisplayPage({
             {voucher?.title ?? "Redemption"}
           </h1>
           <p className="text-on-surface-variant text-sm">
-            Dibuat {formatDate(redemption.createdAt)} ·{" "}
+            Dibuat {formatDateTime(redemption.createdAt)} ·{" "}
             {formatWealth(redemption.wealthAmount)} $WEALTH
           </p>
+          {voucher?.expiryDate ? (
+            <p
+              className={`text-sm ${
+                isVoucherExpired(voucher.expiryDate)
+                  ? "text-error font-semibold"
+                  : "text-on-surface-variant"
+              }`}
+            >
+              {isVoucherExpired(voucher.expiryDate)
+                ? `Kedaluwarsa ${formatDate(voucher.expiryDate)}`
+                : `Berlaku sampai ${formatDate(voucher.expiryDate)}`}
+            </p>
+          ) : null}
         </div>
 
         <RedemptionStatusBanner

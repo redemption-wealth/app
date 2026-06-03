@@ -8,7 +8,7 @@ import { TxDetailModal } from "@/components/features/tx-detail-modal";
 import { TxStatusPill } from "@/components/features/tx-status-pill";
 import type { HistoryEntry } from "@/lib/schemas/history-entry";
 import { useTxHistory } from "@/hooks/use-tx-history";
-import { formatDate, formatWealth } from "@/lib/utils";
+import { formatDateTime, formatWealth } from "@/lib/utils";
 import type { RedemptionStatus } from "@/lib/schemas/redemption";
 
 type StatusFilter = "all" | RedemptionStatus;
@@ -109,7 +109,7 @@ export function TxHistoryCardList() {
                         {entry.merchantName ? ` — ${entry.merchantName}` : ""}
                       </p>
                       <p className="text-on-surface-variant mt-0.5 text-xs">
-                        {formatDate(entry.createdAt)}
+                        {formatDateTime(entry.createdAt)}
                       </p>
                     </div>
                     <TxStatusPill status={entry.status} />

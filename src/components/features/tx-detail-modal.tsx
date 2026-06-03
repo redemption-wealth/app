@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { TransactionInfo } from "@/components/features/transaction-info";
 import { TxStatusPill } from "@/components/features/tx-status-pill";
 import type { HistoryEntry } from "@/lib/schemas/history-entry";
-import { formatDate, formatWealth } from "@/lib/utils";
+import { formatDateTime, formatWealth } from "@/lib/utils";
 
 interface TxDetailModalProps {
   entry: HistoryEntry | null;
@@ -61,7 +61,7 @@ export function TxDetailModal({ entry, onOpenChange }: TxDetailModalProps) {
             {entry.merchantName ? ` — ${entry.merchantName}` : ""}
           </DialogTitle>
           <DialogDescription className="text-on-surface-variant text-sm">
-            {formatDate(entry.createdAt)}
+            {formatDateTime(entry.createdAt)}
           </DialogDescription>
         </DialogHeader>
 

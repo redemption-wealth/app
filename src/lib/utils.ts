@@ -32,6 +32,27 @@ export function formatDate(dateStr: string | Date): string {
   }).format(date);
 }
 
+// Like formatDate but appends 24h time with seconds (WIB), e.g.
+// "12 Agu 2026 15:45:30". Use for exact moments (timestamps); the time uses
+// colons (en-GB) rather than id-ID's dots so it reads as 15:45:30.
+export function formatDateTime(dateStr: string | Date): string {
+  const date = typeof dateStr === "string" ? new Date(dateStr) : dateStr;
+  const datePart = new Intl.DateTimeFormat("id-ID", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    timeZone: "Asia/Jakarta",
+  }).format(date);
+  const timePart = new Intl.DateTimeFormat("en-GB", {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hourCycle: "h23",
+    timeZone: "Asia/Jakarta",
+  }).format(date);
+  return `${datePart} ${timePart}`;
+}
+
 export function truncateAddress(address: string): string {
   if (address.length <= 10) return address;
   return `${address.slice(0, 6)}...${address.slice(-4)}`;
