@@ -334,10 +334,10 @@ function PriceCard({
         </div>
         <div>
           <p className="text-[10px] font-semibold tracking-wider uppercase">
-            Berlaku hingga
+            Masa berlaku
           </p>
           <p className="text-on-surface mt-1 font-bold">
-            {formatDate(voucher.expiryDate)}
+            {formatDate(voucher.startDate)} – {formatDate(voucher.expiryDate)}
           </p>
         </div>
       </div>
