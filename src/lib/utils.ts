@@ -51,3 +51,14 @@ export function isVoucherValid(voucher: {
   end.setUTCHours(16, 59, 59, 999); // 23:59:59 WIB = 16:59:59 UTC
   return voucher.isActive && voucher.remainingStock > 0 && end >= now;
 }
+
+// True once a voucher's validity window has fully passed. Valid through the
+// entire expiry day in WIB (UTC+7), matching isVoucherValid / the backend.
+export function isVoucherExpired(expiryDate: Date | string): boolean {
+  const end =
+    typeof expiryDate === "string"
+      ? new Date(expiryDate)
+      : new Date(expiryDate);
+  end.setUTCHours(16, 59, 59, 999); // 23:59:59 WIB = 16:59:59 UTC
+  return end < new Date();
+}

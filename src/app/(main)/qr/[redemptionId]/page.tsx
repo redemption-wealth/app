@@ -10,7 +10,7 @@ import { useReconcileRedemption } from "@/hooks/use-reconcile-redemption";
 import { useRedemption } from "@/hooks/use-redemption";
 import { useRequireAuth } from "@/hooks/use-require-auth";
 import { useVouchers } from "@/hooks/use-vouchers";
-import { formatDate, formatWealth } from "@/lib/utils";
+import { formatDate, formatWealth, isVoucherExpired } from "@/lib/utils";
 import { useRedemptionFlow } from "@/stores/redemption-flow";
 
 const RELATED_LIMIT = 4;
@@ -183,6 +183,7 @@ export default function QrDisplayPage({
         {redemption.status === "confirmed" ? (
           <QrDisplay
             qrCodes={qrCodes}
+            expired={voucher ? isVoucherExpired(voucher.expiryDate) : false}
             onReload={() => refetch()}
             isReloading={isFetching}
           />

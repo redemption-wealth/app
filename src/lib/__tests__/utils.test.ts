@@ -4,6 +4,7 @@ import {
   formatWealth,
   truncateAddress,
   isVoucherValid,
+  isVoucherExpired,
 } from "@/lib/utils";
 
 // Project convention (UAT prereq): WEALTH 4dp, IDR 0dp, id-ID locale.
@@ -125,5 +126,30 @@ describe("isVoucherValid", () => {
         expiryDate: future,
       }),
     ).toBe(false);
+  });
+});
+
+// Drives the "Kedaluwarsa" QR status — true only once the WIB expiry day passed.
+describe("isVoucherExpired", () => {
+  it("far-future expiry → not expired", () => {
+    expect(isVoucherExpired("2999-12-31")).toBe(false);
+  });
+
+  it("far-past expiry → expired", () => {
+    expect(isVoucherExpired("2000-01-01")).toBe(true);
+  });
+
+  it("expiry tomorrow is not expired (WIB end-of-day extension)", () => {
+    const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000);
+    expect(isVoucherExpired(tomorrow)).toBe(false);
+  });
+
+  it("yesterday expiry is expired", () => {
+    const yesterday = new Date(Date.now() - 36 * 60 * 60 * 1000);
+    expect(isVoucherExpired(yesterday)).toBe(true);
+  });
+
+  it("accepts Date object input", () => {
+    expect(isVoucherExpired(new Date("2999-01-01T00:00:00Z"))).toBe(false);
   });
 });

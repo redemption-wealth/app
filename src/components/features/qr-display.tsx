@@ -5,6 +5,9 @@ import type { QrCode } from "@/lib/schemas/redemption";
 
 interface QrDisplayProps {
   qrCodes: QrCode[];
+  /** True when the voucher's validity window has passed — drives the
+   *  "Kedaluwarsa" state for QRs that were never used in time. */
+  expired?: boolean;
   onReload?: () => void;
   isReloading?: boolean;
 }
@@ -30,19 +33,32 @@ function isUsedStatus(status: QrCode["status"]): boolean {
   return status === "used" || status === "fully_used";
 }
 
-function StatusText({ status }: { status: QrCode["status"] }) {
+function StatusText({
+  status,
+  expired = false,
+}: {
+  status: QrCode["status"];
+  expired?: boolean;
+}) {
   const used = isUsedStatus(status);
-  const className = used
-    ? "text-error font-semibold"
-    : status === "redeemed"
-      ? "text-primary font-semibold"
-      : "text-on-success-container font-semibold";
+  // Expiry only matters for a QR that was never used in time.
+  const isExpired = !used && !!expired;
 
-  const label = used
-    ? "Sudah dipakai"
-    : status === "redeemed"
-      ? "Siap digunakan"
-      : "Tersedia";
+  let className: string;
+  let label: string;
+  if (used) {
+    className = "text-error font-semibold";
+    label = "Sudah dipakai";
+  } else if (isExpired) {
+    className = "text-error font-semibold";
+    label = "Kedaluwarsa";
+  } else if (status === "redeemed") {
+    className = "text-primary font-semibold";
+    label = "Siap digunakan";
+  } else {
+    className = "text-on-success-container font-semibold";
+    label = "Tersedia";
+  }
 
   return (
     <p className="text-outline text-xs">
@@ -51,12 +67,24 @@ function StatusText({ status }: { status: QrCode["status"] }) {
   );
 }
 
-function QrCard({ qr, label }: { qr: QrCode; label?: string }) {
+function QrCard({
+  qr,
+  label,
+  expired = false,
+}: {
+  qr: QrCode;
+  label?: string;
+  expired?: boolean;
+}) {
   const used = isUsedStatus(qr.status);
+  const isExpired = !used && !!expired;
+  // Both states disable the QR visually and hide the download action.
+  const disabled = used || isExpired;
+  const overlayLabel = used ? "Sudah Dipakai" : "Kedaluwarsa";
   return (
     <div
       className={`flex flex-col items-center gap-3 rounded-[var(--radius-lg)] border bg-white p-6 ${
-        used ? "border-error/40" : "border-border"
+        disabled ? "border-error/40" : "border-border"
       }`}
     >
       {label ? (
@@ -68,10 +96,10 @@ function QrCard({ qr, label }: { qr: QrCode; label?: string }) {
           src={qr.imageUrl}
           alt={`QR code ${qr.qrNumber}`}
           className={`h-64 w-64 object-contain transition ${
-            used ? "opacity-20 grayscale" : ""
+            disabled ? "opacity-20 grayscale" : ""
           }`}
         />
-        {used ? (
+        {disabled ? (
           <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
             <div className="text-error border-error flex -rotate-12 items-center gap-1.5 rounded-xl border-2 bg-white/85 px-4 py-2 shadow-sm">
               <svg
@@ -88,16 +116,18 @@ function QrCard({ qr, label }: { qr: QrCode; label?: string }) {
                 />
               </svg>
               <span className="text-base font-extrabold tracking-wide uppercase">
-                Sudah Dipakai
+                {overlayLabel}
               </span>
             </div>
           </div>
         ) : null}
       </div>
-      <StatusText status={qr.status} />
-      {used ? (
+      <StatusText status={qr.status} expired={expired} />
+      {disabled ? (
         <p className="text-on-surface-variant text-center text-xs">
-          Voucher ini telah diredem di merchant.
+          {used
+            ? "Voucher ini telah diredem di merchant."
+            : "Voucher ini sudah melewati masa berlaku."}
         </p>
       ) : (
         <button
@@ -125,7 +155,12 @@ function QrCard({ qr, label }: { qr: QrCode; label?: string }) {
   );
 }
 
-export function QrDisplay({ qrCodes, onReload, isReloading }: QrDisplayProps) {
+export function QrDisplay({
+  qrCodes,
+  expired = false,
+  onReload,
+  isReloading,
+}: QrDisplayProps) {
   const [activeIndex, setActiveIndex] = useState(0);
 
   if (qrCodes.length === 0) {
@@ -153,7 +188,7 @@ export function QrDisplay({ qrCodes, onReload, isReloading }: QrDisplayProps) {
     const qr = qrCodes[0]!;
     return (
       <div className="space-y-3">
-        <QrCard qr={qr} />
+        <QrCard qr={qr} expired={expired} />
       </div>
     );
   }
@@ -170,6 +205,7 @@ export function QrDisplay({ qrCodes, onReload, isReloading }: QrDisplayProps) {
           <QrCard
             key={qr.id}
             qr={qr}
+            expired={expired}
             label={`QR ${i + 1} dari ${qrCodes.length}`}
           />
         ))}
@@ -179,6 +215,7 @@ export function QrDisplay({ qrCodes, onReload, isReloading }: QrDisplayProps) {
       <div className="md:hidden">
         <QrCard
           qr={active}
+          expired={expired}
           label={`QR ${activeIndex + 1} dari ${qrCodes.length}`}
         />
       </div>
