@@ -10,7 +10,7 @@ const walletConnectDomains =
   "https://*.walletconnect.com https://*.walletconnect.org wss://*.walletconnect.com wss://*.walletconnect.org";
 const cloudflareChallenge = "https://challenges.cloudflare.com";
 const r2Domains =
-  "https://*.r2.dev https://*.r2.cloudflarestorage.com https://pub-*.r2.dev";
+  "https://*.r2.dev https://*.r2.cloudflarestorage.com https://pub-*.r2.dev https://cdn.wealthcrypto.fund";
 
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
 
@@ -47,6 +47,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       { protocol: "https", hostname: "*.r2.dev" },
       { protocol: "https", hostname: "*.r2.cloudflarestorage.com" },
+      { protocol: "https", hostname: "cdn.wealthcrypto.fund" },
     ],
   },
   async redirects() {
