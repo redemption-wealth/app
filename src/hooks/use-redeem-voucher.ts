@@ -2,9 +2,10 @@
 
 import { useRouter } from "next/navigation";
 import { useCallback } from "react";
-import { parseUnits } from "viem";
-import { useWriteContract } from "wagmi";
+import { useSendTransaction } from "@privy-io/react-auth";
+import { encodeFunctionData, parseUnits } from "viem";
 import { useAuth } from "@/hooks/use-auth";
+import { TARGET_CHAIN_ID } from "@/lib/chain";
 import { useWalletHealth } from "@/hooks/use-wallet-health";
 import { ApiError } from "@/lib/api/errors";
 import { endpoints } from "@/lib/api/endpoints";
@@ -52,7 +53,7 @@ function existingRedemptionNeedsSignature(redemption: Redemption): boolean {
 export function useRedeemVoucher() {
   const router = useRouter();
   const { walletAddress, login, authenticated } = useAuth();
-  const { writeContractAsync } = useWriteContract();
+  const { sendTransaction } = useSendTransaction();
   const walletHealth = useWalletHealth();
   const initiateStore = useRedemptionFlow((s) => s.initiate);
   const transition = useRedemptionFlow((s) => s.transition);
@@ -84,12 +85,27 @@ export function useRedeemVoucher() {
 
       transition("awaiting-signature");
       const parsedAmount = parseUnits(amountWealth, 18);
-      const txHash = await writeContractAsync({
-        address: tokenAddress,
-        abi: ERC20_ABI,
-        functionName: "transfer",
-        args: [treasury, parsedAmount],
-      });
+      // Gasless redemption: Privy sponsors the gas (`sponsor: true`) so users
+      // never need ETH to redeem. Sponsorship is enabled + funded in the Privy
+      // dashboard; the flag is per-transaction (not automatic), so only this
+      // WEALTH transfer is sponsored. `showWalletUIs: false` keeps our own
+      // Indonesian signing UI in control, matching the global Privy config.
+      const { hash: txHash } = await sendTransaction(
+        {
+          to: tokenAddress,
+          data: encodeFunctionData({
+            abi: ERC20_ABI,
+            functionName: "transfer",
+            args: [treasury, parsedAmount],
+          }),
+          chainId: TARGET_CHAIN_ID,
+        },
+        {
+          sponsor: true,
+          address: walletAddress,
+          uiOptions: { showWalletUIs: false },
+        },
+      );
       // Past this point a transaction exists on-chain — it must NOT be cancelled.
       onBroadcast();
 
@@ -100,7 +116,7 @@ export function useRedeemVoucher() {
       transition("polling-confirmation");
       router.push(`/qr/${redemptionId}`);
     },
-    [router, transition, walletAddress, walletHealth, writeContractAsync],
+    [router, sendTransaction, transition, walletAddress, walletHealth],
   );
 
   const start = useCallback(
