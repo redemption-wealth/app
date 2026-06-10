@@ -30,13 +30,6 @@ function normalizeCategoryName(value: string | undefined | null): string {
   return (value ?? "").trim().toLowerCase();
 }
 
-function titleCase(value: string): string {
-  return value
-    .split(/[\s_-]+/)
-    .map((part) => (part ? part[0]!.toUpperCase() + part.slice(1) : ""))
-    .join(" ");
-}
-
 function voucherWealthPrice(
   voucher: Voucher,
   priceIdr: number | null,
@@ -83,7 +76,7 @@ export function MarketplaceInteractive() {
     for (const m of allMerchants) {
       const key = normalizeCategoryName(m.category);
       if (!key) continue;
-      if (!seen.has(key)) seen.set(key, titleCase(m.category));
+      if (!seen.has(key)) seen.set(key, m.category);
     }
     const dynamic = Array.from(seen, ([id, label]) => ({ id, label })).sort(
       (a, b) => a.label.localeCompare(b.label, "id"),
