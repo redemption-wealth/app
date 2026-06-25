@@ -1,9 +1,40 @@
 import { describe, expect, it } from "vitest";
 import {
+  qrCodeSchema,
   redeemVoucherRequestSchema,
   redeemVoucherResponseSchema,
   redemptionSchema,
 } from "../redemption";
+
+const baseQr = {
+  id: "q1",
+  voucherId: "v1",
+  qrNumber: 1,
+  redemptionId: "r1",
+  imageUrl: "qr-codes/r1/1.png",
+  token: "tok-1",
+  status: "redeemed" as const,
+  createdAt: "2026-04-17T00:00:00Z",
+};
+
+describe("qrCodeSchema multi-format", () => {
+  it("accepts a CODE asset: null imageUrl + value", () => {
+    const parsed = qrCodeSchema.parse({
+      ...baseQr,
+      imageUrl: null,
+      token: null,
+      value: "PROMO-2026",
+    });
+    expect(parsed.imageUrl).toBeNull();
+    expect(parsed.value).toBe("PROMO-2026");
+  });
+
+  it("accepts a QR asset: imageUrl set, value null", () => {
+    const parsed = qrCodeSchema.parse({ ...baseQr, value: null });
+    expect(parsed.imageUrl).toBe("qr-codes/r1/1.png");
+    expect(parsed.value).toBeNull();
+  });
+});
 
 const baseRedemption = {
   id: "r1",

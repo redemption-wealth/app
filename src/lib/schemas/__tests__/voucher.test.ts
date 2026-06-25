@@ -41,6 +41,23 @@ describe("voucherSchema", () => {
     delete invalid.title;
     expect(() => voucherSchema.parse(invalid)).toThrow();
   });
+
+  it("defaults format to QR when omitted (backward compatible)", () => {
+    expect(voucherSchema.parse(baseVoucher).format).toBe("QR");
+  });
+
+  it("accepts CODE / BARCODE formats with barcodeSymbology", () => {
+    expect(voucherSchema.parse({ ...baseVoucher, format: "CODE" }).format).toBe(
+      "CODE",
+    );
+    const bc = voucherSchema.parse({
+      ...baseVoucher,
+      format: "BARCODE",
+      barcodeSymbology: "CODE128",
+    });
+    expect(bc.format).toBe("BARCODE");
+    expect(bc.barcodeSymbology).toBe("CODE128");
+  });
 });
 
 describe("voucherListResponseSchema", () => {

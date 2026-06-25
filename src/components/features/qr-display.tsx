@@ -3,14 +3,25 @@
 import { useState } from "react";
 import type { QrCode } from "@/lib/schemas/redemption";
 
+type AssetFormat = "QR" | "CODE" | "BARCODE";
+
 interface QrDisplayProps {
   qrCodes: QrCode[];
+  /** Asset format of the voucher — QR/BARCODE render an image, CODE renders
+   *  the plain value as text. Defaults to QR. */
+  format?: AssetFormat;
   /** True when the voucher's validity window has passed — drives the
    *  "Kedaluwarsa" state for QRs that were never used in time. */
   expired?: boolean;
   onReload?: () => void;
   isReloading?: boolean;
 }
+
+const ASSET_NOUN: Record<AssetFormat, string> = {
+  QR: "QR",
+  CODE: "Kode",
+  BARCODE: "Barcode",
+};
 
 async function downloadQr(imageUrl: string, filename: string) {
   try {
@@ -70,17 +81,20 @@ function StatusText({
 function QrCard({
   qr,
   label,
+  format = "QR",
   expired = false,
 }: {
   qr: QrCode;
   label?: string;
+  format?: AssetFormat;
   expired?: boolean;
 }) {
   const used = isUsedStatus(qr.status);
   const isExpired = !used && !!expired;
-  // Both states disable the QR visually and hide the download action.
+  // Both states disable the asset visually and hide the action.
   const disabled = used || isExpired;
   const overlayLabel = used ? "Sudah Dipakai" : "Kedaluwarsa";
+  const noun = ASSET_NOUN[format];
   return (
     <div
       className={`flex flex-col items-center gap-3 rounded-[var(--radius-lg)] border bg-white p-6 ${
@@ -91,14 +105,26 @@ function QrCard({
         <p className="text-on-surface-variant text-xs font-semibold">{label}</p>
       ) : null}
       <div className="relative">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={qr.imageUrl}
-          alt={`QR code ${qr.qrNumber}`}
-          className={`h-64 w-64 object-contain transition ${
-            disabled ? "opacity-20 grayscale" : ""
-          }`}
-        />
+        {format === "CODE" ? (
+          <div
+            className={`bg-surface-container-low flex h-64 w-64 items-center justify-center rounded-lg p-4 transition ${
+              disabled ? "opacity-20 grayscale" : ""
+            }`}
+          >
+            <span className="text-on-surface text-center font-mono text-2xl font-bold tracking-wider break-all select-all">
+              {qr.value ?? "-"}
+            </span>
+          </div>
+        ) : (
+          /* eslint-disable-next-line @next/next/no-img-element */
+          <img
+            src={qr.imageUrl ?? ""}
+            alt={`${noun} ${qr.qrNumber}`}
+            className={`h-64 w-64 object-contain transition ${
+              disabled ? "opacity-20 grayscale" : ""
+            }`}
+          />
+        )}
         {disabled ? (
           <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
             <div className="text-error border-error flex -rotate-12 items-center gap-1.5 rounded-xl border-2 bg-white/85 px-4 py-2 shadow-sm">
@@ -129,10 +155,38 @@ function QrCard({
             ? "Voucher ini telah diredem di merchant."
             : "Voucher ini sudah melewati masa berlaku."}
         </p>
+      ) : format === "CODE" ? (
+        <button
+          type="button"
+          onClick={() => {
+            if (qr.value) void navigator.clipboard?.writeText(qr.value);
+          }}
+          className="text-primary inline-flex items-center gap-1.5 text-xs font-semibold"
+        >
+          <svg
+            className="h-4 w-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={1.5}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75"
+            />
+          </svg>
+          Salin Kode
+        </button>
       ) : (
         <button
           type="button"
-          onClick={() => downloadQr(qr.imageUrl, `qr-${qr.qrNumber}.png`)}
+          onClick={() =>
+            downloadQr(
+              qr.imageUrl ?? "",
+              `${format.toLowerCase()}-${qr.qrNumber}.png`,
+            )
+          }
           className="text-primary inline-flex items-center gap-1.5 text-xs font-semibold"
         >
           <svg
@@ -148,7 +202,7 @@ function QrCard({
               d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"
             />
           </svg>
-          Simpan QR
+          Simpan {noun}
         </button>
       )}
     </div>
@@ -157,18 +211,20 @@ function QrCard({
 
 export function QrDisplay({
   qrCodes,
+  format = "QR",
   expired = false,
   onReload,
   isReloading,
 }: QrDisplayProps) {
   const [activeIndex, setActiveIndex] = useState(0);
+  const noun = ASSET_NOUN[format];
 
   if (qrCodes.length === 0) {
     return (
       <div className="border-border rounded-[var(--radius-lg)] border bg-white p-6 text-center">
         <div className="border-primary mx-auto mb-3 h-6 w-6 animate-spin rounded-full border-2 border-t-transparent" />
         <p className="text-on-surface-variant text-sm">
-          Menyiapkan QR code kamu… Halaman ini akan memperbarui otomatis.
+          Menyiapkan {noun} kamu… Halaman ini akan memperbarui otomatis.
         </p>
         {onReload ? (
           <button
@@ -177,7 +233,7 @@ export function QrDisplay({
             disabled={isReloading}
             className="text-primary mt-3 inline-flex items-center text-xs font-semibold disabled:opacity-50"
           >
-            {isReloading ? "Memuat…" : "Muat ulang QR"}
+            {isReloading ? "Memuat…" : `Muat ulang ${noun}`}
           </button>
         ) : null}
       </div>
@@ -188,7 +244,7 @@ export function QrDisplay({
     const qr = qrCodes[0]!;
     return (
       <div className="space-y-3">
-        <QrCard qr={qr} expired={expired} />
+        <QrCard qr={qr} format={format} expired={expired} />
       </div>
     );
   }
@@ -205,8 +261,9 @@ export function QrDisplay({
           <QrCard
             key={qr.id}
             qr={qr}
+            format={format}
             expired={expired}
-            label={`QR ${i + 1} dari ${qrCodes.length}`}
+            label={`${noun} ${i + 1} dari ${qrCodes.length}`}
           />
         ))}
       </div>
@@ -215,8 +272,9 @@ export function QrDisplay({
       <div className="md:hidden">
         <QrCard
           qr={active}
+          format={format}
           expired={expired}
-          label={`QR ${activeIndex + 1} dari ${qrCodes.length}`}
+          label={`${noun} ${activeIndex + 1} dari ${qrCodes.length}`}
         />
       </div>
 

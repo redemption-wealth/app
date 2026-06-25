@@ -36,9 +36,10 @@ export const qrCodeSchema = z.object({
   slotId: z.string().optional(),
   qrNumber: z.number().int().positive(),
   redemptionId: z.string().nullable(),
-  imageUrl: z.string(),
+  imageUrl: z.string().nullable(), // null for CODE format (no rendered image)
   imageHash: z.string().optional(),
   token: z.string().nullable(),
+  value: z.string().nullable().optional(), // merchant-uploaded asset value
   status: qrCodeStatusSchema,
   assignedToUserId: z.string().nullable().optional(),
   assignedAt: z.string().nullable().optional(),

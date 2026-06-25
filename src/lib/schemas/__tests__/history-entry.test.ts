@@ -37,6 +37,7 @@ describe("redemptionToHistoryEntry", () => {
         gasFeeAmount: "1",
         totalPrice: "11.5",
         qrPerSlot: 1,
+        format: "QR",
         isActive: true,
         deletedAt: null,
         createdAt: "2026-01-01",

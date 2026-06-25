@@ -26,6 +26,10 @@ export const voucherSchema = z.object({
   appFeeSnapshot: decimalStringSchema.optional(),
   gasFeeSnapshot: decimalStringSchema.optional(),
   qrPerSlot: z.number().int().positive(),
+  // Asset format presented behind the voucher. Defaults to QR for backward
+  // compatibility with payloads from before the multi-format migration.
+  format: z.enum(["QR", "CODE", "BARCODE"]).default("QR"),
+  barcodeSymbology: z.string().nullable().optional(),
   isActive: z.boolean(),
   deletedAt: z.string().nullable().optional(),
   createdAt: z.string(),

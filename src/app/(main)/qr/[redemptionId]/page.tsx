@@ -201,6 +201,7 @@ export default function QrDisplayPage({
         {redemption.status === "confirmed" ? (
           <QrDisplay
             qrCodes={qrCodes}
+            format={voucher?.format ?? "QR"}
             expired={voucher ? isVoucherExpired(voucher.expiryDate) : false}
             onReload={() => refetch()}
             isReloading={isFetching}
