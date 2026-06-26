@@ -129,7 +129,7 @@ function QrCard({
             src={qr.imageUrl ?? ""}
             alt={`${noun} ${qr.qrNumber}`}
             className={`object-contain transition ${
-              format === "BARCODE" ? "max-h-36 w-full" : "h-52 w-52"
+              format === "BARCODE" ? "max-h-44 w-full" : "h-56 w-56"
             } ${disabled ? "opacity-20 grayscale" : ""}`}
           />
         )}
@@ -156,62 +156,68 @@ function QrCard({
           </div>
         ) : null}
       </div>
-      <StatusText status={qr.status} expired={expired} />
-      {disabled ? (
-        <p className="text-on-surface-variant text-center text-xs">
-          {used
-            ? "Voucher ini telah diredem di merchant."
-            : "Voucher ini sudah melewati masa berlaku."}
-        </p>
-      ) : format === "CODE" ? (
-        <button
-          type="button"
-          onClick={() => {
-            if (qr.value) void navigator.clipboard?.writeText(qr.value);
-          }}
-          className="text-primary inline-flex items-center gap-1.5 text-xs font-semibold"
-        >
-          <svg
-            className="h-4 w-4"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={1.5}
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75"
-            />
-          </svg>
-          Salin Kode
-        </button>
-      ) : (
-        <button
-          type="button"
-          onClick={() =>
-            downloadQr(
-              qr.imageUrl ?? "",
-              `${format.toLowerCase()}-${qr.qrNumber}.png`,
-            )
-          }
-          className="text-primary inline-flex items-center gap-1.5 text-xs font-semibold"
-        >
-          <svg
-            className="h-4 w-4"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={1.5}
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"
-            />
-          </svg>
-          Simpan {noun}
-        </button>
+      {/* Inside the RedeemTicket frame we hide the status line + per-asset
+          action; the card's own "Bagikan / Simpan Kartu" is the save/share. */}
+      {embedded ? null : (
+        <>
+          <StatusText status={qr.status} expired={expired} />
+          {disabled ? (
+            <p className="text-on-surface-variant text-center text-xs">
+              {used
+                ? "Voucher ini telah diredem di merchant."
+                : "Voucher ini sudah melewati masa berlaku."}
+            </p>
+          ) : format === "CODE" ? (
+            <button
+              type="button"
+              onClick={() => {
+                if (qr.value) void navigator.clipboard?.writeText(qr.value);
+              }}
+              className="text-primary inline-flex items-center gap-1.5 text-xs font-semibold"
+            >
+              <svg
+                className="h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={1.5}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75"
+                />
+              </svg>
+              Salin Kode
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() =>
+                downloadQr(
+                  qr.imageUrl ?? "",
+                  `${format.toLowerCase()}-${qr.qrNumber}.png`,
+                )
+              }
+              className="text-primary inline-flex items-center gap-1.5 text-xs font-semibold"
+            >
+              <svg
+                className="h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={1.5}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"
+                />
+              </svg>
+              Simpan {noun}
+            </button>
+          )}
+        </>
       )}
     </div>
   );

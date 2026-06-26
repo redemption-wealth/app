@@ -7,6 +7,46 @@ import type { QrCode } from "@/lib/schemas/redemption";
 import type { Voucher } from "@/lib/schemas/voucher";
 import { formatDate, isVoucherExpired } from "@/lib/utils";
 
+function blobToDataUrl(blob: Blob): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+}
+
+/**
+ * Cross-origin images (R2 signed URLs) can't be read by html-to-image because R2
+ * doesn't send CORS headers. Temporarily swap them for same-origin-proxied data
+ * URLs so the capture works, and return a restore fn. Display is untouched.
+ */
+async function inlineCrossOriginImages(root: HTMLElement): Promise<() => void> {
+  const imgs = Array.from(root.querySelectorAll("img"));
+  const restores: Array<() => void> = [];
+  await Promise.all(
+    imgs.map(async (img) => {
+      const src = img.getAttribute("src") ?? "";
+      if (!/^https?:\/\//i.test(src)) return; // relative/same-origin → fine
+      if (src.startsWith(window.location.origin)) return;
+      try {
+        const res = await fetch(
+          `/api/asset-image?u=${encodeURIComponent(src)}`,
+        );
+        if (!res.ok) return;
+        const dataUrl = await blobToDataUrl(await res.blob());
+        const original = img.getAttribute("src")!;
+        restores.push(() => img.setAttribute("src", original));
+        img.setAttribute("src", dataUrl);
+        await img.decode().catch(() => {});
+      } catch {
+        /* leave as-is; capture may still partially work */
+      }
+    }),
+  );
+  return () => restores.forEach((r) => r());
+}
+
 interface RedeemTicketProps {
   voucher?: Voucher | undefined;
   /** A single asset — BOGO renders one card per asset so each can be shared
@@ -44,7 +84,11 @@ export function RedeemTicket({
     if (!cardRef.current) return;
     setSharing(true);
     setShareError(null);
+    let restore: (() => void) | null = null;
     try {
+      // Inline cross-origin (R2) images via our same-origin proxy so the canvas
+      // isn't tainted; restored right after the capture.
+      restore = await inlineCrossOriginImages(cardRef.current);
       const blob = await toBlob(cardRef.current, {
         pixelRatio: 2,
         backgroundColor: "#ffffff",
@@ -79,6 +123,7 @@ export function RedeemTicket({
     } catch {
       setShareError("Gagal membuat gambar kartu. Coba lagi.");
     } finally {
+      restore?.();
       setSharing(false);
     }
   }
@@ -146,7 +191,7 @@ export function RedeemTicket({
         </div>
 
         {/* The asset — focal point, scannable, no overlay */}
-        <div className="px-4 pt-1 pb-3">
+        <div className="px-5 py-5">
           <QrDisplay
             qrCodes={[qr]}
             format={format}
