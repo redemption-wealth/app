@@ -130,12 +130,14 @@ export function RedeemTicket({
 
   return (
     <div className="space-y-2.5">
+      {/* Ticket-stub frame: a green Wealth × Merchant header, an info strip, a
+          perforated tear-line (dashed + side notches) and the asset "stub". */}
       <div
         ref={cardRef}
-        className="border-border overflow-hidden rounded-[var(--radius-lg)] border bg-white shadow-[var(--shadow-ambient)]"
+        className="border-border relative overflow-hidden rounded-[var(--radius-lg)] border bg-white shadow-[var(--shadow-ambient)]"
       >
         {/* Wealth × Merchant collab header — Wealth is the dominant brand */}
-        <div className="bg-primary flex items-center justify-between gap-3 px-4 py-3">
+        <div className="bg-primary relative flex items-center justify-between gap-3 px-5 py-3.5">
           {/* white Wealth logo (filter inverts the gold wordmark) */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
@@ -143,25 +145,25 @@ export function RedeemTicket({
             alt="WEALTH"
             className="h-7 w-auto brightness-0 invert"
           />
-          <div className="flex items-center gap-2">
-            <span className="text-lg font-light text-white/60">×</span>
+          <div className="flex items-center gap-2.5">
+            <span className="text-base font-light text-white/50">×</span>
             {merchantLogo ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={merchantLogo}
                 alt={merchantName}
-                className="h-9 w-9 rounded-full bg-white object-cover p-0.5 ring-1 ring-white/40"
+                className="h-9 w-9 rounded-full bg-white object-cover p-0.5 ring-1 ring-white/50"
               />
             ) : (
-              <span className="text-sm font-bold tracking-wide text-white uppercase">
+              <span className="max-w-[9rem] truncate text-sm font-bold tracking-wide text-white uppercase">
                 {merchantName}
               </span>
             )}
           </div>
         </div>
 
-        {/* Title (compact) */}
-        <div className="px-4 pt-3 pb-1">
+        {/* Info strip */}
+        <div className="px-5 pt-4 pb-1">
           <div className="flex items-start justify-between gap-2">
             <div className="min-w-0">
               <p className="text-on-surface-variant truncate text-[10px] font-bold tracking-wider uppercase">
@@ -179,7 +181,7 @@ export function RedeemTicket({
           </div>
           {voucher?.expiryDate ? (
             <p
-              className={`text-[11px] ${
+              className={`mt-0.5 text-[11px] ${
                 expired ? "text-error font-semibold" : "text-on-surface-variant"
               }`}
             >
@@ -190,8 +192,16 @@ export function RedeemTicket({
           ) : null}
         </div>
 
-        {/* The asset — focal point, scannable, no overlay */}
-        <div className="px-5 py-5">
+        {/* Perforated tear-line: notches bite the card edges (filled with the
+            page background so they read as holes), dashed line between them. */}
+        <div className="relative py-3">
+          <span className="bg-surface absolute top-1/2 left-0 h-5 w-5 -translate-x-1/2 -translate-y-1/2 rounded-full" />
+          <span className="bg-surface absolute top-1/2 right-0 h-5 w-5 translate-x-1/2 -translate-y-1/2 rounded-full" />
+          <div className="border-outline-variant absolute inset-x-4 top-1/2 -translate-y-1/2 border-t border-dashed" />
+        </div>
+
+        {/* The asset "stub" — focal point, scannable, no overlay */}
+        <div className="px-5 pt-1 pb-5">
           <QrDisplay
             qrCodes={[qr]}
             format={format}

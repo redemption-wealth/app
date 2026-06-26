@@ -205,7 +205,17 @@ export default function QrDisplayPage({
         ) : null}
 
         {redemption.status === "confirmed" ? (
-          qrCodes.length > 0 ? (
+          qrCodes.length === 1 ? (
+            // Single asset — centered, comfortable width
+            <div className="mx-auto w-full max-w-sm">
+              <RedeemTicket
+                voucher={voucher}
+                qr={qrCodes[0]!}
+                onReload={() => refetch()}
+                isReloading={isFetching}
+              />
+            </div>
+          ) : qrCodes.length > 1 ? (
             <div className="space-y-4 md:grid md:grid-cols-2 md:items-start md:gap-4 md:space-y-0">
               {qrCodes.map((qr, i) => (
                 <RedeemTicket

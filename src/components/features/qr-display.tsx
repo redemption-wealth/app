@@ -115,11 +115,11 @@ function QrCard({
       <div className="relative flex w-full justify-center">
         {format === "CODE" ? (
           <div
-            className={`bg-surface-container-low flex w-full items-center justify-center rounded-lg px-4 py-7 transition ${
+            className={`bg-surface-container-low flex w-full items-center justify-center overflow-x-auto rounded-lg px-3 py-7 transition ${
               disabled ? "opacity-20 grayscale" : ""
             }`}
           >
-            <span className="text-on-surface text-center font-mono text-3xl font-bold tracking-[0.15em] break-all select-all">
+            <span className="text-on-surface text-center font-mono text-2xl font-bold tracking-[0.12em] whitespace-nowrap select-all">
               {qr.value ?? "-"}
             </span>
           </div>
