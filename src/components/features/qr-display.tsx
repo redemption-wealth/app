@@ -13,8 +13,10 @@ interface QrDisplayProps {
   /** True when the voucher's validity window has passed — drives the
    *  "Kedaluwarsa" state for QRs that were never used in time. */
   expired?: boolean;
-  onReload?: () => void;
-  isReloading?: boolean;
+  onReload?: (() => void) | undefined;
+  isReloading?: boolean | undefined;
+  /** When inside the RedeemTicket frame, drop the asset's own card chrome. */
+  embedded?: boolean;
 }
 
 const ASSET_NOUN: Record<AssetFormat, string> = {
@@ -83,11 +85,13 @@ function QrCard({
   label,
   format = "QR",
   expired = false,
+  embedded = false,
 }: {
   qr: QrCode;
   label?: string;
   format?: AssetFormat;
   expired?: boolean;
+  embedded?: boolean;
 }) {
   const used = isUsedStatus(qr.status);
   const isExpired = !used && !!expired;
@@ -97,9 +101,13 @@ function QrCard({
   const noun = ASSET_NOUN[format];
   return (
     <div
-      className={`flex flex-col items-center gap-3 rounded-[var(--radius-lg)] border bg-white p-6 ${
-        disabled ? "border-error/40" : "border-border"
-      }`}
+      className={
+        embedded
+          ? "flex flex-col items-center gap-3"
+          : `flex flex-col items-center gap-3 rounded-[var(--radius-lg)] border bg-white p-6 ${
+              disabled ? "border-error/40" : "border-border"
+            }`
+      }
     >
       {label ? (
         <p className="text-on-surface-variant text-xs font-semibold">{label}</p>
@@ -215,6 +223,7 @@ export function QrDisplay({
   expired = false,
   onReload,
   isReloading,
+  embedded = false,
 }: QrDisplayProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const noun = ASSET_NOUN[format];
@@ -244,7 +253,7 @@ export function QrDisplay({
     const qr = qrCodes[0]!;
     return (
       <div className="space-y-3">
-        <QrCard qr={qr} format={format} expired={expired} />
+        <QrCard qr={qr} format={format} expired={expired} embedded={embedded} />
       </div>
     );
   }
@@ -263,6 +272,7 @@ export function QrDisplay({
             qr={qr}
             format={format}
             expired={expired}
+            embedded={embedded}
             label={`${noun} ${i + 1} dari ${qrCodes.length}`}
           />
         ))}
@@ -274,6 +284,7 @@ export function QrDisplay({
           qr={active}
           format={format}
           expired={expired}
+          embedded={embedded}
           label={`${noun} ${activeIndex + 1} dari ${qrCodes.length}`}
         />
       </div>

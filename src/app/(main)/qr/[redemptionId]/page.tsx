@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { use, useEffect, useMemo, useState } from "react";
-import { QrDisplay } from "@/components/features/qr-display";
+import { RedeemTicket } from "@/components/features/redeem-ticket";
 import { RedemptionStatusBanner } from "@/components/features/redemption-status-banner";
 import { TransactionInfo } from "@/components/features/transaction-info";
 import { VoucherCard } from "@/components/features/voucher-card";
@@ -155,33 +155,38 @@ export default function QrDisplayPage({
   return (
     <div className="mx-auto w-full max-w-2xl px-4 py-6 md:px-8 md:py-8">
       <div className="space-y-6">
-        <div className="space-y-1">
-          {voucher ? (
-            <p className="text-on-surface-variant text-[11px] font-semibold tracking-wider uppercase">
-              {voucher.merchant?.name ?? "Voucher"}
+        {/* Page header — the confirmed state shows the branded RedeemTicket
+            (which carries its own title/merchant/validity), so we hide this to
+            avoid duplication. */}
+        {redemption.status !== "confirmed" ? (
+          <div className="space-y-1">
+            {voucher ? (
+              <p className="text-on-surface-variant text-[11px] font-semibold tracking-wider uppercase">
+                {voucher.merchant?.name ?? "Voucher"}
+              </p>
+            ) : null}
+            <h1 className="font-display text-on-surface text-2xl font-bold md:text-3xl">
+              {voucher?.title ?? "Redemption"}
+            </h1>
+            <p className="text-on-surface-variant text-sm">
+              Dibuat {formatDateTime(redemption.createdAt)} ·{" "}
+              {formatWealth(redemption.wealthAmount)} $WEALTH
             </p>
-          ) : null}
-          <h1 className="font-display text-on-surface text-2xl font-bold md:text-3xl">
-            {voucher?.title ?? "Redemption"}
-          </h1>
-          <p className="text-on-surface-variant text-sm">
-            Dibuat {formatDateTime(redemption.createdAt)} ·{" "}
-            {formatWealth(redemption.wealthAmount)} $WEALTH
-          </p>
-          {voucher?.expiryDate ? (
-            <p
-              className={`text-sm ${
-                isVoucherExpired(voucher.expiryDate)
-                  ? "text-error font-semibold"
-                  : "text-on-surface-variant"
-              }`}
-            >
-              {isVoucherExpired(voucher.expiryDate)
-                ? `Kedaluwarsa ${formatDate(voucher.expiryDate)}`
-                : `Berlaku sampai ${formatDate(voucher.expiryDate)}`}
-            </p>
-          ) : null}
-        </div>
+            {voucher?.expiryDate ? (
+              <p
+                className={`text-sm ${
+                  isVoucherExpired(voucher.expiryDate)
+                    ? "text-error font-semibold"
+                    : "text-on-surface-variant"
+                }`}
+              >
+                {isVoucherExpired(voucher.expiryDate)
+                  ? `Kedaluwarsa ${formatDate(voucher.expiryDate)}`
+                  : `Berlaku sampai ${formatDate(voucher.expiryDate)}`}
+              </p>
+            ) : null}
+          </div>
+        ) : null}
 
         <RedemptionStatusBanner
           status={redemption.status}
@@ -199,10 +204,9 @@ export default function QrDisplayPage({
         ) : null}
 
         {redemption.status === "confirmed" ? (
-          <QrDisplay
+          <RedeemTicket
+            voucher={voucher}
             qrCodes={qrCodes}
-            format={voucher?.format ?? "QR"}
-            expired={voucher ? isVoucherExpired(voucher.expiryDate) : false}
             onReload={() => refetch()}
             isReloading={isFetching}
           />
