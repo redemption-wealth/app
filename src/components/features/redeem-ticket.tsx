@@ -136,17 +136,21 @@ export function RedeemTicket({
         ref={cardRef}
         className="border-border relative overflow-hidden rounded-[var(--radius-lg)] border bg-white shadow-[var(--shadow-ambient)]"
       >
-        {/* Wealth × Merchant collab header — Wealth is the dominant brand */}
-        <div className="bg-primary relative flex items-center justify-between gap-3 px-5 py-3.5">
-          {/* white Wealth logo (filter inverts the gold wordmark) */}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/image/logo.png"
-            alt="WEALTH"
-            className="h-7 w-auto brightness-0 invert"
-          />
-          <div className="flex items-center gap-2.5">
-            <span className="text-base font-light text-white/50">×</span>
+        {/* Wealth × Merchant collab header — balanced lockup: Wealth leads, a
+            divider, then the merchant; topped with a small collab label. */}
+        <div className="bg-primary px-5 py-3.5">
+          <p className="mb-2 text-center text-[9px] font-semibold tracking-[0.22em] text-white/55 uppercase">
+            Kolaborasi Eksklusif
+          </p>
+          <div className="flex items-center justify-center gap-4">
+            {/* white Wealth logo (filter inverts the gold wordmark) */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/image/logo.png"
+              alt="WEALTH"
+              className="h-7 w-auto brightness-0 invert"
+            />
+            <span className="h-7 w-px bg-white/30" />
             {merchantLogo ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
