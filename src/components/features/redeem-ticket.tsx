@@ -9,19 +9,25 @@ import { formatDate, isVoucherExpired } from "@/lib/utils";
 
 interface RedeemTicketProps {
   voucher?: Voucher | undefined;
-  qrCodes: QrCode[];
+  /** A single asset — BOGO renders one card per asset so each can be shared
+   *  or saved on its own. */
+  qr: QrCode;
+  index?: number | undefined; // 0-based
+  total?: number | undefined;
   onReload?: (() => void) | undefined;
   isReloading?: boolean | undefined;
 }
 
 /**
- * Branded "e-voucher" card wrapping the redeemed asset: Wealth header + merchant
- * co-branding + the asset (kept on white, scannable) + footer. The card can be
- * saved/shared as a single image. The asset itself is never overlaid.
+ * Wealth-forward "e-voucher" card for ONE asset: a green Wealth × Merchant
+ * collab header, compact body, the asset (kept scannable, never overlaid), and a
+ * footer. The whole card can be saved/shared as a single image.
  */
 export function RedeemTicket({
   voucher,
-  qrCodes,
+  qr,
+  index = 0,
+  total = 1,
   onReload,
   isReloading,
 }: RedeemTicketProps) {
@@ -42,18 +48,15 @@ export function RedeemTicket({
       const blob = await toBlob(cardRef.current, {
         pixelRatio: 2,
         backgroundColor: "#ffffff",
-        // Don't fetch/embed webfonts (cross-origin → "Failed to fetch"); the
-        // rendered text is captured as-is.
         skipFonts: true,
-        // Keep the captured image clean: drop interactive buttons (download/copy,
-        // carousel controls, reload).
         filter: (node) => !(node instanceof HTMLButtonElement),
       });
       if (!blob) throw new Error("Capture returned no image");
-      const safeName = (voucher?.title ?? "wealth-voucher")
+      const base = (voucher?.title ?? "wealth-voucher")
         .replace(/[^a-z0-9]+/gi, "-")
         .toLowerCase();
-      const file = new File([blob], `${safeName}.png`, { type: "image/png" });
+      const name = total > 1 ? `${base}-${index + 1}.png` : `${base}.png`;
+      const file = new File([blob], name, { type: "image/png" });
 
       if (
         typeof navigator !== "undefined" &&
@@ -67,7 +70,7 @@ export function RedeemTicket({
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = file.name;
+        a.download = name;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -81,64 +84,71 @@ export function RedeemTicket({
   }
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-2.5">
       <div
         ref={cardRef}
         className="border-border overflow-hidden rounded-[var(--radius-lg)] border bg-white shadow-[var(--shadow-ambient)]"
       >
-        {/* Brand accent */}
-        <div className="bg-primary h-1.5 w-full" />
-
-        {/* Header: Wealth + e-voucher label. Plain <img> (not next/image) so the
-            share-to-image capture can inline it cleanly. */}
-        <div className="flex items-center justify-between px-5 pt-4">
+        {/* Wealth × Merchant collab header — Wealth is the dominant brand */}
+        <div className="bg-primary flex items-center justify-between gap-3 px-4 py-3">
+          {/* white Wealth logo (filter inverts the gold wordmark) */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/image/logo.png" alt="WEALTH" className="h-6 w-auto" />
-          <span className="text-on-surface-variant text-[10px] font-bold tracking-[0.2em] uppercase">
-            E-Voucher
-          </span>
-        </div>
-
-        {/* Merchant co-branding + title */}
-        <div className="flex items-center gap-3 px-5 pt-4">
-          {merchantLogo ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={merchantLogo}
-              alt={merchantName}
-              className="border-border h-10 w-10 flex-shrink-0 rounded-full border object-cover"
-            />
-          ) : (
-            <div className="bg-primary-container text-on-primary-container flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full text-base font-bold">
-              {merchantName.charAt(0).toUpperCase()}
-            </div>
-          )}
-          <div className="min-w-0">
-            <p className="text-on-surface-variant truncate text-[11px] font-semibold tracking-wider uppercase">
-              {merchantName}
-            </p>
-            <h2 className="font-display text-on-surface truncate text-lg leading-tight font-bold">
-              {voucher?.title ?? "Voucher"}
-            </h2>
+          <img
+            src="/image/logo.png"
+            alt="WEALTH"
+            className="h-7 w-auto brightness-0 invert"
+          />
+          <div className="flex items-center gap-2">
+            <span className="text-lg font-light text-white/60">×</span>
+            {merchantLogo ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={merchantLogo}
+                alt={merchantName}
+                className="h-9 w-9 rounded-full bg-white object-cover p-0.5 ring-1 ring-white/40"
+              />
+            ) : (
+              <span className="text-sm font-bold tracking-wide text-white uppercase">
+                {merchantName}
+              </span>
+            )}
           </div>
         </div>
 
-        {voucher?.expiryDate ? (
-          <p
-            className={`px-5 pt-1 text-xs ${
-              expired ? "text-error font-semibold" : "text-on-surface-variant"
-            }`}
-          >
-            {expired
-              ? `Kedaluwarsa ${formatDate(voucher.expiryDate)}`
-              : `Berlaku sampai ${formatDate(voucher.expiryDate)}`}
-          </p>
-        ) : null}
+        {/* Title (compact) */}
+        <div className="px-4 pt-3 pb-1">
+          <div className="flex items-start justify-between gap-2">
+            <div className="min-w-0">
+              <p className="text-on-surface-variant truncate text-[10px] font-bold tracking-wider uppercase">
+                {merchantName}
+              </p>
+              <h2 className="font-display text-on-surface text-base leading-tight font-bold">
+                {voucher?.title ?? "Voucher"}
+              </h2>
+            </div>
+            {total > 1 ? (
+              <span className="bg-primary-container text-on-primary-container flex-shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-bold">
+                {index + 1}/{total}
+              </span>
+            ) : null}
+          </div>
+          {voucher?.expiryDate ? (
+            <p
+              className={`text-[11px] ${
+                expired ? "text-error font-semibold" : "text-on-surface-variant"
+              }`}
+            >
+              {expired
+                ? `Kedaluwarsa ${formatDate(voucher.expiryDate)}`
+                : `Berlaku sampai ${formatDate(voucher.expiryDate)}`}
+            </p>
+          ) : null}
+        </div>
 
-        {/* The asset — on white, scannable, no overlay */}
-        <div className="px-5 py-5">
+        {/* The asset — focal point, scannable, no overlay */}
+        <div className="px-4 pt-1 pb-3">
           <QrDisplay
-            qrCodes={qrCodes}
+            qrCodes={[qr]}
             format={format}
             expired={expired}
             onReload={onReload}
@@ -148,20 +158,19 @@ export function RedeemTicket({
         </div>
 
         {/* Footer */}
-        <div className="border-border bg-surface-container-low border-t border-dashed px-5 py-3 text-center">
-          <p className="text-on-surface-variant text-[11px]">
-            Tunjukkan kode ini di {merchantName} · Powered by{" "}
-            <span className="text-primary font-semibold">Wealth</span>
+        <div className="border-border bg-primary/5 border-t px-4 py-2 text-center">
+          <p className="text-on-surface-variant text-[10px]">
+            Powered by <span className="text-primary font-bold">Wealth</span>
           </p>
         </div>
       </div>
 
-      {/* Share / save the whole card as an image */}
+      {/* Save / share this card as an image */}
       <button
         type="button"
         onClick={handleShare}
         disabled={sharing}
-        className="border-border text-on-surface hover:bg-surface-container-low flex w-full items-center justify-center gap-2 rounded-[var(--radius-lg)] border bg-white py-3 text-sm font-semibold transition disabled:opacity-50"
+        className="border-border text-on-surface hover:bg-surface-container-low flex w-full items-center justify-center gap-2 rounded-[var(--radius-lg)] border bg-white py-2.5 text-sm font-semibold transition disabled:opacity-50"
       >
         <svg
           className="h-4 w-4"

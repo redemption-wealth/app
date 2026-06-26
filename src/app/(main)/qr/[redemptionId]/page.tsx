@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { use, useEffect, useMemo, useState } from "react";
+import { QrDisplay } from "@/components/features/qr-display";
 import { RedeemTicket } from "@/components/features/redeem-ticket";
 import { RedemptionStatusBanner } from "@/components/features/redemption-status-banner";
 import { TransactionInfo } from "@/components/features/transaction-info";
@@ -204,12 +205,27 @@ export default function QrDisplayPage({
         ) : null}
 
         {redemption.status === "confirmed" ? (
-          <RedeemTicket
-            voucher={voucher}
-            qrCodes={qrCodes}
-            onReload={() => refetch()}
-            isReloading={isFetching}
-          />
+          qrCodes.length > 0 ? (
+            <div className="space-y-4 md:grid md:grid-cols-2 md:items-start md:gap-4 md:space-y-0">
+              {qrCodes.map((qr, i) => (
+                <RedeemTicket
+                  key={qr.id}
+                  voucher={voucher}
+                  qr={qr}
+                  index={i}
+                  total={qrCodes.length}
+                  onReload={() => refetch()}
+                  isReloading={isFetching}
+                />
+              ))}
+            </div>
+          ) : (
+            <QrDisplay
+              qrCodes={[]}
+              onReload={() => refetch()}
+              isReloading={isFetching}
+            />
+          )
         ) : null}
 
         <TransactionInfo txHash={redemption.txHash} />

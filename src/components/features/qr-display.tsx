@@ -112,14 +112,14 @@ function QrCard({
       {label ? (
         <p className="text-on-surface-variant text-xs font-semibold">{label}</p>
       ) : null}
-      <div className="relative">
+      <div className="relative flex w-full justify-center">
         {format === "CODE" ? (
           <div
-            className={`bg-surface-container-low flex h-64 w-64 items-center justify-center rounded-lg p-4 transition ${
+            className={`bg-surface-container-low flex w-full items-center justify-center rounded-lg px-4 py-7 transition ${
               disabled ? "opacity-20 grayscale" : ""
             }`}
           >
-            <span className="text-on-surface text-center font-mono text-2xl font-bold tracking-wider break-all select-all">
+            <span className="text-on-surface text-center font-mono text-3xl font-bold tracking-[0.15em] break-all select-all">
               {qr.value ?? "-"}
             </span>
           </div>
@@ -128,9 +128,9 @@ function QrCard({
           <img
             src={qr.imageUrl ?? ""}
             alt={`${noun} ${qr.qrNumber}`}
-            className={`h-64 w-64 object-contain transition ${
-              disabled ? "opacity-20 grayscale" : ""
-            }`}
+            className={`object-contain transition ${
+              format === "BARCODE" ? "max-h-36 w-full" : "h-52 w-52"
+            } ${disabled ? "opacity-20 grayscale" : ""}`}
           />
         )}
         {disabled ? (
