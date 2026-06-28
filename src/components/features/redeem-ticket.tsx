@@ -30,22 +30,26 @@ function blobToDataUrl(blob: Blob): Promise<string> {
 }
 
 /**
- * Cross-origin images (R2 signed URLs) can't be read by html-to-image because R2
- * doesn't send CORS headers. Temporarily swap them for same-origin-proxied data
- * URLs so the capture works, and return a restore fn. Display is untouched.
+ * Replace every image src with an inlined data URL BEFORE capture so
+ * html-to-image never has to fetch/decode an image while rasterising — which is
+ * where mobile Safari intermittently drops images (blank logos). Cross-origin
+ * images (R2 signed URLs / the CDN, which send no CORS headers) are fetched
+ * through our same-origin proxy; same-origin images (the Wealth logo) are
+ * fetched directly. Returns a restore fn; on-screen display is untouched.
  */
-async function inlineCrossOriginImages(root: HTMLElement): Promise<() => void> {
-  const imgs = Array.from(root.querySelectorAll("img"));
+async function inlineImagesForCapture(root: HTMLElement): Promise<() => void> {
   const restores: Array<() => void> = [];
+  const toFetchUrl = (src: string) =>
+    /^https?:\/\//i.test(src) && !src.startsWith(window.location.origin)
+      ? `/api/asset-image?u=${encodeURIComponent(src)}`
+      : src;
+
   await Promise.all(
-    imgs.map(async (img) => {
+    Array.from(root.querySelectorAll("img")).map(async (img) => {
       const src = img.getAttribute("src") ?? "";
-      if (!/^https?:\/\//i.test(src)) return; // relative/same-origin → fine
-      if (src.startsWith(window.location.origin)) return;
+      if (!src || src.startsWith("data:")) return;
       try {
-        const res = await fetch(
-          `/api/asset-image?u=${encodeURIComponent(src)}`,
-        );
+        const res = await fetch(toFetchUrl(src));
         if (!res.ok) return;
         const dataUrl = await blobToDataUrl(await res.blob());
         const original = img.getAttribute("src")!;
@@ -53,7 +57,7 @@ async function inlineCrossOriginImages(root: HTMLElement): Promise<() => void> {
         img.setAttribute("src", dataUrl);
         await img.decode().catch(() => {});
       } catch {
-        /* leave as-is; capture may still partially work */
+        /* leave as-is */
       }
     }),
   );
@@ -75,7 +79,7 @@ async function prepareForCapture(node: HTMLElement): Promise<() => void> {
   node.style.borderRadius = "0px";
   node.style.border = "none";
   node.style.boxShadow = "none";
-  const restoreImages = await inlineCrossOriginImages(node);
+  const restoreImages = await inlineImagesForCapture(node);
   return () => {
     restoreImages();
     node.style.borderRadius = prev.borderRadius;
@@ -137,12 +141,17 @@ export function RedeemTicket({
           // canvas isn't tainted, and make the card full-bleed; both reverted
           // right after the capture.
           prepare: prepareForCapture,
-          capture: (el) =>
-            toBlob(el, {
+          capture: async (el) => {
+            const opts = {
               pixelRatio: 2,
               skipFonts: true,
-              filter: (n) => !(n instanceof HTMLButtonElement),
-            }),
+              filter: (n: HTMLElement) => !(n instanceof HTMLButtonElement),
+            };
+            // First pass warms html-to-image's image cache; some engines
+            // (mobile Safari) drop images on the very first rasterisation.
+            await toBlob(el, opts).catch(() => null);
+            return toBlob(el, opts);
+          },
           download: downloadBlob,
           ...(canShareFn ? { canShare: canShareFn } : {}),
           ...(shareFn ? { share: shareFn } : {}),
@@ -181,17 +190,15 @@ export function RedeemTicket({
             />
             <span className="h-7 w-px bg-white/30" />
             {merchantLogo ? (
-              // Wrap in an overflow-hidden circle: clipping via overflow is far
-              // more reliable than border-radius on the <img> when the card is
-              // rasterised to an image (html-to-image), avoiding square corners.
-              <span className="flex h-9 w-9 shrink-0 overflow-hidden rounded-full bg-white p-0.5 ring-1 ring-white/50">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={merchantLogo}
-                  alt={merchantName}
-                  className="h-full w-full rounded-full object-cover"
-                />
-              </span>
+              // Show the merchant logo as-is (natural shape, no circle/clip):
+              // a plain <img> rasterises reliably everywhere, including
+              // WebKit/Safari where border-radius/overflow clipping leaks corners.
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={merchantLogo}
+                alt={merchantName}
+                className="h-9 w-auto max-w-[7.5rem] shrink-0 object-contain"
+              />
             ) : (
               <span className="max-w-[9rem] truncate text-sm font-bold tracking-wide text-white uppercase">
                 {merchantName}
