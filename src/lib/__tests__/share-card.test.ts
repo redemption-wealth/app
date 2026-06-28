@@ -172,6 +172,36 @@ describe("shareCard — sharing", () => {
     expect(await run(h.deps)).toEqual({ status: "shared" });
     expect(share).toHaveBeenCalledTimes(1);
   });
+
+  it("includes text + url in the share payload when provided", async () => {
+    const share = shareSpy();
+    const h = setup({ share });
+    await shareCard(
+      NODE,
+      {
+        fileName: "card.png",
+        title: "KFC",
+        text: "Klaim voucher kamu",
+        url: "https://wealth.test/vouchers/1",
+      },
+      h.deps,
+    );
+    expect(share.mock.calls[0]![0]).toEqual({
+      files: [fakeFile("card.png")],
+      title: "KFC",
+      text: "Klaim voucher kamu",
+      url: "https://wealth.test/vouchers/1",
+    });
+  });
+
+  it("omits text/url keys when not provided", async () => {
+    const share = shareSpy();
+    const h = setup({ share });
+    await run(h.deps, "KFC");
+    const payload = share.mock.calls[0]![0] as Record<string, unknown>;
+    expect("text" in payload).toBe(false);
+    expect("url" in payload).toBe(false);
+  });
 });
 
 // ── shareCard: download fallback paths ───────────────────────────────────────

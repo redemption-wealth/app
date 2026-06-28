@@ -18,7 +18,12 @@ export interface ShareCardDeps {
   /** Web Share pre-check. Omit when the platform has no Web Share API. */
   canShare?: (data: { files: File[] }) => boolean;
   /** Web Share. Rejects with an AbortError when the user cancels the sheet. */
-  share?: (data: { files: File[]; title?: string }) => Promise<void>;
+  share?: (data: {
+    files: File[];
+    title?: string;
+    text?: string;
+    url?: string;
+  }) => Promise<void>;
   /** Download fallback (browsers without Web Share, or after a share failure). */
   download: (blob: Blob, fileName: string) => void;
   /** File constructor — injectable so tests need no DOM File global. */
@@ -100,7 +105,7 @@ async function captureCardFile(
  */
 export async function shareCard(
   node: HTMLElement,
-  opts: { title?: string; fileName: string },
+  opts: { title?: string; fileName: string; text?: string; url?: string },
   deps: ShareCardDeps,
 ): Promise<ShareCardResult> {
   const file = await captureCardFile(node, opts.fileName, deps);
@@ -110,10 +115,19 @@ export async function shareCard(
     !!deps.share && (deps.canShare ? deps.canShare({ files: [file] }) : true);
 
   if (canUseShare) {
-    // Avoid passing `title: undefined` (incompatible with the DOM ShareData
-    // type under exactOptionalPropertyTypes).
-    const data: { files: File[]; title?: string } = { files: [file] };
+    // Only include defined keys (avoids passing `undefined`, which is
+    // incompatible with the DOM ShareData type under exactOptionalPropertyTypes).
+    // text + url make the OS share sheet's "Copy"/caption work and add an
+    // engagement message when sharing to chat apps.
+    const data: {
+      files: File[];
+      title?: string;
+      text?: string;
+      url?: string;
+    } = { files: [file] };
     if (opts.title !== undefined) data.title = opts.title;
+    if (opts.text !== undefined) data.text = opts.text;
+    if (opts.url !== undefined) data.url = opts.url;
     try {
       await deps.share!(data);
       return { status: "shared" };

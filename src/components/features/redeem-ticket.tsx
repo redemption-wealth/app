@@ -8,6 +8,13 @@ import type { Voucher } from "@/lib/schemas/voucher";
 import { buildCardFileName, shareCard } from "@/lib/share-card";
 import { formatDate, isVoucherExpired } from "@/lib/utils";
 
+/** A short, friendly caption shared alongside the card image (chat apps append
+ *  the URL after this). */
+function buildShareText(title: string | undefined, merchant: string): string {
+  const t = title ?? "voucher";
+  return `🎉 Aku baru klaim voucher "${t}" di ${merchant} pakai Wealth!\nTukar $WEALTH kamu jadi voucher juga, yuk 👇`;
+}
+
 /** Save a blob to the user's device by clicking a transient object-URL link. */
 function downloadBlob(blob: Blob, fileName: string): void {
   const url = URL.createObjectURL(blob);
@@ -130,11 +137,19 @@ export function RedeemTicket({
       const nav = typeof navigator !== "undefined" ? navigator : undefined;
       const canShareFn = nav?.canShare?.bind(nav);
       const shareFn = nav?.share?.bind(nav);
+      const origin =
+        typeof window !== "undefined" ? window.location.origin : "";
+      // Public link for engagement + so the share sheet's "Copy"/caption works
+      // (a file-only share leaves nothing to copy on iOS).
+      const shareUrl =
+        origin && voucher?.id ? `${origin}/vouchers/${voucher.id}` : origin;
       const result = await shareCard(
         node,
         {
           title: voucher?.title ?? "Voucher Wealth",
           fileName: buildCardFileName(voucher?.title, index, total),
+          text: buildShareText(voucher?.title, merchantName),
+          ...(shareUrl ? { url: shareUrl } : {}),
         },
         {
           // Inline cross-origin (R2) images via our same-origin proxy so the
