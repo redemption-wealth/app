@@ -122,6 +122,21 @@ export function RedeemTicket({
   const cardRef = useRef<HTMLDivElement>(null);
   const [sharing, setSharing] = useState(false);
   const [shareError, setShareError] = useState<string | null>(null);
+  const [linkCopied, setLinkCopied] = useState(false);
+
+  async function handleCopyLink() {
+    // The iOS share sheet's "Copy" copies the image (not a link). Copy a real,
+    // pasteable link here via the Clipboard API — the proven pattern used across
+    // the app (Salin Kode, copy txHash). Home link = openable by anyone.
+    const url = typeof window !== "undefined" ? window.location.origin : "";
+    try {
+      await navigator.clipboard.writeText(url);
+      setLinkCopied(true);
+      window.setTimeout(() => setLinkCopied(false), 1500);
+    } catch {
+      /* clipboard unavailable (insecure context / permission) */
+    }
+  }
 
   const merchantName = voucher?.merchant?.name ?? "Voucher";
   const merchantLogo = voucher?.merchant?.logoUrl ?? null;
@@ -303,6 +318,49 @@ export function RedeemTicket({
           />
         </svg>
         {sharing ? "Menyiapkan kartu…" : "Bagikan / Simpan Kartu"}
+      </button>
+
+      {/* Copy a real link (the share sheet's Copy copies the image, not a link) */}
+      <button
+        type="button"
+        onClick={handleCopyLink}
+        className="text-on-surface-variant hover:text-on-surface mx-auto flex items-center justify-center gap-1.5 py-1 text-xs font-semibold transition"
+      >
+        {linkCopied ? (
+          <>
+            <svg
+              className="text-primary h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M4.5 12.75l6 6 9-13.5"
+              />
+            </svg>
+            <span className="text-primary">Link tersalin</span>
+          </>
+        ) : (
+          <>
+            <svg
+              className="h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={1.7}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244"
+              />
+            </svg>
+            Salin Link
+          </>
+        )}
       </button>
       {shareError ? (
         <p className="text-error text-center text-xs">{shareError}</p>
