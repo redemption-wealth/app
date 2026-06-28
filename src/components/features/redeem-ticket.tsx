@@ -157,12 +157,17 @@ export function RedeemTicket({
             />
             <span className="h-7 w-px bg-white/30" />
             {merchantLogo ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={merchantLogo}
-                alt={merchantName}
-                className="h-9 w-9 rounded-full bg-white object-cover p-0.5 ring-1 ring-white/50"
-              />
+              // Wrap in an overflow-hidden circle: clipping via overflow is far
+              // more reliable than border-radius on the <img> when the card is
+              // rasterised to an image (html-to-image), avoiding square corners.
+              <span className="flex h-9 w-9 shrink-0 overflow-hidden rounded-full bg-white p-0.5 ring-1 ring-white/50">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={merchantLogo}
+                  alt={merchantName}
+                  className="h-full w-full rounded-full object-cover"
+                />
+              </span>
             ) : (
               <span className="max-w-[9rem] truncate text-sm font-bold tracking-wide text-white uppercase">
                 {merchantName}
@@ -174,11 +179,14 @@ export function RedeemTicket({
         {/* Info strip */}
         <div className="px-5 pt-4 pb-1">
           <div className="flex items-start justify-between gap-2">
-            <div className="min-w-0">
+            {/* flex-1 + min-w-0 gives the title the full available width (not a
+                shrink-to-fit box), and truncate keeps it to one line — so the
+                rasterised capture can't reflow it into the date below. */}
+            <div className="min-w-0 flex-1">
               <p className="text-on-surface-variant truncate text-[10px] font-bold tracking-wider uppercase">
                 {merchantName}
               </p>
-              <h2 className="font-display text-on-surface text-base leading-tight font-bold">
+              <h2 className="font-display text-on-surface truncate text-base leading-tight font-bold">
                 {voucher?.title ?? "Voucher"}
               </h2>
             </div>
