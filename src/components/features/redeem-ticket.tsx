@@ -137,12 +137,11 @@ export function RedeemTicket({
       const nav = typeof navigator !== "undefined" ? navigator : undefined;
       const canShareFn = nav?.canShare?.bind(nav);
       const shareFn = nav?.share?.bind(nav);
-      const origin =
-        typeof window !== "undefined" ? window.location.origin : "";
-      // Public link for engagement + so the share sheet's "Copy"/caption works
-      // (a file-only share leaves nothing to copy on iOS).
+      // Link to the app home for engagement + so the share sheet's "Copy"
+      // works (a file-only share leaves nothing to copy on iOS). Home is always
+      // valid — a per-voucher link 404s for expired/inactive/test vouchers.
       const shareUrl =
-        origin && voucher?.id ? `${origin}/vouchers/${voucher.id}` : origin;
+        typeof window !== "undefined" ? window.location.origin : "";
       const result = await shareCard(
         node,
         {
