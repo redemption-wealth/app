@@ -5,7 +5,20 @@ import { toBlob } from "html-to-image";
 import { QrDisplay } from "@/components/features/qr-display";
 import type { QrCode } from "@/lib/schemas/redemption";
 import type { Voucher } from "@/lib/schemas/voucher";
+import { buildCardFileName, shareCard } from "@/lib/share-card";
 import { formatDate, isVoucherExpired } from "@/lib/utils";
+
+/** Save a blob to the user's device by clicking a transient object-URL link. */
+function downloadBlob(blob: Blob, fileName: string): void {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = fileName;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
 
 function blobToDataUrl(blob: Blob): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -81,49 +94,41 @@ export function RedeemTicket({
   const expired = voucher ? isVoucherExpired(voucher.expiryDate) : false;
 
   async function handleShare() {
-    if (!cardRef.current) return;
+    const node = cardRef.current;
+    if (!node) return;
     setSharing(true);
     setShareError(null);
-    let restore: (() => void) | null = null;
     try {
-      // Inline cross-origin (R2) images via our same-origin proxy so the canvas
-      // isn't tainted; restored right after the capture.
-      restore = await inlineCrossOriginImages(cardRef.current);
-      const blob = await toBlob(cardRef.current, {
-        pixelRatio: 2,
-        backgroundColor: "#ffffff",
-        skipFonts: true,
-        filter: (node) => !(node instanceof HTMLButtonElement),
-      });
-      if (!blob) throw new Error("Capture returned no image");
-      const base = (voucher?.title ?? "wealth-voucher")
-        .replace(/[^a-z0-9]+/gi, "-")
-        .toLowerCase();
-      const name = total > 1 ? `${base}-${index + 1}.png` : `${base}.png`;
-      const file = new File([blob], name, { type: "image/png" });
-
-      if (
-        typeof navigator !== "undefined" &&
-        navigator.canShare?.({ files: [file] })
-      ) {
-        await navigator.share({
-          files: [file],
+      const nav = typeof navigator !== "undefined" ? navigator : undefined;
+      const canShareFn = nav?.canShare?.bind(nav);
+      const shareFn = nav?.share?.bind(nav);
+      const result = await shareCard(
+        node,
+        {
           title: voucher?.title ?? "Voucher Wealth",
-        });
-      } else {
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = name;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+          fileName: buildCardFileName(voucher?.title, index, total),
+        },
+        {
+          // Inline cross-origin (R2) images via our same-origin proxy so the
+          // canvas isn't tainted; restored right after the capture.
+          prepare: inlineCrossOriginImages,
+          capture: (el) =>
+            toBlob(el, {
+              pixelRatio: 2,
+              backgroundColor: "#ffffff",
+              skipFonts: true,
+              filter: (n) => !(n instanceof HTMLButtonElement),
+            }),
+          download: downloadBlob,
+          ...(canShareFn ? { canShare: canShareFn } : {}),
+          ...(shareFn ? { share: shareFn } : {}),
+        },
+      );
+      // A cancelled share sheet is normal — only flag genuine failures.
+      if (result.status === "error") {
+        setShareError("Gagal membuat gambar kartu. Coba lagi.");
       }
-    } catch {
-      setShareError("Gagal membuat gambar kartu. Coba lagi.");
     } finally {
-      restore?.();
       setSharing(false);
     }
   }
