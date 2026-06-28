@@ -9,8 +9,11 @@ const ethereumRpcDomains =
 const walletConnectDomains =
   "https://*.walletconnect.com https://*.walletconnect.org wss://*.walletconnect.com wss://*.walletconnect.org";
 const cloudflareChallenge = "https://challenges.cloudflare.com";
+// `*.r2.dev` already matches public R2 URLs (pub-<hash>.r2.dev); a mid-label
+// wildcard like `pub-*.r2.dev` is invalid per the CSP spec and gets ignored
+// (noisy console warning), so it is intentionally omitted.
 const r2Domains =
-  "https://*.r2.dev https://*.r2.cloudflarestorage.com https://pub-*.r2.dev https://cdn.wealthcrypto.fund";
+  "https://*.r2.dev https://*.r2.cloudflarestorage.com https://cdn.wealthcrypto.fund";
 
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
 
