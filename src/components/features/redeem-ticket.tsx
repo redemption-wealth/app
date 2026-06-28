@@ -60,6 +60,30 @@ async function inlineCrossOriginImages(root: HTMLElement): Promise<() => void> {
   return () => restores.forEach((r) => r());
 }
 
+/**
+ * Prep the card for a clean exported image: inline cross-origin images AND make
+ * the card full-bleed (square corners, no border/shadow) so the capture has no
+ * rounded white corners — those look wrong on a coloured chat background. All
+ * changes are reverted via the returned restore fn after capture.
+ */
+async function prepareForCapture(node: HTMLElement): Promise<() => void> {
+  const prev = {
+    borderRadius: node.style.borderRadius,
+    border: node.style.border,
+    boxShadow: node.style.boxShadow,
+  };
+  node.style.borderRadius = "0px";
+  node.style.border = "none";
+  node.style.boxShadow = "none";
+  const restoreImages = await inlineCrossOriginImages(node);
+  return () => {
+    restoreImages();
+    node.style.borderRadius = prev.borderRadius;
+    node.style.border = prev.border;
+    node.style.boxShadow = prev.boxShadow;
+  };
+}
+
 interface RedeemTicketProps {
   voucher?: Voucher | undefined;
   /** A single asset — BOGO renders one card per asset so each can be shared
@@ -110,12 +134,12 @@ export function RedeemTicket({
         },
         {
           // Inline cross-origin (R2) images via our same-origin proxy so the
-          // canvas isn't tainted; restored right after the capture.
-          prepare: inlineCrossOriginImages,
+          // canvas isn't tainted, and make the card full-bleed; both reverted
+          // right after the capture.
+          prepare: prepareForCapture,
           capture: (el) =>
             toBlob(el, {
               pixelRatio: 2,
-              backgroundColor: "#ffffff",
               skipFonts: true,
               filter: (n) => !(n instanceof HTMLButtonElement),
             }),
